@@ -6,6 +6,7 @@
 
 package pexeso;
 
+
 /**
  *
  * @author Tomas
@@ -17,6 +18,8 @@ public class Main {
      */
     public static void main(String[] args) {
         System.out.println("Hello Pexeso");
+        HeadFrame hFrame = new HeadFrame();
+        hFrame.setVisible(true);
     }
     
 }
