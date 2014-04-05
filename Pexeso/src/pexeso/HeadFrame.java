@@ -34,7 +34,7 @@ public class HeadFrame extends JFrame {
     private JLabel playerOnTurnLabel;
     private JLabel jLabel1;
     //cards
-    private JButton[] cards;
+    private DeckOfCards deck;
     
     
     public HeadFrame() {
@@ -51,23 +51,21 @@ public class HeadFrame extends JFrame {
         //Player 1
         playerOneNameLabel = new JLabel("PlayerName 1");
         PlayerOneScoreLabel = new JLabel("Score: ");
-        playerOnePictureButton = new JButton("Picture 1");
+        playerOnePictureButton = new JButton(new ImageIcon("src\\avatars\\Professor.png"));
         //Player 2
         playerTwoNameLabel = new JLabel("PlayerName 2");
         playerTwoScoreLabel = new JLabel("Score: ");
-        playerTwoPictureButton = new JButton("Picture 2");
+        playerTwoPictureButton = new JButton(new ImageIcon("src\\avatars\\Female.png"));
         //top and bottom label
         playerOnTurnLabel = new JLabel("Player on turn: ");
         jLabel1 = new JLabel("");
         //Cards
-        cards = new JButton[64];
-        for (int i = 0; i < cards.length; i++) {
-            cards[i] = new JButton("CARD");
-        }
+        deck = new DeckOfCards();
+        
         
         //Close
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        
+        getContentPane().setLayout(new java.awt.BorderLayout(30, 30));
         //Menu
         headMenuBar.add(gameMenu);
         headMenuBar.add(settingsMenu);
@@ -75,18 +73,23 @@ public class HeadFrame extends JFrame {
         leftPanel.add(playerOneNameLabel);
         leftPanel.add(playerOnePictureButton);
         leftPanel.add(PlayerOneScoreLabel);
+//        leftPanel.setPreferredSize(new java.awt.Dimension(150, 250));
         //rightPanel
         rightPanel.add(playerTwoNameLabel);
         rightPanel.add(playerTwoPictureButton);
         rightPanel.add(playerTwoScoreLabel);
+//        rightPanel.setPreferredSize(new java.awt.Dimension(150, 250));
         //northPanel
         northPanel.add(playerOnTurnLabel);
         //southPanel
         southPanel.add(jLabel1);
         //centerPanel
-        for (int i = 0; i < cards.length; i++) {
-            centerPanel.add(cards[i]);
+        deck.shuffleCards();
+        for (int i = 0; i < deck.getCards().length; i++) {
+            centerPanel.add(deck.getCards()[i]);
         }
+        centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
+        
 
         setJMenuBar(headMenuBar);
         getContentPane().add(leftPanel, java.awt.BorderLayout.LINE_START);
@@ -95,7 +98,11 @@ public class HeadFrame extends JFrame {
         getContentPane().add(southPanel, java.awt.BorderLayout.PAGE_END);
         getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
 
+        
+        
         pack();
         setLocationRelativeTo(null);
+//        setResizable(false);
+        
     }
 }
