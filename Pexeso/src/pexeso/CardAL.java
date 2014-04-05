@@ -6,10 +6,28 @@
 
 package pexeso;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
  *
  * @author Tomas
  */
-public class CardAL {
+public class CardAL implements ActionListener{
+
+    private Card card;
+    
+    public CardAL(Card card) {
+        this.card = card;
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (card.getIcon() == null) {
+            card.setIcon(card.getCardImage());
+        } else {
+            card.setIcon(null);
+        }
+    }
     
 }
