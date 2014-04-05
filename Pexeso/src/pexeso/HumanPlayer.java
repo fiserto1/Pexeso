@@ -12,6 +12,14 @@ package pexeso;
  */
 public class HumanPlayer extends AbstractPlayer {
 
+    public HumanPlayer(String playerName) {
+        super(playerName);
+    }
+
+    public HumanPlayer() {
+        this.playerName = "UnknownPlayer";
+    }
+    
     @Override
     public void move() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
