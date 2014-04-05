@@ -11,12 +11,13 @@ package pexeso;
  * @author Tomas
  */
 public abstract class AbstractPlayer {
-    private int playerScore;
-    private String playerName;
+    protected int playerScore = 0;
+    protected String playerName;
 
-    public AbstractPlayer(int playerScore, String playerName) {
-        this.playerScore = playerScore;
+    public AbstractPlayer(String playerName) {
         this.playerName = playerName;
+    }
+    public AbstractPlayer() {
     }
 
     public int getPlayerScore() {
