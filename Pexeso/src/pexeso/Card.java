@@ -15,8 +15,8 @@ import javax.swing.JButton;
  *
  * @author Tomas
  */
-public class Card extends JButton {
-    private ImageIcon cardIcon = new ImageIcon();
+public class Card extends JButton{
+    private ImageIcon cardImage = new ImageIcon();
 
     public Card() {
     }
@@ -37,13 +37,11 @@ public class Card extends JButton {
         super(text, icon);
     }
 
-    public ImageIcon getCardIcon() {
-        return cardIcon;
+    public ImageIcon getCardImage() {
+        return cardImage;
     }
 
-    public void setCardIcon(ImageIcon cardIcon) {
-        this.cardIcon = cardIcon;
+    public void setCardImage(ImageIcon cardIcon) {
+        this.cardImage = cardIcon;
     }
-    
-    
 }
