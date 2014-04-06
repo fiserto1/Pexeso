@@ -21,8 +21,25 @@ public class HumanPlayer extends AbstractPlayer {
     }
     
     @Override
-    public void move() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public OneMove move(DeckOfCards deck) {
+        for (int i = 0; i < deck.getCards().length; i++) {
+            deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i]));
+        }
+        
+//        boolean valid = false;
+//        while(!valid) {
+//            if (firstClickedCard == null) {
+//                firstClickedCard = CardAL.getClickedCard();
+//            }
+//            else {
+//                secondClickedCard = CardAL.getClickedCard();
+//                valid = true;
+//            }
+//        }
+        
+        OneMove move = CardAL.getMove();
+        return move;
     }
     
+
 }
