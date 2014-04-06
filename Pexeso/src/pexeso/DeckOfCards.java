@@ -9,8 +9,8 @@ import javax.swing.ImageIcon;
  * @author Tomas
  */
 public class DeckOfCards {
-    
-    private final Card[] cards = new Card[64];
+    public static final int NUMBER_OF_CARDS = 64;
+    private final Card[] cards = new Card[NUMBER_OF_CARDS];
 
     public DeckOfCards() {
         int j = 1;
