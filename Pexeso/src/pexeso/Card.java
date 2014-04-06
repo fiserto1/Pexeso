@@ -15,7 +15,7 @@ import javax.swing.JButton;
  *
  * @author Tomas
  */
-public class Card extends JButton{
+public class Card extends JButton {
     private ImageIcon cardImage = new ImageIcon();
 
     public Card() {
@@ -44,4 +44,28 @@ public class Card extends JButton{
     public void setCardImage(ImageIcon cardIcon) {
         this.cardImage = cardIcon;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 17 * hash + (this.cardImage != null ? this.cardImage.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Card other = (Card) obj;
+        if (this.cardImage != other.cardImage && (this.cardImage == null || !this.cardImage.equals(other.cardImage))) {
+            return false;
+        }
+        return true;
+    }
+
+
 }
