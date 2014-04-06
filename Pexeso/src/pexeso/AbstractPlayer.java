@@ -37,7 +37,7 @@ public abstract class AbstractPlayer {
     }
     
     
-    public abstract void move();
+    public abstract OneMove move(DeckOfCards deck);
     
     
 }
