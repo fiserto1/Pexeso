@@ -15,14 +15,14 @@ import javax.swing.*;
  */
 public class HeadFrame extends JFrame {
     //Menu
-    private JMenuBar headMenuBar;
-    private JMenu gameMenu;
-    private JMenu settingsMenu;
-    private JMenu newGameMenu;
-    private JMenuItem onePlayerGameMenuItem;
-    private JMenuItem twoPlayersGameMenuItem;
-    private JMenuItem saveGameMenuItem;
-    private JMenuItem loadGameMenuItem;
+    private final JMenuBar headMenuBar = new JMenuBar();
+    private final JMenu gameMenu = new JMenu("Game");
+    private final JMenu settingsMenu = new JMenu("Settings");
+    private final JMenu newGameMenu = new JMenu("New game");
+    private final JMenuItem onePlayerGameMenuItem = new JMenuItem("One player");
+    private final JMenuItem twoPlayersGameMenuItem = new JMenuItem("Two players");
+    private final JMenuItem saveGameMenuItem = new JMenuItem("Save game");
+    private final JMenuItem loadGameMenuItem = new JMenuItem("Load game");
     //Panels
     private JPanel northPanel;
     private JPanel southPanel;
@@ -41,8 +41,117 @@ public class HeadFrame extends JFrame {
     private JLabel playerOnTurnLabel;
     private JLabel jLabel1;
     //cards
-    private DeckOfCards deck;
+    private final DeckOfCards deck = new DeckOfCards();
 
+
+    public HeadFrame() {
+        //Close
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        
+        //Menu
+        createMenu();
+        //Panels
+        createPanels();
+        
+        getContentPane().setLayout(new java.awt.BorderLayout(30, 30));
+        getContentPane().add(leftPanel, java.awt.BorderLayout.LINE_START);
+        getContentPane().add(rightPanel, java.awt.BorderLayout.LINE_END);
+        getContentPane().add(northPanel, java.awt.BorderLayout.PAGE_START);
+        getContentPane().add(southPanel, java.awt.BorderLayout.PAGE_END);
+        getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
+        setPreferredSize(new java.awt.Dimension(800, 700));
+        pack();
+        setLocationRelativeTo(null);
+//        setResizable(false);
+        
+    }
+    
+    private void createMenu() {
+        saveGameMenuItem.setEnabled(false);
+        loadGameMenuItem.setEnabled(false);
+        headMenuBar.add(gameMenu);
+        headMenuBar.add(settingsMenu);
+        gameMenu.add(newGameMenu);
+        gameMenu.add(saveGameMenuItem);
+        gameMenu.add(loadGameMenuItem);
+        newGameMenu.add(onePlayerGameMenuItem);
+        newGameMenu.add(twoPlayersGameMenuItem);
+        setJMenuBar(headMenuBar);
+        
+        onePlayerGameMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Game game = new Game(new HumanPlayer(), new ComputerPlayer(), HeadFrame.this);
+                showGameBoard(game);
+            }
+        });
+
+        twoPlayersGameMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Game game = new Game(new HumanPlayer(), new HumanPlayer(), HeadFrame.this);
+                showGameBoard(game);
+            }
+        });
+    }
+    
+    private void showGameBoard(Game game) {
+        setPreferredSize(null);
+        leftPanel.setVisible(true);
+        rightPanel.setVisible(true);
+        saveGameMenuItem.setVisible(true);
+        
+        centerPanel.removeAll();
+        deck.shuffleCards();
+        for (int i = 0; i < deck.getCards().length; i++) {
+            centerPanel.add(deck.getCards()[i]);
+            deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i], game));
+        }
+        centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
+        pack();
+//                game.playGame();
+    }
+    
+    private void createPanels() {
+        //Panels
+        northPanel = new JPanel();
+        southPanel = new JPanel();
+        centerPanel = new JPanel(new java.awt.GridLayout(8, 8, 5, 5));
+        rightPanel = new JPanel(new java.awt.GridLayout(3, 1));
+        leftPanel = new JPanel(new java.awt.GridLayout(3, 1));
+        //Player 1
+        playerOneNameLabel = new JLabel("PlayerName 1");
+        PlayerOneScoreLabel = new JLabel("Score: ");
+        playerOnePictureButton = new JButton(new ImageIcon(getClass().getResource("/avatars/Professor.png")));
+        //Player 2
+        playerTwoNameLabel = new JLabel("PlayerName 2");
+        playerTwoScoreLabel = new JLabel("Score: ");
+        playerTwoPictureButton = new JButton(new ImageIcon(getClass().getResource("/avatars/Female.png")));
+        //Top and bottom label
+        playerOnTurnLabel = new JLabel("Player on turn: ");
+        jLabel1 = new JLabel("");
+
+        
+        //leftPanel
+        leftPanel.add(playerOneNameLabel);
+        leftPanel.add(playerOnePictureButton);
+        leftPanel.add(PlayerOneScoreLabel);
+        leftPanel.setVisible(false);
+//        leftPanel.setPreferredSize(new java.awt.Dimension(150, 250));
+        //rightPanel
+        rightPanel.add(playerTwoNameLabel);
+        rightPanel.add(playerTwoPictureButton);
+        rightPanel.add(playerTwoScoreLabel);
+        rightPanel.setVisible(false);
+//        rightPanel.setPreferredSize(new java.awt.Dimension(150, 250));
+        //northPanel
+        northPanel.add(playerOnTurnLabel);
+        //southPanel
+        southPanel.add(jLabel1);
+        //centerPanel
+        centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
+    }
+    
     public DeckOfCards getDeck() {
         return deck;
     }
@@ -70,125 +179,6 @@ public class HeadFrame extends JFrame {
     public JLabel getPlayerOnTurnLabel() {
         return playerOnTurnLabel;
     }
-    
-    
-    public HeadFrame() {
-        //Menu
-        headMenuBar = new JMenuBar();
-        gameMenu = new JMenu("Game");
-        settingsMenu = new JMenu("Settings");
-        newGameMenu = new JMenu("New Game");
-        onePlayerGameMenuItem = new JMenuItem("One player");
-        twoPlayersGameMenuItem = new JMenuItem("Two players");
-        saveGameMenuItem = new JMenuItem("Save Game");
-        loadGameMenuItem = new JMenuItem("Load Game");
-        saveGameMenuItem.setEnabled(false);
-        loadGameMenuItem.setEnabled(false);
-        
-        //Panels
-        northPanel = new JPanel();
-        southPanel = new JPanel();
-        centerPanel = new JPanel(new java.awt.GridLayout(8, 8, 5, 5));
-        rightPanel = new JPanel(new java.awt.GridLayout(3, 1));
-        leftPanel = new JPanel(new java.awt.GridLayout(3, 1));
-        //Player 1
-        playerOneNameLabel = new JLabel("PlayerName 1");
-        PlayerOneScoreLabel = new JLabel("Score: ");
-        playerOnePictureButton = new JButton(new ImageIcon("src\\avatars\\Professor.png"));
-        //Player 2
-        playerTwoNameLabel = new JLabel("PlayerName 2");
-        playerTwoScoreLabel = new JLabel("Score: ");
-        playerTwoPictureButton = new JButton(new ImageIcon("src\\avatars\\Female.png"));
-        //top and bottom label
-        playerOnTurnLabel = new JLabel("Player on turn: ");
-        jLabel1 = new JLabel("");
-        //Cards
-        deck = new DeckOfCards();
-        
-        
-        //Close
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        getContentPane().setLayout(new java.awt.BorderLayout(30, 30));
-        //Menu
-        headMenuBar.add(gameMenu);
-        headMenuBar.add(settingsMenu);
-        gameMenu.add(newGameMenu);
-        gameMenu.add(saveGameMenuItem);
-        gameMenu.add(loadGameMenuItem);
-        newGameMenu.add(onePlayerGameMenuItem);
-        newGameMenu.add(twoPlayersGameMenuItem);
-        
-        onePlayerGameMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                leftPanel.setVisible(true);
-                rightPanel.setVisible(true);
-                setPreferredSize(null);
-                deck.shuffleCards();
-                for (int i = 0; i < deck.getCards().length; i++) {
-                    deck.getCards()[i].setIcon(null);
-                    deck.getCards()[i].setText("CARD");
-                    centerPanel.add(deck.getCards()[i]);
-                }
-                centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
-                pack();
-                Game game = new Game(new HumanPlayer(), new ComputerPlayer(), HeadFrame.this);
-                game.playGame();
-            }
-        });
-        
-        twoPlayersGameMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                leftPanel.setVisible(true);
-                rightPanel.setVisible(true);
-                setPreferredSize(null);
-                deck.shuffleCards();
-                for (int i = 0; i < deck.getCards().length; i++) {
-                    deck.getCards()[i].setIcon(null);
-                    deck.getCards()[i].setText("CARD");
-                    centerPanel.add(deck.getCards()[i]);
-                }
-                centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
-                pack();
-                
-                Game game = new Game(new HumanPlayer(), new HumanPlayer(), HeadFrame.this);
-                game.playGame();
-            }
-        });
-        //leftPanel
-        leftPanel.add(playerOneNameLabel);
-        leftPanel.add(playerOnePictureButton);
-        leftPanel.add(PlayerOneScoreLabel);
-//        leftPanel.setPreferredSize(new java.awt.Dimension(150, 250));
-        //rightPanel
-        rightPanel.add(playerTwoNameLabel);
-        rightPanel.add(playerTwoPictureButton);
-        rightPanel.add(playerTwoScoreLabel);
-//        rightPanel.setPreferredSize(new java.awt.Dimension(150, 250));
-        //northPanel
-        northPanel.add(playerOnTurnLabel);
-        //southPanel
-        southPanel.add(jLabel1);
-        //centerPanel
-        
-        centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
-        
 
-        setJMenuBar(headMenuBar);
-        getContentPane().add(leftPanel, java.awt.BorderLayout.LINE_START);
-        getContentPane().add(rightPanel, java.awt.BorderLayout.LINE_END);
-        getContentPane().add(northPanel, java.awt.BorderLayout.PAGE_START);
-        getContentPane().add(southPanel, java.awt.BorderLayout.PAGE_END);
-        getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
 
-        leftPanel.setVisible(false);
-        rightPanel.setVisible(false);
-        setPreferredSize(new java.awt.Dimension(800, 700));
-        pack();
-        setLocationRelativeTo(null);
-        
-//        setResizable(false);
-        
-    }
 }
