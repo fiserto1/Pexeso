@@ -61,7 +61,7 @@ public class Card extends JButton {
             return false;
         }
         final Card other = (Card) obj;
-        if (this.cardImage != other.cardImage && (this.cardImage == null || !this.cardImage.equals(other.cardImage))) {
+        if (this.cardImage.getImage() != other.cardImage.getImage() && (this.cardImage == null || !this.cardImage.getImage().equals(other.cardImage.getImage()))) {
             return false;
         }
         return true;
