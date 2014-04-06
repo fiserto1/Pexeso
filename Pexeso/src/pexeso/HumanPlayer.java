@@ -22,9 +22,9 @@ public class HumanPlayer extends AbstractPlayer {
     
     @Override
     public OneMove move(DeckOfCards deck) {
-        for (int i = 0; i < deck.getCards().length; i++) {
-            deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i]));
-        }
+//        for (int i = 0; i < deck.getCards().length; i++) {
+//            deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i]));
+//        }
         
 //        boolean valid = false;
 //        while(!valid) {
@@ -37,8 +37,8 @@ public class HumanPlayer extends AbstractPlayer {
 //            }
 //        }
         
-        OneMove move = CardAL.getMove();
-        return move;
+//        OneMove move = CardAL.getMove();
+        return null;
     }
     
 

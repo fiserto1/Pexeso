@@ -6,19 +6,55 @@
 
 package pexeso;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JLabel;
-import javax.swing.Timer;
 
 /**
  *
  * @author Tomas
  */
 public class Game {
+    // true - player one's turn
+    // false - player two's turn
+    private boolean playerOnTurn = true;
+    
     private AbstractPlayer player1;
     private AbstractPlayer player2;
     private HeadFrame frame;
+    private int uncoveredCards = 0;
+
+    public boolean isPlayerOnTurn() {
+        return playerOnTurn;
+    }
+
+    public AbstractPlayer getPlayer1() {
+        return player1;
+    }
+
+    public AbstractPlayer getPlayer2() {
+        return player2;
+    }
+
+    public HeadFrame getFrame() {
+        return frame;
+    }
+
+    public int getUncoveredCards() {
+        return uncoveredCards;
+    }
+
+    public void changePlayerOnTurn() {
+        if(playerOnTurn) {
+            playerOnTurn = false;
+            frame.setPlayerOnTurnLabel("Player One's turn.");
+        }
+        else {
+            playerOnTurn = true;
+            frame.setPlayerOnTurnLabel("Player Two's turn.");
+        }
+    }
+
+    public void setUncoveredCards(int uncoveredCards) {
+        this.uncoveredCards = uncoveredCards;
+    }
     
     //COUNTDOWN
 //    private int countdown = 21;
@@ -32,18 +68,37 @@ public class Game {
         frame.setPlayerTwoNameLabel(player2.playerName);
         frame.setPlayerOneScoreLabel("Score: " + player1.playerScore);
         frame.setPlayerTwoScoreLabel("Score: " + player2.playerScore);
+        frame.setPlayerOnTurnLabel("Player One's turn.");
+    }
+    
+    public void setScore() {
+        if (!playerOnTurn) {
+            player1.playerScore += 10;
+            frame.setPlayerOneScoreLabel("Score: " + player1.playerScore);
+        }
+        else {
+            player2.playerScore += 10;
+            frame.setPlayerTwoScoreLabel("Score: " + player2.playerScore);
+        }
+    }
+    
+    public void endGame() {
+        if (playerOnTurn) {
+            frame.setPlayerOnTurnLabel(player1.playerName + " WON!!");
+        }
+        else {
+            frame.setPlayerOnTurnLabel(player2.playerName + " WON!!");
+        }
     }
     
     public void playGame() {
-        int uncoveredCards = 0;
-        OneMove move;
-        // true - player one's turn
-        // false - player two's turn
-        boolean playerOneTurn = true;
-        while (uncoveredCards != 64) {
-            if (playerOneTurn) {
-                frame.setPlayerOnTurnLabel("Player One's turn.");
-                
+//        int uncoveredCards = 0;
+//        OneMove move;
+//        
+//        while (uncoveredCards != 64) {
+//            if (playerOnTurn) {
+//                frame.setPlayerOnTurnLabel("Player One's turn.");
+//                
                 //COUNTDOWN
 //                timer = new Timer(1000, new ActionListener() {
 //                    @Override
@@ -56,38 +111,38 @@ public class Game {
 //                    }
 //                });
 //                timer.start();
-                
-                move = player1.move(frame.getDeck());
-                if (move.getFirstCard().equals(move.getSecondCard())) {
-                    move.getFirstCard().setVisible(false);
-                    move.getSecondCard().setVisible(false);
-                    uncoveredCards += 2;
-                }
-                else {
-                    move.getFirstCard().setText("CARD");
-                    move.getFirstCard().setIcon(null);
-                    move.getSecondCard().setText("CARD");
-                    move.getSecondCard().setIcon(null);
-                    playerOneTurn = false;
-                }
-            }
-            else {
-                frame.setPlayerOnTurnLabel("Player Two's turn.");
-                move = player2.move(frame.getDeck());
-                if (move.getFirstCard().equals(move.getSecondCard())) {
-                    move.getFirstCard().setVisible(false);
-                    move.getSecondCard().setVisible(false);
-                    uncoveredCards += 2;
-                }
-                else {
-                    move.getFirstCard().setText("CARD");
-                    move.getFirstCard().setIcon(null);
-                    move.getSecondCard().setText("CARD");
-                    move.getSecondCard().setIcon(null);
-                    playerOneTurn = true;
-                }
-            }
-        }
+//                
+//                move = player1.move(frame.getDeck());
+//                if (move.getFirstCard().equals(move.getSecondCard())) {
+//                    move.getFirstCard().setVisible(false);
+//                    move.getSecondCard().setVisible(false);
+//                    uncoveredCards += 2;
+//                }
+//                else {
+//                    move.getFirstCard().setText("CARD");
+//                    move.getFirstCard().setIcon(null);
+//                    move.getSecondCard().setText("CARD");
+//                    move.getSecondCard().setIcon(null);
+//                    playerOnTurn = false;
+//                }
+//            }
+//            else {
+//                frame.setPlayerOnTurnLabel("Player Two's turn.");
+//                move = player2.move(frame.getDeck());
+//                if (move.getFirstCard().equals(move.getSecondCard())) {
+//                    move.getFirstCard().setVisible(false);
+//                    move.getSecondCard().setVisible(false);
+//                    uncoveredCards += 2;
+//                }
+//                else {
+//                    move.getFirstCard().setText("CARD");
+//                    move.getFirstCard().setIcon(null);
+//                    move.getSecondCard().setText("CARD");
+//                    move.getSecondCard().setIcon(null);
+//                    playerOnTurn = true;
+//                }
+//            }
+//        }
     }
     
     public void saveGame() {
