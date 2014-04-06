@@ -19,7 +19,7 @@ public class ComputerPlayer extends AbstractPlayer {
 
     
     @Override
-    public void move() {
+    public OneMove move(DeckOfCards deck) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
