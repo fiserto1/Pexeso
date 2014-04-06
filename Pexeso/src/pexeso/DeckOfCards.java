@@ -25,9 +25,8 @@ public class DeckOfCards {
         int j = 1;
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new Card("CARD");
-//            cards[i].setIcon(new ImageIcon("src\\cards\\" + j + ".jpg"));
             cards[i].setCardImage(new ImageIcon("src\\cards\\" + j + ".jpg"));
-            cards[i].addActionListener(new CardAL(cards[i]));
+//            cards[i].addActionListener(new CardAL(cards[i]));
             if (i%2 != 0) {
                 j++;
             }
@@ -45,7 +44,7 @@ public class DeckOfCards {
         }
     }
     
-    public JButton[] getCards() {
+    public Card[] getCards() {
         return cards;
     }
     
