@@ -6,6 +6,8 @@
 
 package pexeso;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 /**
  *
@@ -16,6 +18,11 @@ public class HeadFrame extends JFrame {
     private JMenuBar headMenuBar;
     private JMenu gameMenu;
     private JMenu settingsMenu;
+    private JMenu newGameMenu;
+    private JMenuItem onePlayerGameMenuItem;
+    private JMenuItem twoPlayersGameMenuItem;
+    private JMenuItem saveGameMenuItem;
+    private JMenuItem loadGameMenuItem;
     //Panels
     private JPanel northPanel;
     private JPanel southPanel;
@@ -35,6 +42,34 @@ public class HeadFrame extends JFrame {
     private JLabel jLabel1;
     //cards
     private DeckOfCards deck;
+
+    public DeckOfCards getDeck() {
+        return deck;
+    }
+
+    public void setPlayerOneNameLabel(String name) {
+        playerOneNameLabel.setText(name);
+    }
+
+    public void setPlayerOneScoreLabel(String score) {
+        PlayerOneScoreLabel.setText(score);
+    }
+
+    public void setPlayerTwoNameLabel(String name) {
+        playerTwoNameLabel.setText(name);
+    }
+
+    public void setPlayerTwoScoreLabel(String score) {
+        playerTwoScoreLabel.setText(score);
+    }
+
+    public void setPlayerOnTurnLabel(String output) {
+        playerOnTurnLabel.setText(output);
+    }
+
+    public JLabel getPlayerOnTurnLabel() {
+        return playerOnTurnLabel;
+    }
     
     
     public HeadFrame() {
@@ -42,6 +77,14 @@ public class HeadFrame extends JFrame {
         headMenuBar = new JMenuBar();
         gameMenu = new JMenu("Game");
         settingsMenu = new JMenu("Settings");
+        newGameMenu = new JMenu("New Game");
+        onePlayerGameMenuItem = new JMenuItem("One player");
+        twoPlayersGameMenuItem = new JMenuItem("Two players");
+        saveGameMenuItem = new JMenuItem("Save Game");
+        loadGameMenuItem = new JMenuItem("Load Game");
+        saveGameMenuItem.setEnabled(false);
+        loadGameMenuItem.setEnabled(false);
+        
         //Panels
         northPanel = new JPanel();
         southPanel = new JPanel();
@@ -69,6 +112,50 @@ public class HeadFrame extends JFrame {
         //Menu
         headMenuBar.add(gameMenu);
         headMenuBar.add(settingsMenu);
+        gameMenu.add(newGameMenu);
+        gameMenu.add(saveGameMenuItem);
+        gameMenu.add(loadGameMenuItem);
+        newGameMenu.add(onePlayerGameMenuItem);
+        newGameMenu.add(twoPlayersGameMenuItem);
+        
+        onePlayerGameMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                leftPanel.setVisible(true);
+                rightPanel.setVisible(true);
+                setPreferredSize(null);
+                deck.shuffleCards();
+                for (int i = 0; i < deck.getCards().length; i++) {
+                    deck.getCards()[i].setIcon(null);
+                    deck.getCards()[i].setText("CARD");
+                    centerPanel.add(deck.getCards()[i]);
+                }
+                centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
+                pack();
+                Game game = new Game(new HumanPlayer(), new ComputerPlayer(), HeadFrame.this);
+                game.playGame();
+            }
+        });
+        
+        twoPlayersGameMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                leftPanel.setVisible(true);
+                rightPanel.setVisible(true);
+                setPreferredSize(null);
+                deck.shuffleCards();
+                for (int i = 0; i < deck.getCards().length; i++) {
+                    deck.getCards()[i].setIcon(null);
+                    deck.getCards()[i].setText("CARD");
+                    centerPanel.add(deck.getCards()[i]);
+                }
+                centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
+                pack();
+                
+                Game game = new Game(new HumanPlayer(), new HumanPlayer(), HeadFrame.this);
+                game.playGame();
+            }
+        });
         //leftPanel
         leftPanel.add(playerOneNameLabel);
         leftPanel.add(playerOnePictureButton);
@@ -84,10 +171,7 @@ public class HeadFrame extends JFrame {
         //southPanel
         southPanel.add(jLabel1);
         //centerPanel
-        deck.shuffleCards();
-        for (int i = 0; i < deck.getCards().length; i++) {
-            centerPanel.add(deck.getCards()[i]);
-        }
+        
         centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
         
 
@@ -98,10 +182,12 @@ public class HeadFrame extends JFrame {
         getContentPane().add(southPanel, java.awt.BorderLayout.PAGE_END);
         getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
 
-        
-        
+        leftPanel.setVisible(false);
+        rightPanel.setVisible(false);
+        setPreferredSize(new java.awt.Dimension(800, 700));
         pack();
         setLocationRelativeTo(null);
+        
 //        setResizable(false);
         
     }
