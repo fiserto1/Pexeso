@@ -6,6 +6,7 @@
 
 package pexeso;
 
+import java.io.Serializable;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -15,8 +16,9 @@ import javax.swing.JButton;
  *
  * @author Tomas
  */
-public class Card extends JButton {
+public class Card extends JButton implements Serializable {
     private ImageIcon cardImage = new ImageIcon();
+    private int compareNumber;
 
     public Card() {
     }
@@ -45,10 +47,18 @@ public class Card extends JButton {
         this.cardImage = cardIcon;
     }
 
+    public int getCompareNumber() {
+        return compareNumber;
+    }
+
+    public void setCompareNumber(int compareNumber) {
+        this.compareNumber = compareNumber;
+    }
+
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 17 * hash + (this.cardImage != null ? this.cardImage.hashCode() : 0);
+        int hash = 7;
+        hash = 59 * hash + this.compareNumber;
         return hash;
     }
 
@@ -61,11 +71,9 @@ public class Card extends JButton {
             return false;
         }
         final Card other = (Card) obj;
-        if (this.cardImage.getImage() != other.cardImage.getImage() && (this.cardImage == null || !this.cardImage.getImage().equals(other.cardImage.getImage()))) {
+        if (this.compareNumber != other.compareNumber) {
             return false;
         }
         return true;
     }
-
-
 }
