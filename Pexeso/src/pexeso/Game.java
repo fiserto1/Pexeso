@@ -8,11 +8,13 @@ package pexeso;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import javax.swing.JFileChooser;
 import javax.swing.Timer;
 
 
@@ -34,7 +36,7 @@ public class Game implements Serializable {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("ShowTime bezi.");
+//            System.out.println("ShowTime bezi.");
             showTimer.stop();
             compareCards();
             if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
@@ -49,7 +51,7 @@ public class Game implements Serializable {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("CheckTimerBezi");
+//            System.out.println("CheckTimerBezi");
             if (playerOnTurn) {
                 newMove = null;
                 newMove = player1.move(frame.getDeck());
@@ -126,7 +128,7 @@ public class Game implements Serializable {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("CheckTimerBezi2");
+//                System.out.println("CheckTimerBezi2");
                 if (playerOnTurn) {
                     newMove = null;
                     newMove = player1.move(frame.getDeck());
@@ -166,30 +168,37 @@ public class Game implements Serializable {
     }
     
     public void saveGame() {
-        stopAllTimers();
-        
-        ObjectOutputStream objOutStr = null;
-        try {
-            objOutStr = new ObjectOutputStream(new FileOutputStream(
-                    "/savedGame.txt"));
-            objOutStr.writeObject(this);
-            objOutStr.close();
-            frame.setDownLabel("Save successful.");
-        } catch (FileNotFoundException fnfe) {
-            frame.setDownLabel("File not found.");
-        } catch (IOException ioe) {
-            frame.setDownLabel("IOExp");
-        } 
-        
-        finally {
+//        JFileChooser fileChooser = new JFileChooser();
+//        fileChooser.showSaveDialog(null);
+//        if (fileChooser.getSelectedFile() != null) {
+            stopAllTimers();
+//            String filepath = fileChooser.getSelectedFile().getAbsolutePath();
+//            System.out.println(filepath);
+            String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
+            ObjectOutputStream objOutStr = null;
             try {
+                objOutStr = new ObjectOutputStream(new FileOutputStream(filepath));
+                objOutStr.writeObject(this);
                 objOutStr.close();
-            } catch (IOException ex) {
-                frame.setDownLabel("Stream not closed.");
+                frame.setDownLabel("Save successful.");
+            } catch (FileNotFoundException fnfe) {
+                frame.setDownLabel("File not found.");
+            } catch (IOException ioe) {
+                frame.setDownLabel("IOExp");
+            } finally {
+                playGame();
+                try {
+                    if (objOutStr != null) {
+                        objOutStr.close();
+                    }
+                } catch (IOException ex) {
+                    frame.setDownLabel("Stream not closed.");
+                }
             }
-        }
+//        }
         
-        playGame();
+        
+        
     }
     
     private void compareCards() {

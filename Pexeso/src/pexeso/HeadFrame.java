@@ -8,6 +8,7 @@ package pexeso;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import javax.swing.*;
  * @author Tomas
  */
 public class HeadFrame extends JFrame  implements Serializable{
+    
     //Menu
     private final JMenuBar headMenuBar = new JMenuBar();
     private final JMenu gameMenu = new JMenu("Game");
@@ -127,37 +129,44 @@ public class HeadFrame extends JFrame  implements Serializable{
 
             @Override
             public void actionPerformed(ActionEvent e) {
-//                newGame.loadGame();
-                ObjectInputStream objOutStr = null;
-                try {
-                    objOutStr = new ObjectInputStream(new FileInputStream(
-                            "/savedGame.txt"));
-
-                    Game loadGame = (Game) objOutStr.readObject();
-                    objOutStr.close();
-                    jLabel1.setText("Load successful.");
-                    System.out.println(loadGame.getUncoveredCards());
-                    if (newGame != null) {
-                        newGame.stopAllTimers();
-                    }
-                    deck = loadGame.getFrame().getDeck();
-                    newGame = loadGame;
-                    newGame.setFrame(HeadFrame.this);
-                    newGame.addListernersToTimers();
-                    showGameBoard();
-                } catch (FileNotFoundException fnfe) {
-                    jLabel1.setText("File not found.");
-                } catch (IOException ioe) {
-                    jLabel1.setText("IOExp");
-                } catch (ClassNotFoundException ex) {
-                    jLabel1.setText("Class not found");
-                } finally {
+//                JFileChooser fileChooser = new JFileChooser();
+//                fileChooser.showOpenDialog(null);
+//                if (fileChooser.getSelectedFile() != null) {
+//                    String filepath = fileChooser.getSelectedFile().getAbsolutePath();
+                    ObjectInputStream objInStr = null;
+                    playerOnTurnLabel.setText(System.getProperty("user.dir") + "\\savedGame.txt");
+                    String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
                     try {
-                        objOutStr.close();
-                    } catch (IOException ex) {
-                        jLabel1.setText("Nepodarilo se zavrit soubor");
+                        objInStr = new ObjectInputStream(new FileInputStream(filepath));
+
+                        Game loadGame = (Game) objInStr.readObject();
+                        objInStr.close();
+                        jLabel1.setText("Load successful.");
+//                        System.out.println(loadGame.getUncoveredCards());
+                        if (newGame != null) {
+                            newGame.stopAllTimers();
+                        }
+                        deck = loadGame.getFrame().getDeck();
+                        newGame = loadGame;
+                        newGame.setFrame(HeadFrame.this);
+                        newGame.addListernersToTimers();
+                        showGameBoard();
+                    } catch (FileNotFoundException fnfe) {
+                        jLabel1.setText("File not found.");
+                    } catch (IOException ioe) {
+                        jLabel1.setText("IOExp");
+                    } catch (ClassNotFoundException ex) {
+                        jLabel1.setText("Class not found");
+                    } finally {
+                        try {
+                            if (objInStr != null) {
+                                objInStr.close();
+                            }
+                        } catch (IOException ex) {
+                            jLabel1.setText("Nepodarilo se zavrit soubor");
+                        }
                     }
-                }
+//                }
             }
         });
     }
@@ -259,6 +268,7 @@ public class HeadFrame extends JFrame  implements Serializable{
     public void setPlayerTwoPictureButton(ImageIcon avatar) {
         playerTwoPictureButton.setIcon(avatar);
     }
+
 
 
 }
