@@ -10,31 +10,17 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
-import javax.swing.Timer;
 
 /**
  *
  * @author Tomas
  */
 public class CardAL implements ActionListener{
-
-    private Timer showTimer = new Timer(1000, new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            compareCards();
-            if (game.getUncoveredCards() == DeckOfCards.NUMBER_OF_CARDS) {
-                game.endGame();
-            }
-            showTimer.stop();
-        }
-    });
     
     private Game game;
     private Card card;
-//    static boolean ready;
-    private static Card firstClickedCard;
-    private static Card secondClickedCard;
+    private static boolean moveCompleted;
+    private static OneMove move = new OneMove(null, null);
     
     public CardAL(Card card, Game game) {
         this.card = card;
@@ -44,49 +30,39 @@ public class CardAL implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if (card.getIcon() == null) {
-            if (firstClickedCard == null) {
+            if (move.getFirstCard() == null) {
                 card.setText("");
                 Image newImage = card.getCardImage().getImage().getScaledInstance(
                         card.getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
                 card.setIcon(new ImageIcon(newImage));
-                firstClickedCard = card;
+                move.setFirstCard(card);
             }
-            else if (secondClickedCard == null) {
+            else if (move.getSecondCard() == null) {
                 card.setText("");
                 Image newImage = card.getCardImage().getImage().getScaledInstance(
                         card.getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
                 card.setIcon(new ImageIcon(newImage));
-                secondClickedCard = card;
-                showTimer.start();
-//                ready = true;
+                move.setSecondCard(card);
+                moveCompleted = true;
             }
         }
     }
-    
-//    public static OneMove getMove() {
-//        OneMove move = new OneMove(firstClickedCard, secondClickedCard);
-//        firstClickedCard = null;
-//        secondClickedCard = null;
-//        return move;
-//    }
 
-    private void compareCards() {
-        if (firstClickedCard.equals(secondClickedCard)) {
-            firstClickedCard.setVisible(false);
-            secondClickedCard.setVisible(false);
-            game.setUncoveredCards(game.getUncoveredCards() + 2);
-            game.setScore();
-            firstClickedCard = null;
-            secondClickedCard = null;
-        } else {
-            firstClickedCard.setText("CARD");
-            firstClickedCard.setIcon(null);
-            secondClickedCard.setText("CARD");
-            secondClickedCard.setIcon(null);
-            game.changePlayerOnTurn();
-            firstClickedCard = null;
-            secondClickedCard = null;
-        }
+    public static void setMoveCompleted(boolean moveCompleted) {
+        CardAL.moveCompleted = moveCompleted;
+    }
+
+    public static boolean isMoveCompleted() {
+        return moveCompleted;
     }
     
+    
+    public static OneMove getMove() {
+        return move;
+    }
+
+    public static void unmarkCards() {
+        move.setFirstCard(null);
+        move.setSecondCard(null);
+    }
 }
