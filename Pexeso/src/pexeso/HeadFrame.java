@@ -42,8 +42,10 @@ public class HeadFrame extends JFrame {
     private JLabel jLabel1;
     //cards
     private final DeckOfCards deck = new DeckOfCards();
+    
+    private Game newGame;
 
-
+    
     public HeadFrame() {
         //Close
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -81,21 +83,27 @@ public class HeadFrame extends JFrame {
         onePlayerGameMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Game game = new Game(new HumanPlayer(), new ComputerPlayer(), HeadFrame.this);
-                showGameBoard(game);
+                if (newGame != null) {
+                    newGame.stopAllTimers();
+                }
+                newGame = new Game(new HumanPlayer(), new ComputerPlayer(), HeadFrame.this);
+                showGameBoard();
             }
         });
 
         twoPlayersGameMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Game game = new Game(new HumanPlayer(), new HumanPlayer(), HeadFrame.this);
-                showGameBoard(game);
+                if (newGame != null) {
+                    newGame.stopAllTimers();
+                }
+                newGame = new Game(new HumanPlayer(), new HumanPlayer(), HeadFrame.this);
+                showGameBoard();
             }
         });
     }
     
-    private void showGameBoard(Game game) {
+    private void showGameBoard() {
         setPreferredSize(null);
         leftPanel.setVisible(true);
         rightPanel.setVisible(true);
@@ -105,11 +113,11 @@ public class HeadFrame extends JFrame {
         deck.shuffleCards();
         for (int i = 0; i < deck.getCards().length; i++) {
             centerPanel.add(deck.getCards()[i]);
-            deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i], game));
+            deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i], newGame));
         }
         centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
         pack();
-//                game.playGame();
+        newGame.playGame();
     }
     
     private void createPanels() {
