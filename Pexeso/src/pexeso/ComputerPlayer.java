@@ -6,6 +6,8 @@
 
 package pexeso;
 
+import java.util.Random;
+
 /**
  *
  * @author Tomas
@@ -20,7 +22,16 @@ public class ComputerPlayer extends AbstractPlayer {
     
     @Override
     public OneMove move(DeckOfCards deck) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Random rnd = new Random();
+        int firstTurn, secondTurn;
+        do {
+            firstTurn = rnd.nextInt(DeckOfCards.NUMBER_OF_CARDS - 1) + 1;
+            secondTurn = rnd.nextInt(DeckOfCards.NUMBER_OF_CARDS - 1) + 1;
+        } while (firstTurn == secondTurn || !deck.getCards()[firstTurn].isVisible() 
+                || !deck.getCards()[secondTurn].isVisible());
+        deck.getCards()[firstTurn].doClick();
+        deck.getCards()[secondTurn].doClick();
+        CardAL.setMoveCompleted(false);
+        return new OneMove(deck.getCards()[firstTurn], deck.getCards()[secondTurn]);
     }
-    
 }
