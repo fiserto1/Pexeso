@@ -73,7 +73,6 @@ public class HeadFrame extends JFrame {
     
     private void createMenu() {
         saveGameMenuItem.setEnabled(false);
-        loadGameMenuItem.setEnabled(false);
         headMenuBar.add(gameMenu);
         headMenuBar.add(settingsMenu);
         gameMenu.add(newGameMenu);
@@ -114,7 +113,7 @@ public class HeadFrame extends JFrame {
         setPreferredSize(null);
         leftPanel.setVisible(true);
         rightPanel.setVisible(true);
-        saveGameMenuItem.setVisible(true);
+        saveGameMenuItem.setEnabled(true);
         
         centerPanel.removeAll();
         deck.shuffleCards();
