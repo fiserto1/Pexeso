@@ -25,15 +25,16 @@ public class DeckOfCards {
     
     public void shuffleCards() {
         Random rnd = new Random();
-        
+        //shuffle
         for (int i = 0; i < cards.length; i++) {
-            
             int change = rnd.nextInt(cards.length);
             Card temp = cards[i];
             cards[i] = cards[change];
             cards[change] = temp;
             
         }
+        
+        //turn
         for (int i = 0; i < cards.length; i++) {
             cards[i].setIcon(null);
             cards[i].setText("CARD");
