@@ -8,12 +8,17 @@ package pexeso;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import javax.swing.*;
 /**
  *
  * @author Tomas
  */
-public class HeadFrame extends JFrame {
+public class HeadFrame extends JFrame  implements Serializable{
     //Menu
     private final JMenuBar headMenuBar = new JMenuBar();
     private final JMenu gameMenu = new JMenu("Game");
@@ -41,7 +46,7 @@ public class HeadFrame extends JFrame {
     private JLabel playerOnTurnLabel;
     private JLabel jLabel1;
     //cards
-    private final DeckOfCards deck = new DeckOfCards();
+    private DeckOfCards deck = new DeckOfCards();
     
     private Game newGame;
     
@@ -88,6 +93,7 @@ public class HeadFrame extends JFrame {
                 if (newGame != null) {
                     newGame.stopAllTimers();
                 }
+                deck.shuffleCards();
                 newGame = new Game(new HumanPlayer("Player 1", defaultPlayerAvatar), 
                         new ComputerPlayer("Computer", defaultComputerAvatar),
                         HeadFrame.this);
@@ -101,10 +107,57 @@ public class HeadFrame extends JFrame {
                 if (newGame != null) {
                     newGame.stopAllTimers();
                 }
+                deck.shuffleCards();
                 newGame = new Game(new HumanPlayer("Player 1", defaultPlayerAvatar), 
-                        new HumanPlayer("Player 2", defaultComputerAvatar), 
+                        new HumanPlayer("Player 2", defaultPlayerAvatar), 
                         HeadFrame.this);
                 showGameBoard();
+            }
+        });
+        
+        saveGameMenuItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                newGame.saveGame();
+            }
+        });
+        
+        loadGameMenuItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                newGame.loadGame();
+                ObjectInputStream objOutStr = null;
+                try {
+                    objOutStr = new ObjectInputStream(new FileInputStream(
+                            "/savedGame.txt"));
+
+                    Game loadGame = (Game) objOutStr.readObject();
+                    objOutStr.close();
+                    jLabel1.setText("Load successful.");
+                    System.out.println(loadGame.getUncoveredCards());
+                    if (newGame != null) {
+                        newGame.stopAllTimers();
+                    }
+                    deck = loadGame.getFrame().getDeck();
+                    newGame = loadGame;
+                    newGame.setFrame(HeadFrame.this);
+                    newGame.addListernersToTimers();
+                    showGameBoard();
+                } catch (FileNotFoundException fnfe) {
+                    jLabel1.setText("File not found.");
+                } catch (IOException ioe) {
+                    jLabel1.setText("IOExp");
+                } catch (ClassNotFoundException ex) {
+                    jLabel1.setText("Class not found");
+                } finally {
+                    try {
+                        objOutStr.close();
+                    } catch (IOException ex) {
+                        jLabel1.setText("Nepodarilo se zavrit soubor");
+                    }
+                }
             }
         });
     }
@@ -116,7 +169,7 @@ public class HeadFrame extends JFrame {
         saveGameMenuItem.setEnabled(true);
         
         centerPanel.removeAll();
-        deck.shuffleCards();
+        
         for (int i = 0; i < deck.getCards().length; i++) {
             centerPanel.add(deck.getCards()[i]);
             deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i], newGame));
@@ -191,6 +244,10 @@ public class HeadFrame extends JFrame {
         playerOnTurnLabel.setText(output);
     }
 
+    public void setDownLabel(String output) {
+        jLabel1.setText(output);
+    }
+    
     public JLabel getPlayerOnTurnLabel() {
         return playerOnTurnLabel;
     }
