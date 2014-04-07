@@ -6,6 +6,8 @@
 
 package pexeso;
 
+import javax.swing.ImageIcon;
+
 /**
  *
  * @author Tomas
@@ -13,11 +15,11 @@ package pexeso;
 public abstract class AbstractPlayer {
     protected int playerScore = 0;
     protected String playerName;
+    protected ImageIcon avatar;
 
-    public AbstractPlayer(String playerName) {
+    public AbstractPlayer(String playerName, ImageIcon avatar) {
         this.playerName = playerName;
-    }
-    public AbstractPlayer() {
+        this.avatar = avatar;
     }
 
     public int getPlayerScore() {

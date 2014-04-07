@@ -7,6 +7,7 @@
 package pexeso;
 
 import java.util.Random;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -14,11 +15,9 @@ import java.util.Random;
  */
 public class ComputerPlayer extends AbstractPlayer {
 
-
-    public ComputerPlayer() {
-        this.playerName = "ComputerPlayer";
+    public ComputerPlayer(String playerName, ImageIcon avatar) {
+        super(playerName, avatar);
     }
-
     
     @Override
     public OneMove move(DeckOfCards deck) {

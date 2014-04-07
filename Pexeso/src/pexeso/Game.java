@@ -85,6 +85,8 @@ public class Game {
         frame.setPlayerTwoNameLabel(player2.playerName);
         frame.setPlayerOneScoreLabel("Score: " + player1.playerScore);
         frame.setPlayerTwoScoreLabel("Score: " + player2.playerScore);
+        frame.setPlayerOnePictureButton(player1.avatar);
+        frame.setPlayerTwoPictureButton(player2.avatar);
         frame.setPlayerOnTurnLabel("Player One's turn.");
     }
     

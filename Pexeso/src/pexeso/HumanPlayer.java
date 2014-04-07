@@ -6,18 +6,18 @@
 
 package pexeso;
 
+import javax.swing.ImageIcon;
+
 /**
  *
  * @author Tomas
  */
 public class HumanPlayer extends AbstractPlayer {
 
-    public HumanPlayer(String playerName) {
-        super(playerName);
-    }
-
-    public HumanPlayer() {
-        this.playerName = "UnknownPlayer";
+    private ImageIcon defaultPlayerAvatar = new ImageIcon(getClass().getResource("/Avatars/Professor.png"));
+    
+    public HumanPlayer(String playerName, ImageIcon avatar) {
+        super(playerName, avatar);
     }
     
     @Override

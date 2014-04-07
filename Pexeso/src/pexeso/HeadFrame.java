@@ -44,6 +44,9 @@ public class HeadFrame extends JFrame {
     private final DeckOfCards deck = new DeckOfCards();
     
     private Game newGame;
+    
+    private final ImageIcon defaultPlayerAvatar = new ImageIcon(getClass().getResource("/Avatars/Professor.png"));
+    private final ImageIcon defaultComputerAvatar = new ImageIcon(getClass().getResource("/Avatars/Female.png"));
 
     
     public HeadFrame() {
@@ -86,7 +89,9 @@ public class HeadFrame extends JFrame {
                 if (newGame != null) {
                     newGame.stopAllTimers();
                 }
-                newGame = new Game(new HumanPlayer(), new ComputerPlayer(), HeadFrame.this);
+                newGame = new Game(new HumanPlayer("Player 1", defaultPlayerAvatar), 
+                        new ComputerPlayer("Computer", defaultComputerAvatar),
+                        HeadFrame.this);
                 showGameBoard();
             }
         });
@@ -97,7 +102,9 @@ public class HeadFrame extends JFrame {
                 if (newGame != null) {
                     newGame.stopAllTimers();
                 }
-                newGame = new Game(new HumanPlayer(), new HumanPlayer(), HeadFrame.this);
+                newGame = new Game(new HumanPlayer("Player 1", defaultPlayerAvatar), 
+                        new HumanPlayer("Player 2", defaultComputerAvatar), 
+                        HeadFrame.this);
                 showGameBoard();
             }
         });
