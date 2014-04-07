@@ -25,16 +25,21 @@ public class DeckOfCards {
     
     public void shuffleCards() {
         Random rnd = new Random();
+        
         for (int i = 0; i < cards.length; i++) {
-            cards[i].setIcon(null);
-            cards[i].setText("CARD");
-            cards[i].setVisible(true);
+            
             int change = rnd.nextInt(cards.length);
             Card temp = cards[i];
             cards[i] = cards[change];
             cards[change] = temp;
             
         }
+        for (int i = 0; i < cards.length; i++) {
+            cards[i].setIcon(null);
+            cards[i].setText("CARD");
+            cards[i].setVisible(true);
+        }
+        
     }
     
     public Card[] getCards() {
