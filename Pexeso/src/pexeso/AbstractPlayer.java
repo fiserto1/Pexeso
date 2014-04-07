@@ -6,13 +6,14 @@
 
 package pexeso;
 
+import java.io.Serializable;
 import javax.swing.ImageIcon;
 
 /**
  *
  * @author Tomas
  */
-public abstract class AbstractPlayer {
+public abstract class AbstractPlayer implements Serializable {
     protected int playerScore = 0;
     protected String playerName;
     protected ImageIcon avatar;
