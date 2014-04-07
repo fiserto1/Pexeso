@@ -130,11 +130,12 @@ public class HeadFrame extends JFrame {
         //Player 1
         playerOneNameLabel = new JLabel("PlayerName 1");
         PlayerOneScoreLabel = new JLabel("Score: ");
-        playerOnePictureButton = new JButton(new ImageIcon(getClass().getResource("/avatars/Professor.png")));
+        playerOnePictureButton = new JButton();
+//        ImageIcon icon1 = new ImageIcon("D:\\Dokumenty\\Vysoká škola\\2. semestr\\PR2\\Projekty\\Semestrální práce\\Pexeso\\src\\Avatars\\Professor.png");
         //Player 2
         playerTwoNameLabel = new JLabel("PlayerName 2");
         playerTwoScoreLabel = new JLabel("Score: ");
-        playerTwoPictureButton = new JButton(new ImageIcon(getClass().getResource("/avatars/Female.png")));
+        playerTwoPictureButton = new JButton();
         //Top and bottom label
         playerOnTurnLabel = new JLabel("Player on turn: ");
         jLabel1 = new JLabel("");
@@ -186,6 +187,14 @@ public class HeadFrame extends JFrame {
 
     public JLabel getPlayerOnTurnLabel() {
         return playerOnTurnLabel;
+    }
+
+    public void setPlayerOnePictureButton(ImageIcon avatar) {
+        playerOnePictureButton.setIcon(avatar);
+    }
+
+    public void setPlayerTwoPictureButton(ImageIcon avatar) {
+        playerTwoPictureButton.setIcon(avatar);
     }
 
 
