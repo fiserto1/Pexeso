@@ -6,11 +6,13 @@
 
 package pexeso;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Tomas
  */
-public class OneMove {
+public class OneMove implements Serializable {
     private Card firstCard;
     private Card secondCard;
 
