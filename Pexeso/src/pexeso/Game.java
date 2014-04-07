@@ -8,6 +8,11 @@ package pexeso;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import javax.swing.Timer;
 
 
@@ -15,7 +20,7 @@ import javax.swing.Timer;
  *
  * @author Tomas
  */
-public class Game {
+public class Game implements Serializable {
     // true - player one's turn
     // false - player two's turn
     private boolean playerOnTurn = true;
@@ -29,6 +34,7 @@ public class Game {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            System.out.println("ShowTime bezi.");
             showTimer.stop();
             compareCards();
             if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
@@ -39,11 +45,11 @@ public class Game {
             }
         }
     });
-    
     private Timer checkTimer = new Timer(50, new ActionListener() {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            System.out.println("CheckTimerBezi");
             if (playerOnTurn) {
                 newMove = null;
                 newMove = player1.move(frame.getDeck());
@@ -81,17 +87,24 @@ public class Game {
         this.player1 = player1;
         this.player2 = player2;
         this.frame = frame;
+        
+    }
+    
+    
+    public void playGame() {
         frame.setPlayerOneNameLabel(player1.playerName);
         frame.setPlayerTwoNameLabel(player2.playerName);
         frame.setPlayerOneScoreLabel("Score: " + player1.playerScore);
         frame.setPlayerTwoScoreLabel("Score: " + player2.playerScore);
         frame.setPlayerOnePictureButton(player1.avatar);
         frame.setPlayerTwoPictureButton(player2.avatar);
-        frame.setPlayerOnTurnLabel("Player One's turn.");
-    }
-    
-    
-    public void playGame() {
+        if (playerOnTurn) {
+            frame.setPlayerOnTurnLabel("Player One's turn.");
+        }
+        else {
+            frame.setPlayerOnTurnLabel("Player Two's turn.");
+        }
+        frame.pack();
         checkTimer.start();
         
         //COUNTDOWN
@@ -108,6 +121,42 @@ public class Game {
 //        timer.start();
     }
     
+    public void addListernersToTimers() {
+        checkTimer.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("CheckTimerBezi2");
+                if (playerOnTurn) {
+                    newMove = null;
+                    newMove = player1.move(frame.getDeck());
+                } else {
+                    newMove = null;
+                    newMove = player2.move(frame.getDeck());
+                }
+                if (newMove != null) {
+                    checkTimer.stop();
+                    showTimer.start();
+                }
+            }
+        });
+        
+        showTimer.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                System.out.println("ShowTimerbezi2");
+                showTimer.stop();
+                compareCards();
+                if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
+                    endGame();
+                } else {
+                    checkTimer.start();
+                }
+            }
+        });
+    }
+    
     public void endGame() {
         if (playerOnTurn) {
             frame.setPlayerOnTurnLabel(player1.playerName + " WON!!");
@@ -117,15 +166,34 @@ public class Game {
     }
     
     public void saveGame() {
+        stopAllTimers();
         
-    }
-    
-    public void loadGame() {
+        ObjectOutputStream objOutStr = null;
+        try {
+            objOutStr = new ObjectOutputStream(new FileOutputStream(
+                    "/savedGame.txt"));
+            objOutStr.writeObject(this);
+            objOutStr.close();
+            frame.setDownLabel("Save successful.");
+        } catch (FileNotFoundException fnfe) {
+            frame.setDownLabel("File not found.");
+        } catch (IOException ioe) {
+            frame.setDownLabel("IOExp");
+        } 
         
+        finally {
+            try {
+                objOutStr.close();
+            } catch (IOException ex) {
+                frame.setDownLabel("Stream not closed.");
+            }
+        }
+        
+        playGame();
     }
     
     private void compareCards() {
-        if (newMove.getFirstCard().equals(newMove.getSecondCard())) {
+        if (newMove.getFirstCard().getCompareNumber() == newMove.getSecondCard().getCompareNumber()) {
             newMove.getFirstCard().setVisible(false);
             newMove.getSecondCard().setVisible(false);
             uncoveredCards += 2;
@@ -170,4 +238,13 @@ public class Game {
     public int getUncoveredCards() {
         return uncoveredCards;
     }
+
+    public void setFrame(HeadFrame frame) {
+        this.frame = frame;
+    }
+
+    public HeadFrame getFrame() {
+        return frame;
+    }
+    
 }
