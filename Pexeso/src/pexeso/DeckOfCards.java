@@ -1,6 +1,7 @@
 
 package pexeso;
 
+import java.io.Serializable;
 import java.util.Random;
 import javax.swing.ImageIcon;
 
@@ -8,7 +9,7 @@ import javax.swing.ImageIcon;
  *
  * @author Tomas
  */
-public class DeckOfCards {
+public class DeckOfCards implements Serializable {
     public static final int NUMBER_OF_CARDS = 64;
     private final Card[] cards = new Card[NUMBER_OF_CARDS];
 
@@ -16,6 +17,7 @@ public class DeckOfCards {
         int j = 1;
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new Card("CARD");
+            cards[i].setCompareNumber(j);
             cards[i].setCardImage(new ImageIcon(getClass().getResource("/cards/" + j + ".jpg")));
             if (i % 2 != 0) {
                 j++;
