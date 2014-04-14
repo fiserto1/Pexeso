@@ -18,6 +18,7 @@ public class DeckOfCards implements Serializable {
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new Card("CARD");
             cards[i].setCompareNumber(j);
+            cards[i].setFocusPainted(false);
             cards[i].setCardImage(new ImageIcon(getClass().getResource("/cards/" + j + ".jpg")));
             if (i % 2 != 0) {
                 j++;
