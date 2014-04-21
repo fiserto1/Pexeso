@@ -14,6 +14,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.Timer;
 
@@ -22,7 +24,7 @@ import javax.swing.Timer;
  *
  * @author Tomas
  */
-public class Game implements Serializable {
+public class Game implements Serializable, Runnable{
     // true - player one's turn
     // false - player two's turn
     private boolean playerOnTurn = true;
@@ -34,41 +36,42 @@ public class Game implements Serializable {
     private OneMove newMove;
     
     private Message output;
+    private boolean endOfGame;
     
-    private Timer showTimer = new Timer(500, new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-//            System.out.println("ShowTime bezi.");
-            showTimer.stop();
-            compareCards();
-            if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
-                endGame();
-            }
-            else {
-                checkTimer.start();
-            }
-        }
-    });
-    private Timer checkTimer = new Timer(50, new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-//            System.out.println("CheckTimerBezi");
-            if (playerOnTurn) {
-                newMove = null;
-                newMove = player1.move(deck);
-            }
-            else {
-                newMove = null;
-                newMove = player2.move(deck);
-            }
-            if (newMove != null) {
-                checkTimer.stop();
-                showTimer.start();
-            }
-        }
-    });
+//    private Timer showTimer = new Timer(500, new ActionListener() {
+//
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+////            System.out.println("ShowTime bezi.");
+//            showTimer.stop();
+//            compareCards();
+//            if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
+//                endGame();
+//            }
+//            else {
+//                checkTimer.start();
+//            }
+//        }
+//    });
+//    private Timer checkTimer = new Timer(50, new ActionListener() {
+//
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+////            System.out.println("CheckTimerBezi");
+//            if (playerOnTurn) {
+//                newMove = null;
+//                newMove = player1.move(deck);
+//            }
+//            else {
+//                newMove = null;
+//                newMove = player2.move(deck);
+//            }
+//            if (newMove != null) {
+//                checkTimer.stop();
+//                showTimer.start();
+//            }
+//        }
+//    });
     
     
 
@@ -110,7 +113,27 @@ public class Game implements Serializable {
         else {
             output.setHeadMessage("Player Two's turn.");
         }
-        checkTimer.start();
+//        checkTimer.start();
+        while (!endOfGame) {
+            if (playerOnTurn) {
+                newMove = player1.move(deck);
+            }
+            else {
+                newMove = player2.move(deck);
+            }
+            
+            //card show
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                System.out.println("Game cant sleep.");
+            }
+            
+            compareCards();
+            if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
+                endGame();
+            }
+        }
         
         //COUNTDOWN
 //        timer = new Timer(1000, new ActionListener() {
@@ -126,41 +149,41 @@ public class Game implements Serializable {
 //        timer.start();
     }
     
-    public void addListernersToTimers() {
-        checkTimer.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//                System.out.println("CheckTimerBezi2");
-                if (playerOnTurn) {
-                    newMove = null;
-                    newMove = player1.move(deck);
-                } else {
-                    newMove = null;
-                    newMove = player2.move(deck);
-                }
-                if (newMove != null) {
-                    checkTimer.stop();
-                    showTimer.start();
-                }
-            }
-        });
-        
-        showTimer.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//                System.out.println("ShowTimerbezi2");
-                showTimer.stop();
-                compareCards();
-                if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
-                    endGame();
-                } else {
-                    checkTimer.start();
-                }
-            }
-        });
-    }
+//    public void addListernersToTimers() {
+//        checkTimer.addActionListener(new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+////                System.out.println("CheckTimerBezi2");
+//                if (playerOnTurn) {
+//                    newMove = null;
+//                    newMove = player1.move(deck);
+//                } else {
+//                    newMove = null;
+//                    newMove = player2.move(deck);
+//                }
+//                if (newMove != null) {
+//                    checkTimer.stop();
+//                    showTimer.start();
+//                }
+//            }
+//        });
+//        
+//        showTimer.addActionListener(new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+////                System.out.println("ShowTimerbezi2");
+//                showTimer.stop();
+//                compareCards();
+//                if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
+//                    endGame();
+//                } else {
+//                    checkTimer.start();
+//                }
+//            }
+//        });
+//    }
     
     public void endGame() {
         if (playerOnTurn) {
@@ -168,13 +191,16 @@ public class Game implements Serializable {
         } else {
             output.setHeadMessage(player2.getName() + " WON!!");
         }
+        endOfGame = true;
     }
     
     public void saveGame() {
 //        JFileChooser fileChooser = new JFileChooser();
 //        fileChooser.showSaveDialog(null);
 //        if (fileChooser.getSelectedFile() != null) {
-            stopAllTimers();
+        
+//            stopAllTimers();
+        
 //            String filepath = fileChooser.getSelectedFile().getAbsolutePath();
 //            System.out.println(filepath);
             String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
@@ -213,7 +239,7 @@ public class Game implements Serializable {
                 player1.setScore(player1.getScore() + 10);
             }
             else {
-                player1.setScore(player1.getScore() + 10);
+                player2.setScore(player2.getScore() + 10);
             }
             newMove = null;
             CardAL.unmarkCards();
@@ -243,10 +269,10 @@ public class Game implements Serializable {
 //        frame.setPlayerOnTurnLabel("Countdown: " + countdown);
 //    }
     
-    public void stopAllTimers() {
-        checkTimer.stop();
-        showTimer.stop();
-    }
+//    public void stopAllTimers() {
+//        checkTimer.stop();
+//        showTimer.stop();
+//    }
     
     public boolean isPlayerOnTurn() {
         return playerOnTurn;
@@ -262,5 +288,10 @@ public class Game implements Serializable {
 
     public void setDeck(DeckOfCards deck) {
         this.deck = deck;
+    }
+
+    @Override
+    public void run() {
+        playGame();
     }
 }

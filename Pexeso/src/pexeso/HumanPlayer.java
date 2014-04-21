@@ -6,6 +6,8 @@
 
 package pexeso;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 
 /**
@@ -22,12 +24,26 @@ public class HumanPlayer extends AbstractPlayer {
     
     @Override
     public OneMove move(DeckOfCards deck) {
-        OneMove move = null;
-        if (CardAL.isMoveCompleted()) {
-            CardAL.setMoveCompleted(false);
-            move = CardAL.getMove();
+        //wait for user choice
+        CardAL.setMoveCompleted(false);
+        CardAL listener = new CardAL();
+        for (int i = 0; i < deck.getCards().length; i++) {
+            deck.getCards()[i].addActionListener(listener);
         }
-        return move;
+        
+        while (!CardAL.isMoveCompleted()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(HumanPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        for (int i = 0; i < deck.getCards().length; i++) {
+            deck.getCards()[i].removeActionListener(listener);
+        }
+        
+        return CardAL.getMove();
     }
     
 

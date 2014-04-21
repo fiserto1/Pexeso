@@ -6,6 +6,7 @@
 
 package pexeso;
 
+import java.awt.Image;
 import java.util.Random;
 import javax.swing.ImageIcon;
 
@@ -28,9 +29,18 @@ public class ComputerPlayer extends AbstractPlayer {
             secondTurn = rnd.nextInt(DeckOfCards.NUMBER_OF_CARDS - 1) + 1;
         } while (firstTurn == secondTurn || !deck.getCards()[firstTurn].isVisible() 
                 || !deck.getCards()[secondTurn].isVisible());
-        deck.getCards()[firstTurn].doClick();
-        deck.getCards()[secondTurn].doClick();
-        CardAL.setMoveCompleted(false);
+        
+        //do click
+        deck.getCards()[firstTurn].setText("");
+        Image newImage = deck.getCards()[firstTurn].getCardImage().getImage().getScaledInstance(
+                deck.getCards()[firstTurn].getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
+        deck.getCards()[firstTurn].setIcon(new ImageIcon(newImage));
+        
+        deck.getCards()[secondTurn].setText("");
+        newImage = deck.getCards()[secondTurn].getCardImage().getImage().getScaledInstance(
+                deck.getCards()[secondTurn].getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
+        deck.getCards()[secondTurn].setIcon(new ImageIcon(newImage));
+        
         return new OneMove(deck.getCards()[firstTurn], deck.getCards()[secondTurn]);
     }
 }
