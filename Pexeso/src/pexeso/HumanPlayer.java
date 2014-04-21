@@ -14,10 +14,10 @@ import javax.swing.ImageIcon;
  */
 public class HumanPlayer extends AbstractPlayer {
 
-    private ImageIcon defaultPlayerAvatar = new ImageIcon(getClass().getResource("/Avatars/Professor.png"));
+//    private ImageIcon defaultPlayerAvatar = new ImageIcon(getClass().getResource("/Avatars/Professor.png"));
     
-    public HumanPlayer(String playerName, ImageIcon avatar, int playerNumber) {
-        super(playerName, avatar, playerNumber);
+    public HumanPlayer(String name, ImageIcon avatar, int playerNumber) {
+        super(name, avatar, playerNumber);
     }
     
     @Override

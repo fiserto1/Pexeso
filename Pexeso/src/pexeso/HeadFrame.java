@@ -15,12 +15,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import javax.swing.*;
+import pexeso.delegates.MessageDelegate;
 import pexeso.delegates.PlayerDelegate;
 /**
  *
  * @author Tomas
  */
-public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate {
+public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, MessageDelegate {
     
     //Menu
     private final JMenuBar headMenuBar = new JMenuBar();
@@ -46,8 +47,8 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate {
     private JLabel playerTwoScoreLabel;
     private JButton playerTwoPictureButton;
     //top and bottom label
-    private JLabel playerOnTurnLabel;
-    private JLabel jLabel1;
+    private JLabel headOutputLabel;
+    private JLabel errorLabel;
     //cards
     private DeckOfCards deck = new DeckOfCards();
     
@@ -98,10 +99,10 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate {
                 }
                 deck.shuffleCards();
                 AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
-                AbstractPlayer player2 = new ComputerPlayer("Computer", defaultPlayerAvatar, 2);
+                AbstractPlayer player2 = new ComputerPlayer("Computer", defaultComputerAvatar, 2);
                 player1.setDelegate(HeadFrame.this);
-                player1.setDelegate(HeadFrame.this);
-                newGame = new Game(player1, player2, HeadFrame.this);
+                player2.setDelegate(HeadFrame.this);
+                newGame = new Game(player1, player2, deck);
                 showGameBoard();
             }
         });
@@ -116,8 +117,8 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate {
                 AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
                 AbstractPlayer player2 = new HumanPlayer("Player 2", defaultPlayerAvatar, 2);
                 player1.setDelegate(HeadFrame.this);
-                player1.setDelegate(HeadFrame.this);
-                newGame = new Game(player1, player2, HeadFrame.this);
+                player2.setDelegate(HeadFrame.this);
+                newGame = new Game(player1, player2, deck);
                 showGameBoard();
             }
         });
@@ -139,36 +140,35 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate {
 //                if (fileChooser.getSelectedFile() != null) {
 //                    String filepath = fileChooser.getSelectedFile().getAbsolutePath();
                     ObjectInputStream objInStr = null;
-                    playerOnTurnLabel.setText(System.getProperty("user.dir") + "\\savedGame.txt");
+                    headOutputLabel.setText(System.getProperty("user.dir") + "\\savedGame.txt");
                     String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
                     try {
                         objInStr = new ObjectInputStream(new FileInputStream(filepath));
 
                         Game loadGame = (Game) objInStr.readObject();
                         objInStr.close();
-                        jLabel1.setText("Load successful.");
+                        errorLabel.setText("Load successful.");
 //                        System.out.println(loadGame.getUncoveredCards());
                         if (newGame != null) {
                             newGame.stopAllTimers();
                         }
-                        deck = loadGame.getFrame().getDeck();
+                        deck = loadGame.getDeck();
                         newGame = loadGame;
-                        newGame.setFrame(HeadFrame.this);
                         newGame.addListernersToTimers();
                         showGameBoard();
                     } catch (FileNotFoundException fnfe) {
-                        jLabel1.setText("File not found.");
+                        errorLabel.setText("File not found.");
                     } catch (IOException ioe) {
-                        jLabel1.setText("IOExp");
+                        errorLabel.setText("IOExp");
                     } catch (ClassNotFoundException ex) {
-                        jLabel1.setText("Class not found");
+                        errorLabel.setText("Class not found");
                     } finally {
                         try {
                             if (objInStr != null) {
                                 objInStr.close();
                             }
                         } catch (IOException ex) {
-                            jLabel1.setText("Nepodarilo se zavrit soubor");
+                            errorLabel.setText("Nepodarilo se zavrit soubor");
                         }
                     }
 //                }
@@ -201,35 +201,39 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate {
         rightPanel = new JPanel(new java.awt.GridLayout(3, 1));
         leftPanel = new JPanel(new java.awt.GridLayout(3, 1));
         //Player 1
-        playerOneNameLabel = new JLabel("PlayerName 1");
-        playerOneScoreLabel = new JLabel("Score: ");
+        playerOneNameLabel = new JLabel("PlayerName 1", SwingConstants.CENTER);
+        playerOneScoreLabel = new JLabel("Score: ", SwingConstants.CENTER);
         playerOnePictureButton = new JButton();
+        playerOnePictureButton.setHorizontalAlignment(SwingConstants.CENTER);
 //        ImageIcon icon1 = new ImageIcon("D:\\Dokumenty\\Vysoká škola\\2. semestr\\PR2\\Projekty\\Semestrální práce\\Pexeso\\src\\Avatars\\Professor.png");
         //Player 2
-        playerTwoNameLabel = new JLabel("PlayerName 2");
-        playerTwoScoreLabel = new JLabel("Score: ");
+        playerTwoNameLabel = new JLabel("PlayerName 2", SwingConstants.CENTER);
+        playerTwoScoreLabel = new JLabel("Score: ", SwingConstants.CENTER);
         playerTwoPictureButton = new JButton();
+        playerTwoPictureButton.setHorizontalAlignment(SwingConstants.CENTER);
         //Top and bottom label
-        playerOnTurnLabel = new JLabel("Player on turn: ");
-        jLabel1 = new JLabel("");
+        headOutputLabel = new JLabel("Player on turn: ");
+        errorLabel = new JLabel("");
 
         
         //leftPanel
         leftPanel.add(playerOneNameLabel);
         leftPanel.add(playerOnePictureButton);
         leftPanel.add(playerOneScoreLabel);
+        leftPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         leftPanel.setVisible(false);
 //        leftPanel.setPreferredSize(new java.awt.Dimension(150, 250));
         //rightPanel
         rightPanel.add(playerTwoNameLabel);
         rightPanel.add(playerTwoPictureButton);
         rightPanel.add(playerTwoScoreLabel);
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         rightPanel.setVisible(false);
 //        rightPanel.setPreferredSize(new java.awt.Dimension(150, 250));
         //northPanel
-        northPanel.add(playerOnTurnLabel);
+        northPanel.add(headOutputLabel);
         //southPanel
-        southPanel.add(jLabel1);
+        southPanel.add(errorLabel);
         //centerPanel
         centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
     }
@@ -237,62 +241,54 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate {
     public DeckOfCards getDeck() {
         return deck;
     }
-
-    public void setPlayerOneNameLabel(String name) {
-        playerOneNameLabel.setText(name);
-    }
-
-    public void setPlayerOneScoreLabel(String score) {
-        playerOneScoreLabel.setText(score);
-    }
-
-    public void setPlayerTwoNameLabel(String name) {
-        playerTwoNameLabel.setText(name);
-    }
-
-    public void setPlayerTwoScoreLabel(String score) {
-        playerTwoScoreLabel.setText(score);
-    }
-
-    public void setPlayerOnTurnLabel(String output) {
-        playerOnTurnLabel.setText(output);
-    }
-
-    public void setDownLabel(String output) {
-        jLabel1.setText(output);
-    }
     
-    public JLabel getPlayerOnTurnLabel() {
-        return playerOnTurnLabel;
-    }
-
-    public void setPlayerOnePictureButton(ImageIcon avatar) {
-        playerOnePictureButton.setIcon(avatar);
-    }
-
-    public void setPlayerTwoPictureButton(ImageIcon avatar) {
-        playerTwoPictureButton.setIcon(avatar);
+    public JLabel getHeadOutputLabel() {
+        return headOutputLabel;
     }
 
     @Override
     public void scoreChanged(AbstractPlayer player) {
         if (player.getPlayerNumber() == 1) {
-            playerOneScoreLabel.setText("Score: " + player.getPlayerScore());
+            playerOneScoreLabel.setText("Score: " + player.getScore());
         }
         else {
-            playerTwoScoreLabel.setText("Score: " + player.getPlayerScore());
+            playerTwoScoreLabel.setText("Score: " + player.getScore());
         }
+        pack();
     }
 
     @Override
     public void nameChanged(AbstractPlayer player) {
         if (player.getPlayerNumber() == 1) {
-            playerOneNameLabel.setText("Score: " + player.getPlayerName());
+            playerOneNameLabel.setText(player.getName());
         } 
         else {
-            playerTwoNameLabel.setText("Score: " + player.getPlayerName());
+            playerTwoNameLabel.setText(player.getName());
         }
+        pack();
+    }
 
+    @Override
+    public void avatarChanged(AbstractPlayer player) {
+        if (player.getPlayerNumber() == 1) {
+            playerOnePictureButton.setIcon(player.getAvatar());
+        } 
+        else {
+            playerTwoPictureButton.setIcon(player.getAvatar());
+        }
+        pack();
+    }
+
+    @Override
+    public void errorMessageChanged(Message mess) {
+        errorLabel.setText(mess.getErrorMessage());
+        pack();
+    }
+
+    @Override
+    public void headMessageChanged(Message mess) {
+        headOutputLabel.setText(mess.getHeadMessage());
+        pack();
     }
 
 }

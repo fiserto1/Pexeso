@@ -28,9 +28,12 @@ public class Game implements Serializable {
     private boolean playerOnTurn = true;
     private AbstractPlayer player1;
     private AbstractPlayer player2;
-    private HeadFrame frame;
+//    private HeadFrame frame;
+    private DeckOfCards deck;
     private int uncoveredCards = 0;
     private OneMove newMove;
+    
+    private Message output;
     
     private Timer showTimer = new Timer(500, new ActionListener() {
 
@@ -54,11 +57,11 @@ public class Game implements Serializable {
 //            System.out.println("CheckTimerBezi");
             if (playerOnTurn) {
                 newMove = null;
-                newMove = player1.move(frame.getDeck());
+                newMove = player1.move(deck);
             }
             else {
                 newMove = null;
-                newMove = player2.move(frame.getDeck());
+                newMove = player2.move(deck);
             }
             if (newMove != null) {
                 checkTimer.stop();
@@ -72,12 +75,12 @@ public class Game implements Serializable {
     public void changePlayerOnTurn() {
         if(playerOnTurn) {
             playerOnTurn = false;
-            frame.setPlayerOnTurnLabel("Player Two's turn.");
+            output.setHeadMessage("Player Two's turn.");
             
         }
         else {
             playerOnTurn = true;
-            frame.setPlayerOnTurnLabel("Player One's turn.");
+            output.setHeadMessage("Player One's turn.");
         }
     }
     
@@ -85,28 +88,28 @@ public class Game implements Serializable {
 //    private int countdown = 21;
 //    private Timer timer;
 
-    public Game(AbstractPlayer player1, AbstractPlayer player2, HeadFrame frame) {
+    public Game(AbstractPlayer player1, AbstractPlayer player2, DeckOfCards deck) {
         this.player1 = player1;
         this.player2 = player2;
-        this.frame = frame;
+        this.deck = deck;
+        this.output = new Message((HeadFrame) player1.getDelegate());
         
     }
     
     
     public void playGame() {
-        frame.setPlayerOneNameLabel(player1.playerName);
-        frame.setPlayerTwoNameLabel(player2.playerName);
-        frame.setPlayerOneScoreLabel("Score: " + player1.playerScore);
-        frame.setPlayerTwoScoreLabel("Score: " + player2.playerScore);
-        frame.setPlayerOnePictureButton(player1.avatar);
-        frame.setPlayerTwoPictureButton(player2.avatar);
+        player1.setName(player1.name);
+        player1.setScore(player1.score);
+        player1.setAvatar(player1.avatar);
+        player2.setName(player2.name);
+        player2.setScore(player2.score);
+        player2.setAvatar(player2.avatar);
         if (playerOnTurn) {
-            frame.setPlayerOnTurnLabel("Player One's turn.");
+            output.setHeadMessage("Player One's turn.");
         }
         else {
-            frame.setPlayerOnTurnLabel("Player Two's turn.");
+            output.setHeadMessage("Player Two's turn.");
         }
-        frame.pack();
         checkTimer.start();
         
         //COUNTDOWN
@@ -131,10 +134,10 @@ public class Game implements Serializable {
 //                System.out.println("CheckTimerBezi2");
                 if (playerOnTurn) {
                     newMove = null;
-                    newMove = player1.move(frame.getDeck());
+                    newMove = player1.move(deck);
                 } else {
                     newMove = null;
-                    newMove = player2.move(frame.getDeck());
+                    newMove = player2.move(deck);
                 }
                 if (newMove != null) {
                     checkTimer.stop();
@@ -161,9 +164,9 @@ public class Game implements Serializable {
     
     public void endGame() {
         if (playerOnTurn) {
-            frame.setPlayerOnTurnLabel(player1.playerName + " WON!!");
+            output.setHeadMessage(player1.getName() + " WON!!");
         } else {
-            frame.setPlayerOnTurnLabel(player2.playerName + " WON!!");
+            output.setHeadMessage(player2.getName() + " WON!!");
         }
     }
     
@@ -180,11 +183,11 @@ public class Game implements Serializable {
                 objOutStr = new ObjectOutputStream(new FileOutputStream(filepath));
                 objOutStr.writeObject(this);
                 objOutStr.close();
-                frame.setDownLabel("Save successful.");
+                output.setErrorMessage("Save successful.");
             } catch (FileNotFoundException fnfe) {
-                frame.setDownLabel("File not found.");
+                output.setErrorMessage("File not found.");
             } catch (IOException ioe) {
-                frame.setDownLabel("IOExp");
+                output.setErrorMessage("IOExp");
             } finally {
                 playGame();
                 try {
@@ -192,7 +195,7 @@ public class Game implements Serializable {
                         objOutStr.close();
                     }
                 } catch (IOException ex) {
-                    frame.setDownLabel("Stream not closed.");
+                    output.setErrorMessage("Stream not closed.");
                 }
             }
 //        }
@@ -206,7 +209,12 @@ public class Game implements Serializable {
             newMove.getFirstCard().setVisible(false);
             newMove.getSecondCard().setVisible(false);
             uncoveredCards += 2;
-            setScore();
+            if (playerOnTurn) {
+                player1.setScore(player1.getScore() + 10);
+            }
+            else {
+                player1.setScore(player1.getScore() + 10);
+            }
             newMove = null;
             CardAL.unmarkCards();
         } else {
@@ -220,15 +228,15 @@ public class Game implements Serializable {
         }
     }
     
-    public void setScore() {
-        if (playerOnTurn) {
-            player1.playerScore += 10;
-            frame.setPlayerOneScoreLabel("Score: " + player1.playerScore);
-        } else {
-            player2.playerScore += 10;
-            frame.setPlayerTwoScoreLabel("Score: " + player2.playerScore);
-        }
-    }
+//    public void setScore() {
+//        if (playerOnTurn) {
+//            player1.score += 10;
+//            frame.setPlayerOneScoreLabel("Score: " + player1.score);
+//        } else {
+//            player2.score += 10;
+//            frame.setPlayerTwoScoreLabel("Score: " + player2.score);
+//        }
+//    }
     
     //COUNTDOWN
 //    private void refreshCountDown() {
@@ -248,12 +256,11 @@ public class Game implements Serializable {
         return uncoveredCards;
     }
 
-    public void setFrame(HeadFrame frame) {
-        this.frame = frame;
+    public DeckOfCards getDeck() {
+        return deck;
     }
 
-    public HeadFrame getFrame() {
-        return frame;
+    public void setDeck(DeckOfCards deck) {
+        this.deck = deck;
     }
-    
 }

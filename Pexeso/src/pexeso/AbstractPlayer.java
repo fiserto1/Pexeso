@@ -15,14 +15,14 @@ import pexeso.delegates.PlayerDelegate;
  * @author Tomas
  */
 public abstract class AbstractPlayer implements Serializable {
-    protected int playerScore;
-    protected String playerName;
+    protected int score;
+    protected String name;
     protected ImageIcon avatar;
     protected int playerNumber;
     private PlayerDelegate delegate;
 
-    public AbstractPlayer(String playerName, ImageIcon avatar, int playerNumber) {
-        this.playerName = playerName;
+    public AbstractPlayer(String name, ImageIcon avatar, int playerNumber) {
+        this.name = name;
         this.avatar = avatar;
         this.playerNumber = playerNumber;
     }
@@ -31,28 +31,45 @@ public abstract class AbstractPlayer implements Serializable {
         return playerNumber;
     }
     
-    public int getPlayerScore() {
-        return playerScore;
+    public int getScore() {
+        return score;
     }
 
-    public String getPlayerName() {
-        return playerName;
+    public String getName() {
+        return name;
     }
 
-    public void setPlayerScore(int playerScore) {
-        this.playerScore = playerScore;
+    public ImageIcon getAvatar() {
+        return avatar;
+    }
+
+    public PlayerDelegate getDelegate() {
+        return delegate;
+    }
+    
+    public void setScore(int score) {
+        this.score = score;
         if (delegate != null) {
             delegate.scoreChanged(this);
         }
     }
     
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
+    public void setName(String name) {
+        this.name = name;
         if (delegate != null) {
             delegate.nameChanged(this);
         }
     }
 
+    public void setAvatar(ImageIcon avatar) {
+        this.avatar = avatar;
+        if (delegate != null) {
+            delegate.avatarChanged(this);
+        }
+    }
+
+    
+    
     public void setDelegate(PlayerDelegate delegate) {
         this.delegate = delegate;
     }

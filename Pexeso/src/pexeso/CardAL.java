@@ -9,13 +9,14 @@ package pexeso;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serializable;
 import javax.swing.ImageIcon;
 
 /**
  *
  * @author Tomas
  */
-public class CardAL implements ActionListener{
+public class CardAL implements ActionListener, Serializable {
     
     private Game game;
     private Card card;

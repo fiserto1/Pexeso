@@ -6,17 +6,15 @@
 
 package pexeso.delegates;
 
-import pexeso.AbstractPlayer;
+import pexeso.Message;
 
 /**
  *
  * @author Tomas
  */
-public interface PlayerDelegate {
+public interface MessageDelegate {
     
-    public void scoreChanged(AbstractPlayer player);
+    public void errorMessageChanged(Message mess);
     
-    public void nameChanged(AbstractPlayer player);
-    
-    public void avatarChanged(AbstractPlayer player);
+    public void headMessageChanged(Message mess);
 }
