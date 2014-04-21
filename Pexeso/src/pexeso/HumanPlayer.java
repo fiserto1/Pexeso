@@ -16,8 +16,8 @@ public class HumanPlayer extends AbstractPlayer {
 
     private ImageIcon defaultPlayerAvatar = new ImageIcon(getClass().getResource("/Avatars/Professor.png"));
     
-    public HumanPlayer(String playerName, ImageIcon avatar) {
-        super(playerName, avatar);
+    public HumanPlayer(String playerName, ImageIcon avatar, int playerNumber) {
+        super(playerName, avatar, playerNumber);
     }
     
     @Override

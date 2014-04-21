@@ -15,11 +15,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import javax.swing.*;
+import pexeso.delegates.PlayerDelegate;
 /**
  *
  * @author Tomas
  */
-public class HeadFrame extends JFrame  implements Serializable{
+public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate {
     
     //Menu
     private final JMenuBar headMenuBar = new JMenuBar();
@@ -38,7 +39,7 @@ public class HeadFrame extends JFrame  implements Serializable{
     private JPanel leftPanel;
     //Player 1
     private JLabel playerOneNameLabel;
-    private JLabel PlayerOneScoreLabel;
+    private JLabel playerOneScoreLabel;
     private JButton playerOnePictureButton;
     //Player 2
     private JLabel playerTwoNameLabel;
@@ -96,9 +97,11 @@ public class HeadFrame extends JFrame  implements Serializable{
                     newGame.stopAllTimers();
                 }
                 deck.shuffleCards();
-                newGame = new Game(new HumanPlayer("Player 1", defaultPlayerAvatar), 
-                        new ComputerPlayer("Computer", defaultComputerAvatar),
-                        HeadFrame.this);
+                AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
+                AbstractPlayer player2 = new ComputerPlayer("Computer", defaultPlayerAvatar, 2);
+                player1.setDelegate(HeadFrame.this);
+                player1.setDelegate(HeadFrame.this);
+                newGame = new Game(player1, player2, HeadFrame.this);
                 showGameBoard();
             }
         });
@@ -110,9 +113,11 @@ public class HeadFrame extends JFrame  implements Serializable{
                     newGame.stopAllTimers();
                 }
                 deck.shuffleCards();
-                newGame = new Game(new HumanPlayer("Player 1", defaultPlayerAvatar), 
-                        new HumanPlayer("Player 2", defaultPlayerAvatar), 
-                        HeadFrame.this);
+                AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
+                AbstractPlayer player2 = new HumanPlayer("Player 2", defaultPlayerAvatar, 2);
+                player1.setDelegate(HeadFrame.this);
+                player1.setDelegate(HeadFrame.this);
+                newGame = new Game(player1, player2, HeadFrame.this);
                 showGameBoard();
             }
         });
@@ -197,7 +202,7 @@ public class HeadFrame extends JFrame  implements Serializable{
         leftPanel = new JPanel(new java.awt.GridLayout(3, 1));
         //Player 1
         playerOneNameLabel = new JLabel("PlayerName 1");
-        PlayerOneScoreLabel = new JLabel("Score: ");
+        playerOneScoreLabel = new JLabel("Score: ");
         playerOnePictureButton = new JButton();
 //        ImageIcon icon1 = new ImageIcon("D:\\Dokumenty\\Vysoká škola\\2. semestr\\PR2\\Projekty\\Semestrální práce\\Pexeso\\src\\Avatars\\Professor.png");
         //Player 2
@@ -212,7 +217,7 @@ public class HeadFrame extends JFrame  implements Serializable{
         //leftPanel
         leftPanel.add(playerOneNameLabel);
         leftPanel.add(playerOnePictureButton);
-        leftPanel.add(PlayerOneScoreLabel);
+        leftPanel.add(playerOneScoreLabel);
         leftPanel.setVisible(false);
 //        leftPanel.setPreferredSize(new java.awt.Dimension(150, 250));
         //rightPanel
@@ -238,7 +243,7 @@ public class HeadFrame extends JFrame  implements Serializable{
     }
 
     public void setPlayerOneScoreLabel(String score) {
-        PlayerOneScoreLabel.setText(score);
+        playerOneScoreLabel.setText(score);
     }
 
     public void setPlayerTwoNameLabel(String name) {
@@ -269,6 +274,25 @@ public class HeadFrame extends JFrame  implements Serializable{
         playerTwoPictureButton.setIcon(avatar);
     }
 
+    @Override
+    public void scoreChanged(AbstractPlayer player) {
+        if (player.getPlayerNumber() == 1) {
+            playerOneScoreLabel.setText("Score: " + player.getPlayerScore());
+        }
+        else {
+            playerTwoScoreLabel.setText("Score: " + player.getPlayerScore());
+        }
+    }
 
+    @Override
+    public void nameChanged(AbstractPlayer player) {
+        if (player.getPlayerNumber() == 1) {
+            playerOneNameLabel.setText("Score: " + player.getPlayerName());
+        } 
+        else {
+            playerTwoNameLabel.setText("Score: " + player.getPlayerName());
+        }
+
+    }
 
 }

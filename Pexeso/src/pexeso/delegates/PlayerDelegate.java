@@ -6,11 +6,15 @@
 
 package pexeso.delegates;
 
+import pexeso.AbstractPlayer;
+
 /**
  *
  * @author Tomas
  */
-public interface ScoreDelegate {
+public interface PlayerDelegate {
     
-    public void scoreChanged(String score);
+    public void scoreChanged(AbstractPlayer player);
+    
+    public void nameChanged(AbstractPlayer player);
 }

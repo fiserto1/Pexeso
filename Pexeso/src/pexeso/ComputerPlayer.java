@@ -15,8 +15,8 @@ import javax.swing.ImageIcon;
  */
 public class ComputerPlayer extends AbstractPlayer {
 
-    public ComputerPlayer(String playerName, ImageIcon avatar) {
-        super(playerName, avatar);
+    public ComputerPlayer(String playerName, ImageIcon avatar, int playerNumber) {
+        super(playerName, avatar, playerNumber);
     }
     
     @Override
