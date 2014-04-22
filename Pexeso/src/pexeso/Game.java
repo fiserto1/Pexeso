@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.Timer;
+import pexeso.delegates.MessageDelegate;
 
 
 /**
@@ -35,7 +36,7 @@ public class Game implements Serializable, Runnable{
     private int uncoveredCards = 0;
     private OneMove newMove;
     
-    private Message output;
+    private transient Message output;
     private boolean endOfGame;
     
 //    private Timer showTimer = new Timer(500, new ActionListener() {
@@ -294,4 +295,30 @@ public class Game implements Serializable, Runnable{
     public void run() {
         playGame();
     }
+
+    public AbstractPlayer getPlayer1() {
+        return player1;
+    }
+
+    public AbstractPlayer getPlayer2() {
+        return player2;
+    }
+
+    public OneMove getNewMove() {
+        return newMove;
+    }
+
+    public Message getOutput() {
+        return output;
+    }
+
+    public boolean isEndOfGame() {
+        return endOfGame;
+    }
+
+    public void setOutputDelegate(MessageDelegate delegate) {
+        this.output = new Message(delegate);
+    }
+    
+    
 }

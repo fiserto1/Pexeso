@@ -19,7 +19,7 @@ public abstract class AbstractPlayer implements Serializable {
     protected String name;
     protected ImageIcon avatar;
     protected int playerNumber;
-    private PlayerDelegate delegate;
+    private transient PlayerDelegate delegate;
 
     public AbstractPlayer(String name, ImageIcon avatar, int playerNumber) {
         this.name = name;

@@ -16,7 +16,7 @@ import pexeso.delegates.MessageDelegate;
 public class Message implements Serializable {
     private String errorMessage;
     private String headMessage;
-    private MessageDelegate delegate;
+    private transient MessageDelegate delegate;
 
     public Message(MessageDelegate delegate) {
         this.delegate = delegate;

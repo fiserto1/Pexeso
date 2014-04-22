@@ -145,7 +145,12 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
                 } catch (FileNotFoundException fnfe) {
                     errorLabel.setText("File not found.");
                 } catch (IOException ioe) {
-                    errorLabel.setText("IOExp");
+                    try {
+                        throw new IOException("hh",ioe);
+//                    errorLabel.setText("IOExp");
+                    } catch (IOException ex) {
+                        Logger.getLogger(HeadFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } finally {
 //                    playGame();
                     try {
@@ -178,10 +183,13 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
                         errorLabel.setText("Load successful.");
 //                        System.out.println(loadGame.getUncoveredCards());
                         if (newGame != null) {
-//                            newGame.stopAllTimers();
+                            gameThread.interrupt();
                         }
                         deck = loadGame.getDeck();
                         newGame = loadGame;
+                        newGame.getPlayer1().setDelegate(HeadFrame.this);
+                        newGame.getPlayer2().setDelegate(HeadFrame.this);
+                        newGame.setOutputDelegate(HeadFrame.this);
 //                        newGame.addListernersToTimers();
                         showGameBoard();
                     } catch (FileNotFoundException fnfe) {
