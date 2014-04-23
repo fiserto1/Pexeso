@@ -19,6 +19,7 @@ import javax.swing.JButton;
 public class Card extends JButton implements Serializable {
     private ImageIcon cardImage = new ImageIcon();
     private int compareNumber;
+    private int idNumber;
 
     public Card() {
     }
@@ -55,6 +56,16 @@ public class Card extends JButton implements Serializable {
         this.compareNumber = compareNumber;
     }
 
+    public int getIdNumber() {
+        return idNumber;
+    }
+
+    public void setIdNumber(int idNumber) {
+        this.idNumber = idNumber;
+    }
+
+    
+    
     @Override
     public int hashCode() {
         int hash = 7;

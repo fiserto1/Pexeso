@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 public class DeckOfCards implements Serializable {
     public static final int NUMBER_OF_CARDS = 64;
     private final Card[] cards = new Card[NUMBER_OF_CARDS];
+    private final int[] onlineCards = new int[NUMBER_OF_CARDS];
 
     public DeckOfCards() {
         int j = 1;
@@ -20,6 +21,7 @@ public class DeckOfCards implements Serializable {
             cards[i].setCompareNumber(j);
             cards[i].setFocusPainted(false);
             cards[i].setCardImage(new ImageIcon(getClass().getResource("/cards/" + j + ".jpg")));
+            cards[i].setIdNumber(i);
             if (i % 2 != 0) {
                 j++;
             }
@@ -42,11 +44,32 @@ public class DeckOfCards implements Serializable {
             cards[i].setIcon(null);
             cards[i].setText("CARD");
             cards[i].setVisible(true);
+            cards[i].setIdNumber(i);
         }
         
+    }
+    
+    public void recreateDeckForOnlineGame(int[] input) {
+        for (int i = 0; i < cards.length; i++) {
+            cards[i].setCompareNumber(input[i]);
+//            cards[i].setFocusPainted(false);
+            cards[i].setCardImage(new ImageIcon(getClass().getResource("/cards/" + input[i] + ".jpg")));
+            cards[i].setIdNumber(i);
+        }
     }
     
     public Card[] getCards() {
         return cards;
     }
+
+    public int[] getOnlineCards() {
+        for (int i = 0; i < cards.length; i++) {
+            onlineCards[i] = cards[i].getCompareNumber();
+//            cards[i].setIdNumber(i);
+        }
+        
+        return onlineCards;
+    }
+    
+    
 }

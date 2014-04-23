@@ -21,6 +21,8 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import pexeso.delegates.MessageDelegate;
 import pexeso.delegates.PlayerDelegate;
+import pexeso.online.ClientGame;
+import pexeso.online.ServerGame;
 /**
  *
  * @author Tomas
@@ -36,6 +38,8 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     private final JMenuItem twoPlayersGameMenuItem = new JMenuItem("Two players");
     private final JMenuItem saveGameMenuItem = new JMenuItem("Save game");
     private final JMenuItem loadGameMenuItem = new JMenuItem("Load game");
+    private final JMenuItem createOnlineGameMenuItem = new JMenuItem("Create game");
+    private final JMenuItem joinOnlineGameMenuItem = new JMenuItem("Join game");
     //Panels
     private JPanel northPanel;
     private JPanel southPanel;
@@ -57,6 +61,8 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     private DeckOfCards deck = new DeckOfCards();
     
     private Game newGame;
+    private ServerGame newServerGame;
+    private ClientGame newClientGame;
     
     private final ImageIcon defaultPlayerAvatar = new ImageIcon(getClass().getResource("/Avatars/Professor.png"));
     private final ImageIcon defaultComputerAvatar = new ImageIcon(getClass().getResource("/Avatars/Female.png"));
@@ -93,6 +99,8 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         gameMenu.add(newGameMenu);
         gameMenu.add(saveGameMenuItem);
         gameMenu.add(loadGameMenuItem);
+        gameMenu.add(createOnlineGameMenuItem);
+        gameMenu.add(joinOnlineGameMenuItem);
         newGameMenu.add(onePlayerGameMenuItem);
         newGameMenu.add(twoPlayersGameMenuItem);
         setJMenuBar(headMenuBar);
@@ -251,6 +259,69 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 //                }
             }
         });
+        
+        createOnlineGameMenuItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deck.shuffleCards();
+                AbstractPlayer player1 = new HumanPlayer("You", defaultPlayerAvatar, 1);
+//                AbstractPlayer player2 = new HumanPlayer("Player 2", defaultPlayerAvatar, 2);
+                player1.setDelegate(HeadFrame.this);
+//                player2.setDelegate(HeadFrame.this);
+                newServerGame = new ServerGame(player1, deck);
+                
+                setPreferredSize(new java.awt.Dimension(1050, 700));
+                leftPanel.setVisible(true);
+                rightPanel.setVisible(true);
+                saveGameMenuItem.setEnabled(true);
+
+                centerPanel.removeAll();
+
+                for (int i = 0; i < deck.getCards().length; i++) {
+                    centerPanel.add(deck.getCards()[i]);
+//            deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i], newGame));
+                }
+                centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
+                pack();
+                Thread t = new Thread(newServerGame);
+                t.start();
+                
+            }
+        });
+        
+        joinOnlineGameMenuItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deck.shuffleCards();
+//                AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
+                AbstractPlayer player2 = new HumanPlayer("You", defaultPlayerAvatar, 1);
+//                player1.setDelegate(HeadFrame.this);
+                player2.setDelegate(HeadFrame.this);
+                newClientGame = new ClientGame(player2, deck);
+                for (int i = 0; i < deck.getCards().length; i++) {
+                    centerPanel.add(deck.getCards()[i]);
+//            deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i], newGame));
+                }
+                setPreferredSize(new java.awt.Dimension(1050, 700));
+                leftPanel.setVisible(true);
+                rightPanel.setVisible(true);
+                saveGameMenuItem.setEnabled(true);
+
+//                centerPanel.removeAll();
+
+//                for (int i = 0; i < deck.getCards().length; i++) {
+//                    centerPanel.add(deck.getCards()[i]);
+//            deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i], newGame));
+//                }
+                centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
+                pack();
+                
+                Thread t = new Thread(newClientGame);
+                t.start();
+            }
+        });
     }
     
     private void showGameBoard() {
@@ -268,7 +339,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
         
         if (gameThread != null) {
-            System.out.println(gameThread.isAlive());
+//            System.out.println(gameThread.isAlive());
         }
         
         
@@ -375,5 +446,4 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         headOutputLabel.setText(mess.getHeadMessage());
         pack();
     }
-
 }
