@@ -151,6 +151,9 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 //                newGame.saveGame();
                 
                 if (newGame != null) {
+                    CardAL.getMove().getFirstCard().setText("CARD");
+                    CardAL.getMove().getFirstCard().setIcon(null);
+                    CardAL.unmarkCards();
                     Game.gameInterrupted = true;
                     while (gameThread.isAlive()) {
                         try {
