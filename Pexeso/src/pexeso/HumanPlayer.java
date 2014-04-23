@@ -32,6 +32,11 @@ public class HumanPlayer extends AbstractPlayer {
         }
         
         while (!CardAL.isMoveCompleted()) {
+            if (Game.gameInterrupted) {
+                CardAL.setMoveCompleted(false);
+                CardAL.unmarkCards();
+                break;
+            }
             try {
                 Thread.sleep(10);
             } catch (InterruptedException ex) {

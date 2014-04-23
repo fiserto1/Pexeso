@@ -28,6 +28,8 @@ import pexeso.delegates.MessageDelegate;
 public class Game implements Serializable, Runnable{
     // true - player one's turn
     // false - player two's turn
+    public static boolean gameInterrupted;
+    
     private boolean playerOnTurn = true;
     private AbstractPlayer player1;
     private AbstractPlayer player2;
@@ -293,7 +295,43 @@ public class Game implements Serializable, Runnable{
 
     @Override
     public void run() {
-        playGame();
+        player1.setName(player1.name);
+        player1.setScore(player1.score);
+        player1.setAvatar(player1.avatar);
+        player2.setName(player2.name);
+        player2.setScore(player2.score);
+        player2.setAvatar(player2.avatar);
+        if (playerOnTurn) {
+            output.setHeadMessage("Player One's turn.");
+        } else {
+            output.setHeadMessage("Player Two's turn.");
+        }
+//        checkTimer.start();
+        while (!endOfGame) {
+            
+            if (playerOnTurn) {
+                newMove = player1.move(deck);
+            } else {
+                newMove = player2.move(deck);
+            }
+
+            if (gameInterrupted) {
+                return;
+            }
+            //card show
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                System.out.println("Game cant sleep.");
+            }
+
+            if (newMove.getFirstCard() != null && newMove.getSecondCard() != null) {
+                compareCards();
+            }
+            if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
+                endGame();
+            }
+        }
     }
 
     public AbstractPlayer getPlayer1() {

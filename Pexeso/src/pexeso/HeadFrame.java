@@ -87,7 +87,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     }
     
     private void createMenu() {
-//        saveGameMenuItem.setEnabled(false);
+        saveGameMenuItem.setEnabled(false);
         headMenuBar.add(gameMenu);
         headMenuBar.add(settingsMenu);
         gameMenu.add(newGameMenu);
@@ -101,7 +101,14 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (newGame != null) {
-//                    newGame.stopAllTimers();
+                    Game.gameInterrupted = true;
+                    while (gameThread.isAlive()) {
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException ie) {
+                            System.out.println("ouha");
+                        }
+                    }
                 }
                 deck.shuffleCards();
                 AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
@@ -116,8 +123,16 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         twoPlayersGameMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                
                 if (newGame != null) {
-//                    newGame.stopAllTimers();
+                    Game.gameInterrupted = true;
+                    while (gameThread.isAlive()) {
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException ie) {
+                            System.out.println("ouha");
+                        }
+                    }
                 }
                 deck.shuffleCards();
                 AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
@@ -135,6 +150,18 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
             public void actionPerformed(ActionEvent e) {
 //                newGame.saveGame();
                 
+                if (newGame != null) {
+                    Game.gameInterrupted = true;
+                    while (gameThread.isAlive()) {
+                        try {
+                            Thread.sleep(10);
+                        }
+                        catch (InterruptedException ie) {
+                            System.out.println("ouha");
+                        }
+                    }
+                }
+                
                 String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
                 ObjectOutputStream objOutStr = null;
                 try {
@@ -142,6 +169,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
                     objOutStr.writeObject(newGame);
                     objOutStr.close();
                     errorLabel.setText("Save successful.");
+                    showGameBoard();
                 } catch (FileNotFoundException fnfe) {
                     errorLabel.setText("File not found.");
                 } catch (IOException ioe) {
@@ -168,12 +196,24 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (newGame != null) {
+                    Game.gameInterrupted = true;
+                    while (gameThread.isAlive()) {
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException ie) {
+                            System.out.println("ouha");
+                        }
+                    }
+                }
+                
+                
 //                JFileChooser fileChooser = new JFileChooser();
 //                fileChooser.showOpenDialog(null);
 //                if (fileChooser.getSelectedFile() != null) {
 //                    String filepath = fileChooser.getSelectedFile().getAbsolutePath();
                     ObjectInputStream objInStr = null;
-                    headOutputLabel.setText(System.getProperty("user.dir") + "\\savedGame.txt");
+//                    headOutputLabel.setText(System.getProperty("user.dir") + "\\savedGame.txt");
                     String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
                     try {
                         objInStr = new ObjectInputStream(new FileInputStream(filepath));
@@ -182,9 +222,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
                         objInStr.close();
                         errorLabel.setText("Load successful.");
 //                        System.out.println(loadGame.getUncoveredCards());
-                        if (newGame != null) {
-                            gameThread.interrupt();
-                        }
+                        
                         deck = loadGame.getDeck();
                         newGame = loadGame;
                         newGame.getPlayer1().setDelegate(HeadFrame.this);
@@ -213,7 +251,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     }
     
     private void showGameBoard() {
-        setPreferredSize(new java.awt.Dimension(1000, 700));
+        setPreferredSize(new java.awt.Dimension(1050, 700));
         leftPanel.setVisible(true);
         rightPanel.setVisible(true);
         saveGameMenuItem.setEnabled(true);
@@ -227,11 +265,13 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
         
         if (gameThread != null) {
-            gameThread.interrupt();
+            System.out.println(gameThread.isAlive());
         }
+        
+        
+        Game.gameInterrupted = false;
         gameThread = new Thread(newGame);
         gameThread.start();
-        
         pack();
     }
     
