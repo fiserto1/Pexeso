@@ -80,7 +80,7 @@ public abstract class AbstractPlayer implements Serializable {
     
     
     
-    public abstract OneMove move(DeckOfCards deck);
+    public abstract OneMove move(OneMove myLastMove, OneMove oppMove);
     
     
 }

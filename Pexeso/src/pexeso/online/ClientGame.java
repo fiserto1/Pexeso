@@ -47,12 +47,17 @@ public class ClientGame implements Runnable {
 
     private transient Message output;
     private boolean endOfGame;
+    
+    private OneMove lastPlayer1Move;
+    private OneMove lastPlayer2Move;
 
     public ClientGame( AbstractPlayer clientPlayer, DeckOfCards deck) {
         this.serverPlayer = null;
         this.clientPlayer = clientPlayer;
         this.deck = deck;
         this.output = new Message((HeadFrame) clientPlayer.getDelegate());
+        this.lastPlayer1Move = null;
+        this.lastPlayer2Move = null;
     }
 
     
@@ -119,10 +124,29 @@ public class ClientGame implements Runnable {
         while (!endOfGame) {
 
             if (playerOnTurn) {
-                newMove = clientPlayer.move(deck);
+                CardAL listener = new CardAL();
+                if (clientPlayer instanceof HumanPlayer) {
+                    CardAL.setMoveCompleted(false);
+                    for (int i = 0; i < deck.getCards().length; i++) {
+                        deck.getCards()[i].addActionListener(listener);
+                    }
+                }
+                newMove = clientPlayer.move(lastPlayer1Move, lastPlayer2Move);
+                lastPlayer1Move = newMove;
+                
+                if (newMove.getFirstCardIDNumber() != -1 && newMove.getSecondCardIDNumber() != -1) {
+                    lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[newMove.getFirstCardIDNumber()].getCompareNumber());
+                    lastPlayer1Move.setSecondCardCompareNumber(deck.getCards()[newMove.getSecondCardIDNumber()].getCompareNumber());
+                }
+                
+                if (clientPlayer instanceof HumanPlayer) {
+                    for (int i = 0; i < deck.getCards().length; i++) {
+                        deck.getCards()[i].removeActionListener(listener);
+                    }
+                }
                 try {
 //                    System.out.println(newMove.getFirstCard().getIdNumber() + "," + newMove.getSecondCard().getIdNumber());
-                    int[] onlineMove = {newMove.getFirstCard().getIdNumber(), newMove.getSecondCard().getIdNumber()};
+                    int[] onlineMove = {newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber()};
                     objOutStream.writeObject(onlineMove);
 //                    objOutStream.writeObject(newMove);
                 } catch (IOException ex) {
@@ -132,7 +156,8 @@ public class ClientGame implements Runnable {
 //                newMove = serverPlayer.move(deck);
                 try {
                     int[] playa = (int[]) objInStream.readObject();
-                    newMove = new OneMove(deck.getCards()[playa[0]], deck.getCards()[playa[1]]);
+                    newMove = new OneMove(playa[0], playa[1]);
+                    lastPlayer2Move = newMove;
 //                    newMove = (OneMove) objInStream.readObject();
 //                    System.out.println("GOT HIM, im client" + playa[0] + "," + playa[1]);
                 } catch (IOException ex) {
@@ -143,15 +168,15 @@ public class ClientGame implements Runnable {
             }
 
             //card show
-            newMove.getFirstCard().setText("");
-            Image newImage = newMove.getFirstCard().getCardImage().getImage().getScaledInstance(
-                    newMove.getFirstCard().getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
-            newMove.getFirstCard().setIcon(new ImageIcon(newImage));
+            deck.getCards()[newMove.getFirstCardIDNumber()].setText("");
+            Image newImage = deck.getCards()[newMove.getFirstCardIDNumber()].getCardImage().getImage().getScaledInstance(
+                    deck.getCards()[newMove.getFirstCardIDNumber()].getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
+            deck.getCards()[newMove.getFirstCardIDNumber()].setIcon(new ImageIcon(newImage));
 
-            newMove.getSecondCard().setText("");
-            newImage = newMove.getSecondCard().getCardImage().getImage().getScaledInstance(
-                    newMove.getSecondCard().getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
-            newMove.getSecondCard().setIcon(new ImageIcon(newImage));
+            deck.getCards()[newMove.getSecondCardIDNumber()].setText("");
+            newImage = deck.getCards()[newMove.getSecondCardIDNumber()].getCardImage().getImage().getScaledInstance(
+                    deck.getCards()[newMove.getSecondCardIDNumber()].getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
+            deck.getCards()[newMove.getSecondCardIDNumber()].setIcon(new ImageIcon(newImage));
             
             try {
                 Thread.sleep(1000);
@@ -159,7 +184,7 @@ public class ClientGame implements Runnable {
                 System.out.println("Game cant sleep.");
             }
 
-            if (newMove.getFirstCard() != null && newMove.getSecondCard() != null) {
+            if (newMove.getFirstCardIDNumber()!= -1 && newMove.getSecondCardIDNumber() != -1) {
                 compareCards();
             }
             if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
@@ -186,9 +211,9 @@ public class ClientGame implements Runnable {
     }
 
     private void compareCards() {
-        if (newMove.getFirstCard().getCompareNumber() == newMove.getSecondCard().getCompareNumber()) {
-            newMove.getFirstCard().setVisible(false);
-            newMove.getSecondCard().setVisible(false);
+        if (deck.getCards()[newMove.getFirstCardIDNumber()].getCompareNumber() == deck.getCards()[newMove.getSecondCardIDNumber()].getCompareNumber()) {
+            deck.getCards()[newMove.getFirstCardIDNumber()].setVisible(false);
+            deck.getCards()[newMove.getSecondCardIDNumber()].setVisible(false);
             uncoveredCards += 2;
             if (playerOnTurn) {
                 clientPlayer.setScore(clientPlayer.getScore() + 10);
@@ -198,10 +223,10 @@ public class ClientGame implements Runnable {
             newMove = null;
             CardAL.unmarkCards();
         } else {
-            newMove.getFirstCard().setText("CARD");
-            newMove.getFirstCard().setIcon(null);
-            newMove.getSecondCard().setText("CARD");
-            newMove.getSecondCard().setIcon(null);
+            deck.getCards()[newMove.getFirstCardIDNumber()].setText("CARD");
+            deck.getCards()[newMove.getFirstCardIDNumber()].setIcon(null);
+            deck.getCards()[newMove.getSecondCardIDNumber()].setText("CARD");
+            deck.getCards()[newMove.getSecondCardIDNumber()].setIcon(null);
             changePlayerOnTurn();
             newMove = null;
             CardAL.unmarkCards();

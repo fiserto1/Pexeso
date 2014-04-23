@@ -15,21 +15,15 @@ import javax.swing.ImageIcon;
  * @author Tomas
  */
 public class HumanPlayer extends AbstractPlayer {
-
-//    private ImageIcon defaultPlayerAvatar = new ImageIcon(getClass().getResource("/Avatars/Professor.png"));
     
     public HumanPlayer(String name, ImageIcon avatar, int playerNumber) {
         super(name, avatar, playerNumber);
     }
     
     @Override
-    public OneMove move(DeckOfCards deck) {
+    public OneMove move(OneMove myLastMove, OneMove oppMove) {
         //wait for user choice
         CardAL.setMoveCompleted(false);
-        CardAL listener = new CardAL();
-        for (int i = 0; i < deck.getCards().length; i++) {
-            deck.getCards()[i].addActionListener(listener);
-        }
         
         while (!CardAL.isMoveCompleted()) {
             if (Game.gameInterrupted) {
@@ -42,10 +36,6 @@ public class HumanPlayer extends AbstractPlayer {
             } catch (InterruptedException ex) {
                 Logger.getLogger(HumanPlayer.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        
-        for (int i = 0; i < deck.getCards().length; i++) {
-            deck.getCards()[i].removeActionListener(listener);
         }
         
         return CardAL.getMove();

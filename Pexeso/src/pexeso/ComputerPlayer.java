@@ -21,26 +21,14 @@ public class ComputerPlayer extends AbstractPlayer {
     }
     
     @Override
-    public OneMove move(DeckOfCards deck) {
+    public OneMove move(OneMove myLastMove, OneMove oppMove) {
         Random rnd = new Random();
         int firstTurn, secondTurn;
         do {
-            firstTurn = rnd.nextInt(DeckOfCards.NUMBER_OF_CARDS - 1) + 1;
-            secondTurn = rnd.nextInt(DeckOfCards.NUMBER_OF_CARDS - 1) + 1;
-        } while (firstTurn == secondTurn || !deck.getCards()[firstTurn].isVisible() 
-                || !deck.getCards()[secondTurn].isVisible());
+            firstTurn = rnd.nextInt(DeckOfCards.NUMBER_OF_CARDS - 1);
+            secondTurn = rnd.nextInt(DeckOfCards.NUMBER_OF_CARDS - 1);
+        } while (firstTurn == secondTurn);
         
-        //do click
-        deck.getCards()[firstTurn].setText("");
-        Image newImage = deck.getCards()[firstTurn].getCardImage().getImage().getScaledInstance(
-                deck.getCards()[firstTurn].getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
-        deck.getCards()[firstTurn].setIcon(new ImageIcon(newImage));
-        
-        deck.getCards()[secondTurn].setText("");
-        newImage = deck.getCards()[secondTurn].getCardImage().getImage().getScaledInstance(
-                deck.getCards()[secondTurn].getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
-        deck.getCards()[secondTurn].setIcon(new ImageIcon(newImage));
-        
-        return new OneMove(deck.getCards()[firstTurn], deck.getCards()[secondTurn]);
+        return new OneMove(firstTurn, secondTurn);
     }
 }
