@@ -6,6 +6,7 @@
 
 package pexeso;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -21,7 +22,7 @@ public class HumanPlayer extends AbstractPlayer {
     }
     
     @Override
-    public OneMove move(OneMove myLastMove, OneMove oppMove) {
+    public OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves) {
         //wait for user choice
         CardAL.setMoveCompleted(false);
         

@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -41,6 +42,12 @@ public class Game implements Serializable, Runnable{
     private OneMove newMove;
     private OneMove lastPlayer1Move;
     private OneMove lastPlayer2Move;
+    
+    private boolean rightMoveByPlayer1;
+    private boolean rightMoveByPlayer2;
+    
+    private ArrayList<OneMove> player1Moves = new ArrayList<OneMove>();
+    private ArrayList<OneMove> player2Moves = new ArrayList<OneMove>();
     
     private transient Message output;
     private boolean endOfGame;
@@ -82,12 +89,7 @@ public class Game implements Serializable, Runnable{
                     }
                 }
                 
-                newMove = player1.move(lastPlayer1Move, lastPlayer2Move);
-                lastPlayer1Move = newMove;
-                if (newMove.getFirstCardIDNumber() != -1 && newMove.getSecondCardIDNumber() != -1) {
-                    lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[newMove.getFirstCardIDNumber()].getCompareNumber());
-                    lastPlayer1Move.setSecondCardCompareNumber(deck.getCards()[newMove.getSecondCardIDNumber()].getCompareNumber());
-                }
+                newMove = player1.move(lastPlayer1Move, player2Moves);
                 
                 if (player1 instanceof HumanPlayer) {
                     for (int i = 0; i < deck.getCards().length; i++) {
@@ -104,13 +106,7 @@ public class Game implements Serializable, Runnable{
                     }
                 }
                 
-                newMove = player2.move(lastPlayer2Move, lastPlayer1Move);
-                lastPlayer2Move = newMove;
-                
-                if (newMove.getFirstCardIDNumber() != -1 && newMove.getSecondCardIDNumber() != -1) {
-                    lastPlayer2Move.setFirstCardCompareNumber(deck.getCards()[newMove.getFirstCardIDNumber()].getCompareNumber());
-                    lastPlayer2Move.setSecondCardCompareNumber(deck.getCards()[newMove.getSecondCardIDNumber()].getCompareNumber());
-                }
+                newMove = player2.move(lastPlayer2Move, player1Moves);
                 
                 if (player2 instanceof HumanPlayer) {
                     for (int i = 0; i < deck.getCards().length; i++) {
@@ -150,10 +146,13 @@ public class Game implements Serializable, Runnable{
     }
     
     public void endGame() {
-        if (playerOnTurn) {
+        if (player1.getScore() > player2.getScore()) {
             output.setHeadMessage(player1.getName() + " WON!!");
-        } else {
+        } else if (player1.getScore() < player2.getScore()){
             output.setHeadMessage(player2.getName() + " WON!!");
+        }
+        else {
+            output.setHeadMessage("DRAW");
         }
         endOfGame = true;
     }
@@ -165,13 +164,71 @@ public class Game implements Serializable, Runnable{
             uncoveredCards += 2;
             if (playerOnTurn) {
                 player1.setScore(player1.getScore() + 10);
+                lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
+                if (lastPlayer1Move.getFirstCardIDNumber() != -1 && lastPlayer1Move.getSecondCardIDNumber() != -1) {
+                    lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer1Move.getFirstCardIDNumber()].getCompareNumber());
+                    lastPlayer1Move.setSecondCardCompareNumber(deck.getCards()[lastPlayer1Move.getSecondCardIDNumber()].getCompareNumber());
+                    if (!rightMoveByPlayer1) {
+                        rightMoveByPlayer1 = true;
+                        player1Moves = new ArrayList<OneMove>();
+                        player1Moves.add(lastPlayer1Move);
+                    }
+                    else {
+                        player1Moves.add(lastPlayer1Move);
+                    }
+                }
             }
             else {
                 player2.setScore(player2.getScore() + 10);
+                lastPlayer2Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
+
+                if (lastPlayer2Move.getFirstCardIDNumber() != -1 && lastPlayer2Move.getSecondCardIDNumber() != -1) {
+                    lastPlayer2Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer2Move.getFirstCardIDNumber()].getCompareNumber());
+                    lastPlayer2Move.setSecondCardCompareNumber(deck.getCards()[lastPlayer2Move.getSecondCardIDNumber()].getCompareNumber());
+                    if (!rightMoveByPlayer2) {
+                        rightMoveByPlayer2 = true;
+                        player2Moves = new ArrayList<OneMove>();
+                        player2Moves.add(lastPlayer2Move);
+                    } else {
+                        player2Moves.add(lastPlayer2Move);
+                    }
+                }
             }
             newMove = null;
             CardAL.unmarkCards();
         } else {
+            if (playerOnTurn) {
+                
+                lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
+                if (lastPlayer1Move.getFirstCardIDNumber() != -1 && lastPlayer1Move.getSecondCardIDNumber() != -1) {
+                    lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer1Move.getFirstCardIDNumber()].getCompareNumber());
+                    lastPlayer1Move.setSecondCardCompareNumber(deck.getCards()[lastPlayer1Move.getSecondCardIDNumber()].getCompareNumber());
+                    
+                    if (!rightMoveByPlayer1) {
+                        player1Moves = new ArrayList<OneMove>();
+                        player1Moves.add(lastPlayer1Move);
+                    } else {
+                        rightMoveByPlayer1 = false;
+                        player1Moves.add(lastPlayer1Move);
+                    }
+                }
+            }
+            else {
+                player2Moves = new ArrayList<OneMove>();
+                lastPlayer2Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
+
+                if (lastPlayer2Move.getFirstCardIDNumber() != -1 && lastPlayer2Move.getSecondCardIDNumber() != -1) {
+                    lastPlayer2Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer2Move.getFirstCardIDNumber()].getCompareNumber());
+                    lastPlayer2Move.setSecondCardCompareNumber(deck.getCards()[lastPlayer2Move.getSecondCardIDNumber()].getCompareNumber());
+                    if (!rightMoveByPlayer2) {
+                        player2Moves = new ArrayList<OneMove>();
+                        player2Moves.add(lastPlayer2Move);
+                    } else {
+                        rightMoveByPlayer2 = false;
+                        player2Moves.add(lastPlayer2Move);
+                    }
+                }
+            }
             deck.getCards()[newMove.getFirstCardIDNumber()].setText("CARD");
             deck.getCards()[newMove.getFirstCardIDNumber()].setIcon(null);
             deck.getCards()[newMove.getSecondCardIDNumber()].setText("CARD");

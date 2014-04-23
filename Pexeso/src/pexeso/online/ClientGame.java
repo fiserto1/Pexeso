@@ -16,6 +16,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -50,6 +51,12 @@ public class ClientGame implements Runnable {
     
     private OneMove lastPlayer1Move;
     private OneMove lastPlayer2Move;
+    
+    private boolean rightMoveByPlayer1;
+    private boolean rightMoveByPlayer2;
+    
+    private ArrayList<OneMove> player1Moves = new ArrayList<OneMove>();
+    private ArrayList<OneMove> player2Moves = new ArrayList<OneMove>();
 
     public ClientGame( AbstractPlayer clientPlayer, DeckOfCards deck) {
         this.serverPlayer = null;
@@ -131,13 +138,13 @@ public class ClientGame implements Runnable {
                         deck.getCards()[i].addActionListener(listener);
                     }
                 }
-                newMove = clientPlayer.move(lastPlayer1Move, lastPlayer2Move);
-                lastPlayer1Move = newMove;
-                
-                if (newMove.getFirstCardIDNumber() != -1 && newMove.getSecondCardIDNumber() != -1) {
-                    lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[newMove.getFirstCardIDNumber()].getCompareNumber());
-                    lastPlayer1Move.setSecondCardCompareNumber(deck.getCards()[newMove.getSecondCardIDNumber()].getCompareNumber());
-                }
+                newMove = clientPlayer.move(lastPlayer1Move, player2Moves);
+//                lastPlayer1Move = newMove;
+//                
+//                if (newMove.getFirstCardIDNumber() != -1 && newMove.getSecondCardIDNumber() != -1) {
+//                    lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[newMove.getFirstCardIDNumber()].getCompareNumber());
+//                    lastPlayer1Move.setSecondCardCompareNumber(deck.getCards()[newMove.getSecondCardIDNumber()].getCompareNumber());
+//                }
                 
                 if (clientPlayer instanceof HumanPlayer) {
                     for (int i = 0; i < deck.getCards().length; i++) {
@@ -157,7 +164,7 @@ public class ClientGame implements Runnable {
                 try {
                     int[] playa = (int[]) objInStream.readObject();
                     newMove = new OneMove(playa[0], playa[1]);
-                    lastPlayer2Move = newMove;
+//                    lastPlayer2Move = newMove;
 //                    newMove = (OneMove) objInStream.readObject();
 //                    System.out.println("GOT HIM, im client" + playa[0] + "," + playa[1]);
                 } catch (IOException ex) {
@@ -217,12 +224,68 @@ public class ClientGame implements Runnable {
             uncoveredCards += 2;
             if (playerOnTurn) {
                 clientPlayer.setScore(clientPlayer.getScore() + 10);
+                lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
+                if (lastPlayer1Move.getFirstCardIDNumber() != -1 && lastPlayer1Move.getSecondCardIDNumber() != -1) {
+                    lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer1Move.getFirstCardIDNumber()].getCompareNumber());
+                    lastPlayer1Move.setSecondCardCompareNumber(deck.getCards()[lastPlayer1Move.getSecondCardIDNumber()].getCompareNumber());
+                    if (!rightMoveByPlayer1) {
+                        rightMoveByPlayer1 = true;
+                        player1Moves = new ArrayList<OneMove>();
+                        player1Moves.add(lastPlayer1Move);
+                    } else {
+                        player1Moves.add(lastPlayer1Move);
+                    }
+                }
             } else {
                 serverPlayer.setScore(serverPlayer.getScore() + 10);
+                lastPlayer2Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
+
+                if (lastPlayer2Move.getFirstCardIDNumber() != -1 && lastPlayer2Move.getSecondCardIDNumber() != -1) {
+                    lastPlayer2Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer2Move.getFirstCardIDNumber()].getCompareNumber());
+                    lastPlayer2Move.setSecondCardCompareNumber(deck.getCards()[lastPlayer2Move.getSecondCardIDNumber()].getCompareNumber());
+                    if (!rightMoveByPlayer2) {
+                        rightMoveByPlayer2 = true;
+                        player2Moves = new ArrayList<OneMove>();
+                        player2Moves.add(lastPlayer2Move);
+                    } else {
+                        player2Moves.add(lastPlayer2Move);
+                    }
+                }
             }
             newMove = null;
             CardAL.unmarkCards();
         } else {
+            if (playerOnTurn) {
+
+                lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
+                if (lastPlayer1Move.getFirstCardIDNumber() != -1 && lastPlayer1Move.getSecondCardIDNumber() != -1) {
+                    lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer1Move.getFirstCardIDNumber()].getCompareNumber());
+                    lastPlayer1Move.setSecondCardCompareNumber(deck.getCards()[lastPlayer1Move.getSecondCardIDNumber()].getCompareNumber());
+
+                    if (!rightMoveByPlayer1) {
+                        player1Moves = new ArrayList<OneMove>();
+                        player1Moves.add(lastPlayer1Move);
+                    } else {
+                        rightMoveByPlayer1 = false;
+                        player1Moves.add(lastPlayer1Move);
+                    }
+                }
+            } else {
+                player2Moves = new ArrayList<OneMove>();
+                lastPlayer2Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
+
+                if (lastPlayer2Move.getFirstCardIDNumber() != -1 && lastPlayer2Move.getSecondCardIDNumber() != -1) {
+                    lastPlayer2Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer2Move.getFirstCardIDNumber()].getCompareNumber());
+                    lastPlayer2Move.setSecondCardCompareNumber(deck.getCards()[lastPlayer2Move.getSecondCardIDNumber()].getCompareNumber());
+                    if (!rightMoveByPlayer2) {
+                        player2Moves = new ArrayList<OneMove>();
+                        player2Moves.add(lastPlayer2Move);
+                    } else {
+                        rightMoveByPlayer2 = false;
+                        player2Moves.add(lastPlayer2Move);
+                    }
+                }
+            }
             deck.getCards()[newMove.getFirstCardIDNumber()].setText("CARD");
             deck.getCards()[newMove.getFirstCardIDNumber()].setIcon(null);
             deck.getCards()[newMove.getSecondCardIDNumber()].setText("CARD");

@@ -7,6 +7,7 @@
 package pexeso;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import pexeso.delegates.PlayerDelegate;
 
@@ -80,7 +81,7 @@ public abstract class AbstractPlayer implements Serializable {
     
     
     
-    public abstract OneMove move(OneMove myLastMove, OneMove oppMove);
+    public abstract OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves);
     
     
 }
