@@ -6,15 +6,10 @@
 
 package pexeso.online;
 
-import com.sun.corba.se.pept.encoding.InputObject;
 import java.awt.Image;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -24,7 +19,6 @@ import pexeso.AbstractPlayer;
 import pexeso.CardAL;
 import pexeso.DeckOfCards;
 import pexeso.HeadFrame;
-import pexeso.HumanPlayer;
 import pexeso.Message;
 import pexeso.OneMove;
 import pexeso.delegates.MessageDelegate;
