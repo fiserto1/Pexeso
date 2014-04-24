@@ -20,7 +20,9 @@ public class DeckOfCards implements Serializable {
             cards[i] = new Card("CARD");
             cards[i].setCompareNumber(j);
             cards[i].setFocusPainted(false);
-            cards[i].setCardImage(new ImageIcon(getClass().getResource("/images/" + j + ".jpg")));
+            cards[i].setCardImage(new ImageIcon(getClass().getResource(
+                    "/images/" + j + ".jpg")));
+            
             cards[i].setIdNumber(i);
             if (i % 2 != 0) {
                 j++;
@@ -52,8 +54,9 @@ public class DeckOfCards implements Serializable {
     public void recreateDeckForOnlineGame(int[] input) {
         for (int i = 0; i < cards.length; i++) {
             cards[i].setCompareNumber(input[i]);
-//            cards[i].setFocusPainted(false);
-            cards[i].setCardImage(new ImageIcon(getClass().getResource("/images/" + input[i] + ".jpg")));
+            cards[i].setCardImage(new ImageIcon(getClass().getResource(
+                    "/images/" + input[i] + ".jpg")));
+            
             cards[i].setIdNumber(i);
         }
     }
@@ -65,11 +68,7 @@ public class DeckOfCards implements Serializable {
     public int[] getOnlineCards() {
         for (int i = 0; i < cards.length; i++) {
             onlineCards[i] = cards[i].getCompareNumber();
-//            cards[i].setIdNumber(i);
         }
-        
         return onlineCards;
     }
-    
-    
 }
