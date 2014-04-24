@@ -9,20 +9,9 @@ package pexeso.games;
 import pexeso.players.AbstractPlayer;
 import pexeso.players.HumanPlayer;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.Timer;
 import pexeso.cards.CardAL;
 import pexeso.cards.DeckOfCards;
 import pexeso.HeadFrame;
@@ -36,28 +25,30 @@ import pexeso.delegates.MessageDelegate;
  * @author Tomas
  */
 public class Game implements Serializable, Runnable{
-    // true - player one's turn
-    // false - player two's turn
+    
     public static boolean gameInterrupted;
     
-    private boolean playerOnTurn = true;
-    private AbstractPlayer player1;
-    private AbstractPlayer player2;
-
-    private DeckOfCards deck;
-    private int uncoveredCards = 0;
-    private OneMove newMove;
-    private OneMove lastPlayer1Move;
-    private OneMove lastPlayer2Move;
+    // true - player one's turn
+    // false - player two's turn
+    protected boolean playerOnTurn = true;
+    protected AbstractPlayer player1;
+    protected AbstractPlayer player2;
+    protected DeckOfCards deck;
     
-    private boolean rightMoveByPlayer1;
-    private boolean rightMoveByPlayer2;
+    protected int uncoveredCards = 0;
     
-    private ArrayList<OneMove> player1Moves = new ArrayList<OneMove>();
-    private ArrayList<OneMove> player2Moves = new ArrayList<OneMove>();
+    protected OneMove newMove;
+    protected OneMove lastPlayer1Move;
+    protected OneMove lastPlayer2Move;
     
-    private transient Message output;
-    private boolean endOfGame;
+    protected boolean rightMoveByPlayer1;
+    protected boolean rightMoveByPlayer2;
+    
+    protected ArrayList<OneMove> player1Moves = new ArrayList<OneMove>();
+    protected ArrayList<OneMove> player2Moves = new ArrayList<OneMove>();
+    
+    protected transient Message output;
+    protected boolean endOfGame;
     
 
     public Game(AbstractPlayer player1, AbstractPlayer player2, DeckOfCards deck) {
@@ -66,8 +57,12 @@ public class Game implements Serializable, Runnable{
         this.deck = deck;
         this.lastPlayer1Move = null;
         this.lastPlayer2Move = null;
-        this.output = new Message((HeadFrame) player1.getDelegate());
-        
+        if (player1 != null) {
+            this.output = new Message((HeadFrame) player1.getDelegate());
+        }
+        else {
+            this.output = new Message((HeadFrame) player2.getDelegate());
+        }
     }
     
     
@@ -80,9 +75,9 @@ public class Game implements Serializable, Runnable{
         player2.setScore(player2.getScore());
         player2.setAvatar(player2.getAvatar());
         if (playerOnTurn) {
-            output.setHeadMessage("Player One's turn.");
+            output.setHeadMessage(player1.getName() + "'s turn.");
         } else {
-            output.setHeadMessage("Player Two's turn.");
+            output.setHeadMessage(player2.getName() + "'s turn.");
         }
 
         while (!endOfGame) {
@@ -125,23 +120,8 @@ public class Game implements Serializable, Runnable{
             if (gameInterrupted) {
                 return;
             }
-            //card show
-            //card show
-            deck.getCards()[newMove.getFirstCardIDNumber()].setText("");
-            Image newImage = deck.getCards()[newMove.getFirstCardIDNumber()].getCardImage().getImage().getScaledInstance(
-                    deck.getCards()[newMove.getFirstCardIDNumber()].getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
-            deck.getCards()[newMove.getFirstCardIDNumber()].setIcon(new ImageIcon(newImage));
-
-            deck.getCards()[newMove.getSecondCardIDNumber()].setText("");
-            newImage = deck.getCards()[newMove.getSecondCardIDNumber()].getCardImage().getImage().getScaledInstance(
-                    deck.getCards()[newMove.getSecondCardIDNumber()].getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
-            deck.getCards()[newMove.getSecondCardIDNumber()].setIcon(new ImageIcon(newImage));
             
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                System.out.println("Game cant sleep.");
-            }
+            showCards();
 
             if (newMove.getFirstCardIDNumber() != -1 && newMove.getSecondCardIDNumber() != -1) {
                 compareCards();
@@ -152,10 +132,29 @@ public class Game implements Serializable, Runnable{
         }
     }
     
+    protected void showCards() {
+        deck.getCards()[newMove.getFirstCardIDNumber()].setText("");
+        Image newImage = deck.getCards()[newMove.getFirstCardIDNumber()].getCardImage().getImage().getScaledInstance(
+                deck.getCards()[newMove.getFirstCardIDNumber()].getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
+        deck.getCards()[newMove.getFirstCardIDNumber()].setIcon(new ImageIcon(newImage));
+
+        deck.getCards()[newMove.getSecondCardIDNumber()].setText("");
+        newImage = deck.getCards()[newMove.getSecondCardIDNumber()].getCardImage().getImage().getScaledInstance(
+                deck.getCards()[newMove.getSecondCardIDNumber()].getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
+        deck.getCards()[newMove.getSecondCardIDNumber()].setIcon(new ImageIcon(newImage));
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            System.out.println("Game cant sleep.");
+        }
+    }
+    
     public void endGame() {
         if (player1.getScore() > player2.getScore()) {
             output.setHeadMessage(player1.getName() + " WON!!");
-        } else if (player1.getScore() < player2.getScore()){
+        } 
+        else if (player1.getScore() < player2.getScore()){
             output.setHeadMessage(player2.getName() + " WON!!");
         }
         else {
@@ -164,7 +163,7 @@ public class Game implements Serializable, Runnable{
         endOfGame = true;
     }
     
-    private void compareCards() {
+    protected void compareCards() {
         if (deck.getCards()[newMove.getFirstCardIDNumber()].getCompareNumber() == deck.getCards()[newMove.getSecondCardIDNumber()].getCompareNumber()) {
             deck.getCards()[newMove.getFirstCardIDNumber()].setVisible(false);
             deck.getCards()[newMove.getSecondCardIDNumber()].setVisible(false);
@@ -249,11 +248,11 @@ public class Game implements Serializable, Runnable{
     public void changePlayerOnTurn() {
         if (playerOnTurn) {
             playerOnTurn = false;
-            output.setHeadMessage("Player Two's turn.");
+            output.setHeadMessage(player2.getName() + "'s turn.");
 
         } else {
             playerOnTurn = true;
-            output.setHeadMessage("Player One's turn.");
+            output.setHeadMessage(player1.getName() + "'s turn.");
         }
     }
     
