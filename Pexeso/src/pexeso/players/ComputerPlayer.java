@@ -57,7 +57,7 @@ public class ComputerPlayer extends AbstractPlayer {
                 }
             }
             
-            //delete correct
+            //delete correct moves
             if (myLastMove.getFirstCardCompareNumber() == myLastMove.getSecondCardCompareNumber()) {
                 if (correctMoves.containsKey(myLastMove.getFirstCardCompareNumber())) {
                     correctMoves.remove(myLastMove.getFirstCardCompareNumber());
@@ -94,7 +94,7 @@ public class ComputerPlayer extends AbstractPlayer {
                     }
                 }
 
-                //delete correct
+                //delete correct moves
                 if (oppMoves.get(i).getFirstCardCompareNumber() == oppMoves.get(i).getSecondCardCompareNumber()) {
                     if (correctMoves.containsKey(oppMoves.get(i).getFirstCardCompareNumber())) {
                         correctMoves.remove(oppMoves.get(i).getFirstCardCompareNumber());
@@ -104,7 +104,6 @@ public class ComputerPlayer extends AbstractPlayer {
                 }
             }
         }
-        
         
         for (Map.Entry<Integer, ArrayList<Integer>> entry : correctMoves.entrySet()) {
             if (entry.getValue().size() == 2) {

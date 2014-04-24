@@ -26,9 +26,9 @@ public class HumanPlayer extends AbstractPlayer {
     
     @Override
     public OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves) {
+        
         //wait for user choice
         CardAL.setMoveCompleted(false);
-        
         while (!CardAL.isMoveCompleted()) {
             if (Game.gameInterrupted) {
                 CardAL.setMoveCompleted(false);
@@ -44,6 +44,4 @@ public class HumanPlayer extends AbstractPlayer {
         
         return CardAL.getMove();
     }
-    
-
 }
