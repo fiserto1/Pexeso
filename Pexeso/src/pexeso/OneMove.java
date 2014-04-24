@@ -13,6 +13,7 @@ import java.io.Serializable;
  * @author Tomas
  */
 public class OneMove implements Serializable {
+    
     private int firstCardIDNumber;
     private int firstCardCompareNumber;
     private int secondCardIDNumber;

@@ -63,8 +63,6 @@ public class Card extends JButton implements Serializable {
     public void setIdNumber(int idNumber) {
         this.idNumber = idNumber;
     }
-
-    
     
     @Override
     public int hashCode() {

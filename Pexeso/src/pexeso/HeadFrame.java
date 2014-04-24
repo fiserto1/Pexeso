@@ -69,8 +69,10 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     private ServerGame newServerGame;
     private ClientGame newClientGame;
     
-    private final ImageIcon defaultPlayerAvatar = new ImageIcon(getClass().getResource("/avatars/Professor.png"));
-    private final ImageIcon defaultComputerAvatar = new ImageIcon(getClass().getResource("/avatars/Female.png"));
+    private final ImageIcon defaultPlayerAvatar = 
+            new ImageIcon(getClass().getResource("/avatars/Professor.png"));
+    private final ImageIcon defaultComputerAvatar = 
+            new ImageIcon(getClass().getResource("/avatars/Female.png"));
     
     private Thread gameThread;
 
@@ -161,7 +163,6 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 
             @Override
             public void actionPerformed(ActionEvent e) {
-//                newGame.saveGame();
                 
                 if (newGame != null) {
                     if (CardAL.getMove().getFirstCardIDNumber() != -1) {
@@ -192,13 +193,12 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
                     errorLabel.setText("File not found.");
                 } catch (IOException ioe) {
                     try {
-                        throw new IOException("hh",ioe);
+                        throw new IOException("IOExp.",ioe);
 //                    errorLabel.setText("IOExp");
                     } catch (IOException ex) {
                         Logger.getLogger(HeadFrame.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } finally {
-//                    playGame();
                     try {
                         if (objOutStr != null) {
                             objOutStr.close();
@@ -220,50 +220,40 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
                         try {
                             Thread.sleep(10);
                         } catch (InterruptedException ie) {
-                            System.out.println("ouha");
+                            errorLabel.setText("InterruptedExp.");
                         }
                     }
                 }
-                
-                
-//                JFileChooser fileChooser = new JFileChooser();
-//                fileChooser.showOpenDialog(null);
-//                if (fileChooser.getSelectedFile() != null) {
-//                    String filepath = fileChooser.getSelectedFile().getAbsolutePath();
-                    ObjectInputStream objInStr = null;
-//                    headOutputLabel.setText(System.getProperty("user.dir") + "\\savedGame.txt");
-                    String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
-                    try {
-                        objInStr = new ObjectInputStream(new FileInputStream(filepath));
+                ObjectInputStream objInStr = null;
+                String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
+                try {
+                    objInStr = new ObjectInputStream(new FileInputStream(filepath));
 
-                        Game loadGame = (Game) objInStr.readObject();
-                        objInStr.close();
-                        errorLabel.setText("Load successful.");
-//                        System.out.println(loadGame.getUncoveredCards());
-                        
-                        deck = loadGame.getDeck();
-                        newGame = loadGame;
-                        newGame.getPlayer1().setDelegate(HeadFrame.this);
-                        newGame.getPlayer2().setDelegate(HeadFrame.this);
-                        newGame.setOutputDelegate(HeadFrame.this);
-//                        newGame.addListernersToTimers();
-                        showGameBoard();
-                    } catch (FileNotFoundException fnfe) {
-                        errorLabel.setText("File not found.");
-                    } catch (IOException ioe) {
-                        errorLabel.setText("IOExp");
-                    } catch (ClassNotFoundException ex) {
-                        errorLabel.setText("Class not found");
-                    } finally {
-                        try {
-                            if (objInStr != null) {
-                                objInStr.close();
-                            }
-                        } catch (IOException ex) {
-                            errorLabel.setText("Nepodarilo se zavrit soubor");
+                    Game loadGame = (Game) objInStr.readObject();
+                    objInStr.close();
+                    errorLabel.setText("Load successful.");
+
+                    deck = loadGame.getDeck();
+                    newGame = loadGame;
+                    newGame.getPlayer1().setDelegate(HeadFrame.this);
+                    newGame.getPlayer2().setDelegate(HeadFrame.this);
+                    newGame.setOutputDelegate(HeadFrame.this);
+                    showGameBoard();
+                } catch (FileNotFoundException fnfe) {
+                    errorLabel.setText("File not found.");
+                } catch (IOException ioe) {
+                    errorLabel.setText("IOExp");
+                } catch (ClassNotFoundException ex) {
+                    errorLabel.setText("Class not found");
+                } finally {
+                    try {
+                        if (objInStr != null) {
+                            objInStr.close();
                         }
+                    } catch (IOException ex) {
+                        errorLabel.setText("Nepodarilo se zavrit soubor");
                     }
-//                }
+                } 
             }
         });
         
@@ -273,9 +263,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
             public void actionPerformed(ActionEvent e) {
                 deck.shuffleCards();
                 AbstractPlayer player1 = new HumanPlayer("You", defaultPlayerAvatar, 1);
-//                AbstractPlayer player2 = new HumanPlayer("Player 2", defaultPlayerAvatar, 2);
                 player1.setDelegate(HeadFrame.this);
-//                player2.setDelegate(HeadFrame.this);
                 newServerGame = new ServerGame(player1, deck);
                 
                 setPreferredSize(new java.awt.Dimension(1050, 700));
@@ -287,7 +275,6 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 
                 for (int i = 0; i < deck.getCards().length; i++) {
                     centerPanel.add(deck.getCards()[i]);
-//            deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i], newGame));
                 }
                 centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
                 pack();
@@ -302,26 +289,17 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
             @Override
             public void actionPerformed(ActionEvent e) {
                 deck.shuffleCards();
-//                AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
                 AbstractPlayer player2 = new HumanPlayer("You", defaultPlayerAvatar, 1);
-//                player1.setDelegate(HeadFrame.this);
                 player2.setDelegate(HeadFrame.this);
                 newClientGame = new ClientGame(player2, deck);
                 for (int i = 0; i < deck.getCards().length; i++) {
                     centerPanel.add(deck.getCards()[i]);
-//            deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i], newGame));
                 }
                 setPreferredSize(new java.awt.Dimension(1050, 700));
                 leftPanel.setVisible(true);
                 rightPanel.setVisible(true);
                 saveGameMenuItem.setEnabled(true);
-
-//                centerPanel.removeAll();
-
-//                for (int i = 0; i < deck.getCards().length; i++) {
-//                    centerPanel.add(deck.getCards()[i]);
-//            deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i], newGame));
-//                }
+                
                 centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
                 pack();
                 
@@ -341,13 +319,12 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         
         for (int i = 0; i < deck.getCards().length; i++) {
             centerPanel.add(deck.getCards()[i]);
-//            deck.getCards()[i].addActionListener(new CardAL(deck.getCards()[i], newGame));
         }
         centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
         
-        if (gameThread != null) {
+//        if (gameThread != null) {
 //            System.out.println(gameThread.isAlive());
-        }
+//        }
         
         
         Game.gameInterrupted = false;
@@ -368,7 +345,6 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         playerOneScoreLabel = new JLabel("Score: ", SwingConstants.CENTER);
         playerOnePictureButton = new JButton();
         playerOnePictureButton.setHorizontalAlignment(SwingConstants.CENTER);
-//        ImageIcon icon1 = new ImageIcon("D:\\Dokumenty\\Vysoká škola\\2. semestr\\PR2\\Projekty\\Semestrální práce\\Pexeso\\src\\Avatars\\Professor.png");
         //Player 2
         playerTwoNameLabel = new JLabel("PlayerName 2", SwingConstants.CENTER);
         playerTwoScoreLabel = new JLabel("Score: ", SwingConstants.CENTER);
