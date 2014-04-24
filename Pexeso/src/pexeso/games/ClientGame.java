@@ -41,32 +41,32 @@ public class ClientGame extends Game {
             objOutStream = new ObjectOutputStream(clientSocket.getOutputStream());
             objInStream = new ObjectInputStream(clientSocket.getInputStream());
         } catch (UnknownHostException e) {
-            System.err.println("Don't know about host: localhost.");
+            output.setErrorMessage("Don't know about host: localhost.");
         } catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection to: localhost.");
+            output.setErrorMessage("Couldn't get I/O for the connection to: localhost.");
         }
 
         try {
             objOutStream.writeObject(player1);
         } catch (IOException ex) {
-            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+            output.setErrorMessage("IOExp.");
         }
         
         try {
             player2 = (AbstractPlayer) objInStream.readObject();
             player2.setDelegate(player1.getDelegate());
         } catch (IOException ex) {
-            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+            output.setErrorMessage("IOExp.");
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+            output.setErrorMessage("Opp player class not found.");
         }
         try {
             int[] cc = (int[]) objInStream.readObject();
             deck.recreateDeckForOnlineGame(cc);
         } catch (IOException ex) {
-            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+            output.setErrorMessage("IOExp.");
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+            output.setErrorMessage("Deck class not found.");
         }
         
         if (player1.getName().equals(player2.getName())) {
@@ -94,6 +94,7 @@ public class ClientGame extends Game {
 
             if (playerOnTurn) {
                 CardAL listener = new CardAL();
+                //add click listeners
                 if (player1 instanceof HumanPlayer) {
                     CardAL.setMoveCompleted(false);
                     for (int i = 0; i < deck.getCards().length; i++) {
@@ -102,31 +103,34 @@ public class ClientGame extends Game {
                 }
                 newMove = player1.move(lastPlayer1Move, player2Moves);
                 
+                //remove click listeners
                 if (player1 instanceof HumanPlayer) {
                     for (int i = 0; i < deck.getCards().length; i++) {
                         deck.getCards()[i].removeActionListener(listener);
                     }
                 }
                 try {
-                    int[] myOnlineMove = {newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber()};
+                    int[] myOnlineMove = {newMove.getFirstCardIDNumber(),
+                        newMove.getSecondCardIDNumber()};
                     objOutStream.writeObject(myOnlineMove);
                 } catch (IOException ex) {
-                    Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+                    output.setErrorMessage("IOExp.");
                 }
             } else {
                 try {
                     int[] oppOnlineMove = (int[]) objInStream.readObject();
                     newMove = new OneMove(oppOnlineMove[0], oppOnlineMove[1]);
                 } catch (IOException ex) {
-                    Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+                    output.setErrorMessage("IOExp.");
                 } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+                    output.setErrorMessage("Opp move class not found.");
                 }
             }
 
             showCards();
 
-            if (newMove.getFirstCardIDNumber()!= -1 && newMove.getSecondCardIDNumber() != -1) {
+            if (newMove.getFirstCardIDNumber()!= -1 &&
+                    newMove.getSecondCardIDNumber() != -1) {
                 compareCards();
             }
             if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
@@ -139,7 +143,7 @@ public class ClientGame extends Game {
             objInStream.close();
             clientSocket.close();
         } catch (IOException ex) {
-            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+            output.setErrorMessage("Cant close streams.");
         }
     }
 }

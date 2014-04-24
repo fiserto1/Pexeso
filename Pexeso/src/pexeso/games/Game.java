@@ -123,7 +123,8 @@ public class Game implements Serializable, Runnable{
             
             showCards();
 
-            if (newMove.getFirstCardIDNumber() != -1 && newMove.getSecondCardIDNumber() != -1) {
+            if (newMove.getFirstCardIDNumber() != -1 && 
+                    newMove.getSecondCardIDNumber() != -1) {
                 compareCards();
             }
             if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {

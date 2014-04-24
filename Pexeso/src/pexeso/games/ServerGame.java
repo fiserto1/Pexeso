@@ -38,14 +38,14 @@ public class ServerGame extends Game {
         try {
             serverSock = new ServerSocket(4444);
         } catch (IOException e) {
-            System.err.println("Could not listen on port: 4444.");
+            output.setErrorMessage("Could not listen on port: 4444.");
         }
 
         Socket clientSock = null;
         try {
             clientSock = serverSock.accept();
         } catch (IOException e) {
-            System.err.println("Accept failed.");
+            output.setErrorMessage("Accept failed.");
         }
 
         ObjectOutputStream objOutStream = null;
@@ -54,27 +54,27 @@ public class ServerGame extends Game {
             objOutStream = new ObjectOutputStream(clientSock.getOutputStream());
             objInStream = new ObjectInputStream(clientSock.getInputStream());
         } catch (IOException ex) {
-            Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+            output.setErrorMessage("IOExp.");
         }
         
         try {
             player2 = (AbstractPlayer) objInStream.readObject();
             player2.setDelegate(player1.getDelegate());
         } catch (IOException ex) {
-            Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+            output.setErrorMessage("IOExp.");
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+            output.setErrorMessage("Class not found.");
         }
         
         try {
             objOutStream.writeObject(player1);
         } catch (IOException ex) {
-            Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+            output.setErrorMessage("IOExp.");
         }
         try {
             objOutStream.writeObject(deck.getOnlineCards());
         } catch (IOException ex) {
-            Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+            output.setErrorMessage("IOExp.");
         }
         if (player1.getName().equals(player2.getName())) {
             player2.setName("Opponent");
@@ -99,6 +99,7 @@ public class ServerGame extends Game {
 
             if (playerOnTurn) {
                 CardAL listener = new CardAL();
+                //add click listener
                 if (player2 instanceof HumanPlayer) {
                     CardAL.setMoveCompleted(false);
                     for (int i = 0; i < deck.getCards().length; i++) {
@@ -108,6 +109,7 @@ public class ServerGame extends Game {
                 
                 newMove = player1.move(lastPlayer1Move, player2Moves);
                 
+                //remove click listener
                 if (player1 instanceof HumanPlayer) {
                     for (int i = 0; i < deck.getCards().length; i++) {
                         deck.getCards()[i].removeActionListener(listener);
@@ -115,25 +117,28 @@ public class ServerGame extends Game {
                 }
                 
                 try {
-                    int[] myOnlineMove = {newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber()};
+                    int[] myOnlineMove = {newMove.getFirstCardIDNumber(),
+                        newMove.getSecondCardIDNumber()};
+                    
                     objOutStream.writeObject(myOnlineMove);
                 } catch (IOException ex) {
-                    Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+                    output.setErrorMessage("IOExp.");
                 }
             } else {
                 try {
                     int[] oppOnlineMove = (int[]) objInStream.readObject();
                     newMove = new OneMove(oppOnlineMove[0], oppOnlineMove[1]);
                 } catch (IOException ex) {
-                    Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+                    output.setErrorMessage("IOExp.");
                 } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+                    output.setErrorMessage("Opp move Class not found.");
                 }
             }
 
             showCards();
 
-            if (newMove.getFirstCardIDNumber()!= -1 && newMove.getSecondCardIDNumber() != -1) {
+            if (newMove.getFirstCardIDNumber()!= -1 &&
+                    newMove.getSecondCardIDNumber() != -1) {
                 compareCards();
             }
             if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
@@ -147,7 +152,7 @@ public class ServerGame extends Game {
             clientSock.close();
             serverSock.close();
         } catch (IOException ex) {
-            Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+            output.setErrorMessage("Cant close streams.");
         }
     }
 }
