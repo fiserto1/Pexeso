@@ -17,6 +17,7 @@ import pexeso.delegates.PlayerDelegate;
  * @author Tomas
  */
 public abstract class AbstractPlayer implements Serializable {
+    
     protected int score;
     protected String name;
     protected ImageIcon avatar;
@@ -29,6 +30,10 @@ public abstract class AbstractPlayer implements Serializable {
         this.playerNumber = playerNumber;
     }
 
+    
+    public abstract OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves);
+    
+    
     public int getPlayerNumber() {
         return playerNumber;
     }
@@ -69,8 +74,6 @@ public abstract class AbstractPlayer implements Serializable {
             delegate.avatarChanged(this);
         }
     }
-
-    
     
     public void setDelegate(PlayerDelegate delegate) {
         this.delegate = delegate;
@@ -79,10 +82,4 @@ public abstract class AbstractPlayer implements Serializable {
     public void setPlayerNumber(int playerNumber) {
         this.playerNumber = playerNumber;
     }
-    
-    
-    
-    public abstract OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves);
-    
-    
 }
