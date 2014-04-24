@@ -19,14 +19,9 @@ import pexeso.OneMove;
  */
 public class CardAL implements ActionListener, Serializable {
     
-//    private Game game;
-//    private Card card;
     private static boolean moveCompleted;
     private static OneMove move = new OneMove(-1, -1);
     
-    public CardAL() {
-//        this.card = card;
-    }
     
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -50,6 +45,13 @@ public class CardAL implements ActionListener, Serializable {
             }
         }
     }
+    
+    public static void unmarkCards() {
+        move.setFirstCardIDNumber(-1);
+        move.setSecondCardIDNumber(-1);
+        move.setFirstCardCompareNumber(-1);
+        move.setSecondCardCompareNumber(-1);
+    }
 
     public static void setMoveCompleted(boolean moveCompleted) {
         CardAL.moveCompleted = moveCompleted;
@@ -59,15 +61,7 @@ public class CardAL implements ActionListener, Serializable {
         return moveCompleted;
     }
     
-    
     public static OneMove getMove() {
         return move;
-    }
-
-    public static void unmarkCards() {
-        move.setFirstCardIDNumber(-1);
-        move.setSecondCardIDNumber(-1);
-        move.setFirstCardCompareNumber(-1);
-        move.setSecondCardCompareNumber(-1);
     }
 }
