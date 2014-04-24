@@ -6,7 +6,7 @@
 
 package pexeso.delegates;
 
-import pexeso.AbstractPlayer;
+import pexeso.players.AbstractPlayer;
 
 /**
  *

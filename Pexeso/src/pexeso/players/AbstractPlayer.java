@@ -4,11 +4,12 @@
  * and open the template in the editor.
  */
 
-package pexeso;
+package pexeso.players;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
+import pexeso.OneMove;
 import pexeso.delegates.PlayerDelegate;
 
 /**

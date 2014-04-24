@@ -4,42 +4,51 @@
  * and open the template in the editor.
  */
 
-package pexeso;
+package pexeso.games;
 
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.Timer;
+import pexeso.players.AbstractPlayer;
+import pexeso.cards.CardAL;
+import pexeso.cards.DeckOfCards;
+import static pexeso.games.Game.gameInterrupted;
+import pexeso.HeadFrame;
+import pexeso.players.HumanPlayer;
+import pexeso.Message;
+import pexeso.OneMove;
 import pexeso.delegates.MessageDelegate;
-
 
 /**
  *
  * @author Tomas
  */
-public class Game implements Serializable, Runnable{
-    // true - player one's turn
-    // false - player two's turn
-    public static boolean gameInterrupted;
+public class ClientGame implements Runnable {
     
-    private boolean playerOnTurn = true;
-    private AbstractPlayer player1;
-    private AbstractPlayer player2;
 
+    private AbstractPlayer serverPlayer;
+    private AbstractPlayer clientPlayer;
     private DeckOfCards deck;
+    
+    private boolean playerOnTurn = false;
+    
     private int uncoveredCards = 0;
     private OneMove newMove;
+
+    private transient Message output;
+    private boolean endOfGame;
+    
     private OneMove lastPlayer1Move;
     private OneMove lastPlayer2Move;
     
@@ -48,77 +57,123 @@ public class Game implements Serializable, Runnable{
     
     private ArrayList<OneMove> player1Moves = new ArrayList<OneMove>();
     private ArrayList<OneMove> player2Moves = new ArrayList<OneMove>();
-    
-    private transient Message output;
-    private boolean endOfGame;
-    
 
-    public Game(AbstractPlayer player1, AbstractPlayer player2, DeckOfCards deck) {
-        this.player1 = player1;
-        this.player2 = player2;
+    public ClientGame( AbstractPlayer clientPlayer, DeckOfCards deck) {
+        this.serverPlayer = null;
+        this.clientPlayer = clientPlayer;
         this.deck = deck;
+        this.output = new Message((HeadFrame) clientPlayer.getDelegate());
         this.lastPlayer1Move = null;
         this.lastPlayer2Move = null;
-        this.output = new Message((HeadFrame) player1.getDelegate());
-        
     }
-    
+
     
     @Override
     public void run() {
-        player1.setName(player1.name);
-        player1.setScore(player1.score);
-        player1.setAvatar(player1.avatar);
-        player2.setName(player2.name);
-        player2.setScore(player2.score);
-        player2.setAvatar(player2.avatar);
-        if (playerOnTurn) {
-            output.setHeadMessage("Player One's turn.");
-        } else {
-            output.setHeadMessage("Player Two's turn.");
+        Socket clientSocket = null;
+        ObjectOutputStream objOutStream = null;
+        ObjectInputStream objInStream = null;
+
+        try {
+            clientSocket = new Socket("127.0.0.1", 4444);
+            objOutStream = new ObjectOutputStream(clientSocket.getOutputStream());
+            objInStream = new ObjectInputStream(clientSocket.getInputStream());
+        } catch (UnknownHostException e) {
+            System.err.println("Don't know about host: localhost.");
+        } catch (IOException e) {
+            System.err.println("Couldn't get I/O for the connection to: localhost.");
         }
 
+        
+        
+        try {
+            objOutStream.writeObject(clientPlayer);
+        } catch (IOException ex) {
+            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        try {
+            serverPlayer = (AbstractPlayer) objInStream.readObject();
+            serverPlayer.setDelegate(clientPlayer.getDelegate());
+        } catch (IOException ex) {
+            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            int[] cc = (int[]) objInStream.readObject();
+            deck.recreateDeckForOnlineGame(cc);
+        } catch (IOException ex) {
+            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if (serverPlayer.getName().equals(clientPlayer.getName())) {
+            serverPlayer.setName("Opponent");
+        }
+        serverPlayer.setPlayerNumber(2);
+        serverPlayer.setName(serverPlayer.getName());
+        serverPlayer.setScore(serverPlayer.getScore());
+        serverPlayer.setAvatar(serverPlayer.getAvatar());
+        clientPlayer.setName(clientPlayer.getName());
+        clientPlayer.setScore(clientPlayer.getScore());
+        clientPlayer.setAvatar(clientPlayer.getAvatar());
+        
+        if (playerOnTurn) {
+            output.setHeadMessage(clientPlayer.getName() + "'s turn.");
+        } else {
+            output.setHeadMessage(serverPlayer.getName() + "'s turn.");
+        }
+        
+        System.out.println(serverPlayer.getName() + " joined.");
+        
         while (!endOfGame) {
 
             if (playerOnTurn) {
                 CardAL listener = new CardAL();
-                if (player1 instanceof HumanPlayer) {
+                if (clientPlayer instanceof HumanPlayer) {
                     CardAL.setMoveCompleted(false);
                     for (int i = 0; i < deck.getCards().length; i++) {
                         deck.getCards()[i].addActionListener(listener);
                     }
                 }
+                newMove = clientPlayer.move(lastPlayer1Move, player2Moves);
+//                lastPlayer1Move = newMove;
+//                
+//                if (newMove.getFirstCardIDNumber() != -1 && newMove.getSecondCardIDNumber() != -1) {
+//                    lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[newMove.getFirstCardIDNumber()].getCompareNumber());
+//                    lastPlayer1Move.setSecondCardCompareNumber(deck.getCards()[newMove.getSecondCardIDNumber()].getCompareNumber());
+//                }
                 
-                newMove = player1.move(lastPlayer1Move, player2Moves);
-                
-                if (player1 instanceof HumanPlayer) {
+                if (clientPlayer instanceof HumanPlayer) {
                     for (int i = 0; i < deck.getCards().length; i++) {
                         deck.getCards()[i].removeActionListener(listener);
                     }
                 }
-                
+                try {
+//                    System.out.println(newMove.getFirstCard().getIdNumber() + "," + newMove.getSecondCard().getIdNumber());
+                    int[] onlineMove = {newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber()};
+                    objOutStream.writeObject(onlineMove);
+//                    objOutStream.writeObject(newMove);
+                } catch (IOException ex) {
+                    Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } else {
-                CardAL listener = new CardAL();
-                if (player2 instanceof HumanPlayer) {
-                    CardAL.setMoveCompleted(false);
-                    for (int i = 0; i < deck.getCards().length; i++) {
-                        deck.getCards()[i].addActionListener(listener);
-                    }
-                }
-                
-                newMove = player2.move(lastPlayer2Move, player1Moves);
-                
-                if (player2 instanceof HumanPlayer) {
-                    for (int i = 0; i < deck.getCards().length; i++) {
-                        deck.getCards()[i].removeActionListener(listener);
-                    }
+//                newMove = serverPlayer.move(deck);
+                try {
+                    int[] playa = (int[]) objInStream.readObject();
+                    newMove = new OneMove(playa[0], playa[1]);
+//                    lastPlayer2Move = newMove;
+//                    newMove = (OneMove) objInStream.readObject();
+//                    System.out.println("GOT HIM, im client" + playa[0] + "," + playa[1]);
+                } catch (IOException ex) {
+                    Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
-            if (gameInterrupted) {
-                return;
-            }
-            //card show
             //card show
             deck.getCards()[newMove.getFirstCardIDNumber()].setText("");
             Image newImage = deck.getCards()[newMove.getFirstCardIDNumber()].getCardImage().getImage().getScaledInstance(
@@ -136,34 +191,39 @@ public class Game implements Serializable, Runnable{
                 System.out.println("Game cant sleep.");
             }
 
-            if (newMove.getFirstCardIDNumber() != -1 && newMove.getSecondCardIDNumber() != -1) {
+            if (newMove.getFirstCardIDNumber()!= -1 && newMove.getSecondCardIDNumber() != -1) {
                 compareCards();
             }
             if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
                 endGame();
             }
         }
+        
+        try {
+            objOutStream.close();
+            objInStream.close();
+            clientSocket.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void endGame() {
-        if (player1.getScore() > player2.getScore()) {
-            output.setHeadMessage(player1.getName() + " WON!!");
-        } else if (player1.getScore() < player2.getScore()){
-            output.setHeadMessage(player2.getName() + " WON!!");
-        }
-        else {
-            output.setHeadMessage("DRAW");
+        if (playerOnTurn) {
+            output.setHeadMessage(clientPlayer.getName() + " WON!!");
+        } else {
+            output.setHeadMessage(serverPlayer.getName() + " WON!!");
         }
         endOfGame = true;
     }
-    
+
     private void compareCards() {
         if (deck.getCards()[newMove.getFirstCardIDNumber()].getCompareNumber() == deck.getCards()[newMove.getSecondCardIDNumber()].getCompareNumber()) {
             deck.getCards()[newMove.getFirstCardIDNumber()].setVisible(false);
             deck.getCards()[newMove.getSecondCardIDNumber()].setVisible(false);
             uncoveredCards += 2;
             if (playerOnTurn) {
-                player1.setScore(player1.getScore() + 10);
+                clientPlayer.setScore(clientPlayer.getScore() + 10);
                 lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
                 if (lastPlayer1Move.getFirstCardIDNumber() != -1 && lastPlayer1Move.getSecondCardIDNumber() != -1) {
                     lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer1Move.getFirstCardIDNumber()].getCompareNumber());
@@ -172,14 +232,12 @@ public class Game implements Serializable, Runnable{
                         rightMoveByPlayer1 = true;
                         player1Moves = new ArrayList<OneMove>();
                         player1Moves.add(lastPlayer1Move);
-                    }
-                    else {
+                    } else {
                         player1Moves.add(lastPlayer1Move);
                     }
                 }
-            }
-            else {
-                player2.setScore(player2.getScore() + 10);
+            } else {
+                serverPlayer.setScore(serverPlayer.getScore() + 10);
                 lastPlayer2Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
 
                 if (lastPlayer2Move.getFirstCardIDNumber() != -1 && lastPlayer2Move.getSecondCardIDNumber() != -1) {
@@ -198,12 +256,12 @@ public class Game implements Serializable, Runnable{
             CardAL.unmarkCards();
         } else {
             if (playerOnTurn) {
-                
+
                 lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
                 if (lastPlayer1Move.getFirstCardIDNumber() != -1 && lastPlayer1Move.getSecondCardIDNumber() != -1) {
                     lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer1Move.getFirstCardIDNumber()].getCompareNumber());
                     lastPlayer1Move.setSecondCardCompareNumber(deck.getCards()[lastPlayer1Move.getSecondCardIDNumber()].getCompareNumber());
-                    
+
                     if (!rightMoveByPlayer1) {
                         player1Moves = new ArrayList<OneMove>();
                         player1Moves.add(lastPlayer1Move);
@@ -212,8 +270,7 @@ public class Game implements Serializable, Runnable{
                         player1Moves.add(lastPlayer1Move);
                     }
                 }
-            }
-            else {
+            } else {
                 player2Moves = new ArrayList<OneMove>();
                 lastPlayer2Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
 
@@ -238,18 +295,18 @@ public class Game implements Serializable, Runnable{
             CardAL.unmarkCards();
         }
     }
-    
+
     public void changePlayerOnTurn() {
         if (playerOnTurn) {
             playerOnTurn = false;
-            output.setHeadMessage("Player Two's turn.");
+            output.setHeadMessage(serverPlayer.getName() + "'s turn.");
 
         } else {
             playerOnTurn = true;
-            output.setHeadMessage("Player One's turn.");
+            output.setHeadMessage(clientPlayer.getName() + "'s turn.");
         }
     }
-    
+
     public boolean isPlayerOnTurn() {
         return playerOnTurn;
     }
@@ -267,11 +324,11 @@ public class Game implements Serializable, Runnable{
     }
 
     public AbstractPlayer getPlayer1() {
-        return player1;
+        return clientPlayer;
     }
 
     public AbstractPlayer getPlayer2() {
-        return player2;
+        return serverPlayer;
     }
 
     public OneMove getNewMove() {

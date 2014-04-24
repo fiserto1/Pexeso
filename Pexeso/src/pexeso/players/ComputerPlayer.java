@@ -4,13 +4,15 @@
  * and open the template in the editor.
  */
 
-package pexeso;
+package pexeso.players;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import javax.swing.ImageIcon;
+import pexeso.cards.DeckOfCards;
+import pexeso.OneMove;
 
 /**
  *

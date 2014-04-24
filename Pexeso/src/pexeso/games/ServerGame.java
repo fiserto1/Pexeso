@@ -4,28 +4,23 @@
  * and open the template in the editor.
  */
 
-package pexeso.online;
+package pexeso.games;
 
 import java.awt.Image;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
-import pexeso.AbstractPlayer;
-import pexeso.CardAL;
-import pexeso.DeckOfCards;
-import static pexeso.Game.gameInterrupted;
+import pexeso.players.AbstractPlayer;
+import pexeso.cards.CardAL;
+import pexeso.cards.DeckOfCards;
 import pexeso.HeadFrame;
-import pexeso.HumanPlayer;
+import pexeso.players.HumanPlayer;
 import pexeso.Message;
 import pexeso.OneMove;
 import pexeso.delegates.MessageDelegate;
@@ -34,14 +29,13 @@ import pexeso.delegates.MessageDelegate;
  *
  * @author Tomas
  */
-public class ClientGame implements Runnable {
+public class ServerGame implements Runnable {
     
-
     private AbstractPlayer serverPlayer;
     private AbstractPlayer clientPlayer;
     private DeckOfCards deck;
     
-    private boolean playerOnTurn = false;
+    private boolean playerOnTurn = true;
     
     private int uncoveredCards = 0;
     private OneMove newMove;
@@ -58,61 +52,66 @@ public class ClientGame implements Runnable {
     private ArrayList<OneMove> player1Moves = new ArrayList<OneMove>();
     private ArrayList<OneMove> player2Moves = new ArrayList<OneMove>();
 
-    public ClientGame( AbstractPlayer clientPlayer, DeckOfCards deck) {
-        this.serverPlayer = null;
-        this.clientPlayer = clientPlayer;
+    public ServerGame(AbstractPlayer serverPlayer, DeckOfCards deck) {
+        this.serverPlayer = serverPlayer;
+        this.clientPlayer = null;
         this.deck = deck;
-        this.output = new Message((HeadFrame) clientPlayer.getDelegate());
+        this.output = new Message((HeadFrame) serverPlayer.getDelegate());
         this.lastPlayer1Move = null;
         this.lastPlayer2Move = null;
     }
-
+    
     
     @Override
     public void run() {
-        Socket clientSocket = null;
+        ServerSocket serverSock = null;
+        try {
+            serverSock = new ServerSocket(4444);
+        } catch (IOException e) {
+            System.err.println("Could not listen on port: 4444.");
+        }
+
+        Socket clientSock = null;
+        try {
+            clientSock = serverSock.accept();
+        } catch (IOException e) {
+            System.err.println("Accept failed.");
+        }
+
         ObjectOutputStream objOutStream = null;
         ObjectInputStream objInStream = null;
-
         try {
-            clientSocket = new Socket("127.0.0.1", 4444);
-            objOutStream = new ObjectOutputStream(clientSocket.getOutputStream());
-            objInStream = new ObjectInputStream(clientSocket.getInputStream());
-        } catch (UnknownHostException e) {
-            System.err.println("Don't know about host: localhost.");
-        } catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection to: localhost.");
-        }
-
-        
-        
-        try {
-            objOutStream.writeObject(clientPlayer);
+            objOutStream = new ObjectOutputStream(clientSock.getOutputStream());
+            objInStream = new ObjectInputStream(clientSock.getInputStream());
         } catch (IOException ex) {
-            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        
+        
         try {
-            serverPlayer = (AbstractPlayer) objInStream.readObject();
-            serverPlayer.setDelegate(clientPlayer.getDelegate());
+            clientPlayer = (AbstractPlayer) objInStream.readObject();
+            clientPlayer.setDelegate(serverPlayer.getDelegate());
         } catch (IOException ex) {
-            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            int[] cc = (int[]) objInStream.readObject();
-            deck.recreateDeckForOnlineGame(cc);
-        } catch (IOException ex) {
-            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        try {
+            objOutStream.writeObject(serverPlayer);
+        } catch (IOException ex) {
+            Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            objOutStream.writeObject(deck.getOnlineCards());
+        } catch (IOException ex) {
+            Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
+        }
         if (serverPlayer.getName().equals(clientPlayer.getName())) {
-            serverPlayer.setName("Opponent");
+            clientPlayer.setName("Opponent");
         }
-        serverPlayer.setPlayerNumber(2);
+        clientPlayer.setPlayerNumber(2);
         serverPlayer.setName(serverPlayer.getName());
         serverPlayer.setScore(serverPlayer.getScore());
         serverPlayer.setAvatar(serverPlayer.getAvatar());
@@ -121,12 +120,12 @@ public class ClientGame implements Runnable {
         clientPlayer.setAvatar(clientPlayer.getAvatar());
         
         if (playerOnTurn) {
-            output.setHeadMessage(clientPlayer.getName() + "'s turn.");
-        } else {
             output.setHeadMessage(serverPlayer.getName() + "'s turn.");
+        } else {
+            output.setHeadMessage(clientPlayer.getName() + "'s turn.");
         }
         
-        System.out.println(serverPlayer.getName() + " joined.");
+        System.out.println(clientPlayer.getName() + " joined.");
         
         while (!endOfGame) {
 
@@ -138,35 +137,38 @@ public class ClientGame implements Runnable {
                         deck.getCards()[i].addActionListener(listener);
                     }
                 }
-                newMove = clientPlayer.move(lastPlayer1Move, player2Moves);
+                
+                newMove = serverPlayer.move(lastPlayer1Move, player2Moves);
 //                lastPlayer1Move = newMove;
 //                
 //                if (newMove.getFirstCardIDNumber() != -1 && newMove.getSecondCardIDNumber() != -1) {
-//                    lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[newMove.getFirstCardIDNumber()].getCompareNumber());
-//                    lastPlayer1Move.setSecondCardCompareNumber(deck.getCards()[newMove.getSecondCardIDNumber()].getCompareNumber());
+//                    lastPlayer2Move.setFirstCardCompareNumber(deck.getCards()[newMove.getFirstCardIDNumber()].getCompareNumber());
+//                    lastPlayer2Move.setSecondCardCompareNumber(deck.getCards()[newMove.getSecondCardIDNumber()].getCompareNumber());
 //                }
                 
-                if (clientPlayer instanceof HumanPlayer) {
+                if (serverPlayer instanceof HumanPlayer) {
                     for (int i = 0; i < deck.getCards().length; i++) {
                         deck.getCards()[i].removeActionListener(listener);
                     }
                 }
+                
                 try {
+//                    objOutStream.writeObject(newMove);
 //                    System.out.println(newMove.getFirstCard().getIdNumber() + "," + newMove.getSecondCard().getIdNumber());
                     int[] onlineMove = {newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber()};
                     objOutStream.writeObject(onlineMove);
-//                    objOutStream.writeObject(newMove);
                 } catch (IOException ex) {
                     Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
-//                newMove = serverPlayer.move(deck);
+//                newMove = clientPlayer.move(deck);
                 try {
+//                    newMove = (OneMove) objInStream.readObject();
+//                    OneMove playa = (OneMove) objInStream.readObject();
                     int[] playa = (int[]) objInStream.readObject();
                     newMove = new OneMove(playa[0], playa[1]);
 //                    lastPlayer2Move = newMove;
-//                    newMove = (OneMove) objInStream.readObject();
-//                    System.out.println("GOT HIM, im client" + playa[0] + "," + playa[1]);
+//                    System.out.println("GOT HIM, im server" + playa[0] + "," + playa[1]);
                 } catch (IOException ex) {
                     Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (ClassNotFoundException ex) {
@@ -202,17 +204,19 @@ public class ClientGame implements Runnable {
         try {
             objOutStream.close();
             objInStream.close();
-            clientSocket.close();
+            clientSock.close();
+            serverSock.close();
         } catch (IOException ex) {
-            Logger.getLogger(ClientGame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServerGame.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
     
     public void endGame() {
         if (playerOnTurn) {
-            output.setHeadMessage(clientPlayer.getName() + " WON!!");
-        } else {
             output.setHeadMessage(serverPlayer.getName() + " WON!!");
+        } else {
+            output.setHeadMessage(clientPlayer.getName() + " WON!!");
         }
         endOfGame = true;
     }
@@ -223,7 +227,7 @@ public class ClientGame implements Runnable {
             deck.getCards()[newMove.getSecondCardIDNumber()].setVisible(false);
             uncoveredCards += 2;
             if (playerOnTurn) {
-                clientPlayer.setScore(clientPlayer.getScore() + 10);
+                serverPlayer.setScore(serverPlayer.getScore() + 10);
                 lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
                 if (lastPlayer1Move.getFirstCardIDNumber() != -1 && lastPlayer1Move.getSecondCardIDNumber() != -1) {
                     lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer1Move.getFirstCardIDNumber()].getCompareNumber());
@@ -237,7 +241,8 @@ public class ClientGame implements Runnable {
                     }
                 }
             } else {
-                serverPlayer.setScore(serverPlayer.getScore() + 10);
+                clientPlayer.setScore(clientPlayer.getScore() + 10);
+                
                 lastPlayer2Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
 
                 if (lastPlayer2Move.getFirstCardIDNumber() != -1 && lastPlayer2Move.getSecondCardIDNumber() != -1) {
@@ -255,6 +260,7 @@ public class ClientGame implements Runnable {
             newMove = null;
             CardAL.unmarkCards();
         } else {
+            
             if (playerOnTurn) {
 
                 lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
@@ -299,11 +305,11 @@ public class ClientGame implements Runnable {
     public void changePlayerOnTurn() {
         if (playerOnTurn) {
             playerOnTurn = false;
-            output.setHeadMessage(serverPlayer.getName() + "'s turn.");
+            output.setHeadMessage(clientPlayer.getName() + "'s turn.");
 
         } else {
             playerOnTurn = true;
-            output.setHeadMessage(clientPlayer.getName() + "'s turn.");
+            output.setHeadMessage(serverPlayer.getName() + "'s turn.");
         }
     }
 
@@ -324,11 +330,11 @@ public class ClientGame implements Runnable {
     }
 
     public AbstractPlayer getPlayer1() {
-        return clientPlayer;
+        return serverPlayer;
     }
 
     public AbstractPlayer getPlayer2() {
-        return serverPlayer;
+        return clientPlayer;
     }
 
     public OneMove getNewMove() {

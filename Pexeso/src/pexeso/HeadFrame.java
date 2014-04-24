@@ -6,6 +6,12 @@
 
 package pexeso;
 
+import pexeso.cards.CardAL;
+import pexeso.cards.DeckOfCards;
+import pexeso.games.Game;
+import pexeso.players.ComputerPlayer;
+import pexeso.players.AbstractPlayer;
+import pexeso.players.HumanPlayer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -21,8 +27,8 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import pexeso.delegates.MessageDelegate;
 import pexeso.delegates.PlayerDelegate;
-import pexeso.online.ClientGame;
-import pexeso.online.ServerGame;
+import pexeso.games.ClientGame;
+import pexeso.games.ServerGame;
 /**
  *
  * @author Tomas
@@ -64,8 +70,8 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     private ServerGame newServerGame;
     private ClientGame newClientGame;
     
-    private final ImageIcon defaultPlayerAvatar = new ImageIcon(getClass().getResource("/Avatars/Professor.png"));
-    private final ImageIcon defaultComputerAvatar = new ImageIcon(getClass().getResource("/Avatars/Female.png"));
+    private final ImageIcon defaultPlayerAvatar = new ImageIcon(getClass().getResource("/avatars/Professor.png"));
+    private final ImageIcon defaultComputerAvatar = new ImageIcon(getClass().getResource("/avatars/Female.png"));
     
     private Thread gameThread;
 

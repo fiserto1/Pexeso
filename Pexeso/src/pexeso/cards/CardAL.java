@@ -4,13 +4,14 @@
  * and open the template in the editor.
  */
 
-package pexeso;
+package pexeso.cards;
 
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.Serializable;
 import javax.swing.ImageIcon;
+import pexeso.OneMove;
 
 /**
  *

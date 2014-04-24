@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package pexeso;
+package pexeso.cards;
 
 import java.io.Serializable;
 import javax.swing.Action;

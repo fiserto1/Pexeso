@@ -1,5 +1,5 @@
 
-package pexeso;
+package pexeso.cards;
 
 import java.io.Serializable;
 import java.util.Random;
@@ -20,7 +20,7 @@ public class DeckOfCards implements Serializable {
             cards[i] = new Card("CARD");
             cards[i].setCompareNumber(j);
             cards[i].setFocusPainted(false);
-            cards[i].setCardImage(new ImageIcon(getClass().getResource("/cards/" + j + ".jpg")));
+            cards[i].setCardImage(new ImageIcon(getClass().getResource("/images/" + j + ".jpg")));
             cards[i].setIdNumber(i);
             if (i % 2 != 0) {
                 j++;
@@ -53,7 +53,7 @@ public class DeckOfCards implements Serializable {
         for (int i = 0; i < cards.length; i++) {
             cards[i].setCompareNumber(input[i]);
 //            cards[i].setFocusPainted(false);
-            cards[i].setCardImage(new ImageIcon(getClass().getResource("/cards/" + input[i] + ".jpg")));
+            cards[i].setCardImage(new ImageIcon(getClass().getResource("/images/" + input[i] + ".jpg")));
             cards[i].setIdNumber(i);
         }
     }
