@@ -6,7 +6,6 @@
 
 package pexeso.delegates;
 
-import java.io.Serializable;
 import pexeso.Message;
 
 /**
