@@ -9,8 +9,10 @@ package pexeso.games;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import pexeso.players.AbstractPlayer;
@@ -35,6 +37,11 @@ public class ServerGame extends Game {
     @Override
     public void run() {
         ServerSocket serverSock = null;
+        try {
+            output.setHeadMessage(InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException ex) {
+            output.setErrorMessage("Fuck.");
+        }
         try {
             serverSock = new ServerSocket(4444);
         } catch (IOException e) {
@@ -93,7 +100,7 @@ public class ServerGame extends Game {
             output.setHeadMessage(player2.getName() + "'s turn.");
         }
         
-        System.out.println(player2.getName() + " joined.");
+        output.setErrorMessage(player2.getName() + " joined.");
         
         while (!endOfGame) {
 

@@ -13,6 +13,11 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import pexeso.players.AbstractPlayer;
 import pexeso.cards.CardAL;
 import pexeso.cards.DeckOfCards;
@@ -36,14 +41,25 @@ public class ClientGame extends Game {
         ObjectOutputStream objOutStream = null;
         ObjectInputStream objInStream = null;
 
+        JTextField ipAdressTF = new JTextField();
+        ipAdressTF.setText("127.0.0.1");
+        
+        final JComponent[] inputs = new JComponent[]{
+            new JLabel("Enter the IP adress of the host."),
+            ipAdressTF,
+        };
+        JOptionPane.showConfirmDialog(null, inputs, "Connecting to host...", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        ipAdressTF.requestFocus();
         try {
-            clientSocket = new Socket("127.0.0.1", 4444);
+            clientSocket = new Socket(ipAdressTF.getText(), 4444);
             objOutStream = new ObjectOutputStream(clientSocket.getOutputStream());
             objInStream = new ObjectInputStream(clientSocket.getInputStream());
         } catch (UnknownHostException e) {
-            output.setErrorMessage("Don't know about host: localhost.");
+            output.setErrorMessage("Wrong ip adress.");
+            return;
         } catch (IOException e) {
-            output.setErrorMessage("Couldn't get I/O for the connection to: localhost.");
+            output.setErrorMessage("Can't connect to host.");
+            return;
         }
 
         try {
@@ -88,7 +104,7 @@ public class ClientGame extends Game {
             output.setHeadMessage(player2.getName() + "'s turn.");
         }
         
-        System.out.println(player2.getName() + " joined.");
+        output.setErrorMessage(player2.getName() + " joined.");
         
         while (!endOfGame) {
 
