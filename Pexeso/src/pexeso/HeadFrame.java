@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import pexeso.cards.Card;
 import pexeso.delegates.MessageDelegate;
 import pexeso.delegates.PlayerDelegate;
 import pexeso.games.ClientGame;
@@ -68,6 +69,9 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     private Game newGame;
     private ServerGame newServerGame;
     private ClientGame newClientGame;
+    
+//    private AbstractPlayer player1;
+//    private AbstractPlayer player2;
     
     private final ImageIcon defaultPlayerAvatar = 
             new ImageIcon(getClass().getResource("/avatars/Professor.png"));
@@ -165,11 +169,11 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
             public void actionPerformed(ActionEvent e) {
                 
                 if (newGame != null) {
-                    if (CardAL.getMove().getFirstCardIDNumber() != -1) {
-                        deck.getCards()[CardAL.getMove().getFirstCardIDNumber()].setText("CARD");
-                        deck.getCards()[CardAL.getMove().getFirstCardIDNumber()].setIcon(null);
-                        CardAL.unmarkCards();
-                    }
+//                    if (CardAL.getMove().getFirstCardIDNumber() != -1) {
+//                        deck.getCards()[CardAL.getMove().getFirstCardIDNumber()].setText("CARD");
+//                        deck.getCards()[CardAL.getMove().getFirstCardIDNumber()].setIcon(null);
+//                        CardAL.unmarkCards();
+//                    }
                     Game.gameInterrupted = true;
                     while (gameThread.isAlive()) {
                         try {
@@ -428,5 +432,26 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     public void headMessageChanged(Message mess) {
         headOutputLabel.setText(mess.getHeadMessage());
         pack();
+    }
+
+    @Override
+    public void showPlayerOnBoard(AbstractPlayer player) {
+        player.setName(player.getName());
+        player.setScore(player.getScore());
+        player.setAvatar(player.getAvatar());
+    }
+
+    @Override
+    public void activateCards(CardAL listener) {
+        for (Card card : deck.getCards()) {
+            card.addActionListener(listener);
+        }
+    }
+
+    @Override
+    public void deactivateCards(CardAL listener) {
+        for (Card card : deck.getCards()) {
+            card.removeActionListener(listener);
+        }
     }
 }

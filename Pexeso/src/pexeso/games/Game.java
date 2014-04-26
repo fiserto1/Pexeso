@@ -17,6 +17,7 @@ import pexeso.cards.DeckOfCards;
 import pexeso.HeadFrame;
 import pexeso.Message;
 import pexeso.OneMove;
+import pexeso.cards.Card;
 import pexeso.delegates.MessageDelegate;
 
 
@@ -68,12 +69,6 @@ public class Game implements Serializable, Runnable{
     
     @Override
     public void run() {
-        player1.setName(player1.getName());
-        player1.setScore(player1.getScore());
-        player1.setAvatar(player1.getAvatar());
-        player2.setName(player2.getName());
-        player2.setScore(player2.getScore());
-        player2.setAvatar(player2.getAvatar());
         if (playerOnTurn) {
             output.setHeadMessage(player1.getName() + "'s turn.");
         } else {
@@ -81,40 +76,11 @@ public class Game implements Serializable, Runnable{
         }
 
         while (!endOfGame) {
-
             if (playerOnTurn) {
-                CardAL listener = new CardAL();
-                if (player1 instanceof HumanPlayer) {
-                    CardAL.setMoveCompleted(false);
-                    for (int i = 0; i < deck.getCards().length; i++) {
-                        deck.getCards()[i].addActionListener(listener);
-                    }
-                }
-                
                 newMove = player1.move(lastPlayer1Move, player2Moves);
-                
-                if (player1 instanceof HumanPlayer) {
-                    for (int i = 0; i < deck.getCards().length; i++) {
-                        deck.getCards()[i].removeActionListener(listener);
-                    }
-                }
-                
-            } else {
-                CardAL listener = new CardAL();
-                if (player2 instanceof HumanPlayer) {
-                    CardAL.setMoveCompleted(false);
-                    for (int i = 0; i < deck.getCards().length; i++) {
-                        deck.getCards()[i].addActionListener(listener);
-                    }
-                }
-                
+            } 
+            else {
                 newMove = player2.move(lastPlayer2Move, player1Moves);
-                
-                if (player2 instanceof HumanPlayer) {
-                    for (int i = 0; i < deck.getCards().length; i++) {
-                        deck.getCards()[i].removeActionListener(listener);
-                    }
-                }
             }
 
             if (gameInterrupted) {
@@ -134,15 +100,8 @@ public class Game implements Serializable, Runnable{
     }
     
     protected void showCards() {
-        deck.getCards()[newMove.getFirstCardIDNumber()].setText("");
-        Image newImage = deck.getCards()[newMove.getFirstCardIDNumber()].getCardImage().getImage().getScaledInstance(
-                deck.getCards()[newMove.getFirstCardIDNumber()].getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
-        deck.getCards()[newMove.getFirstCardIDNumber()].setIcon(new ImageIcon(newImage));
-
-        deck.getCards()[newMove.getSecondCardIDNumber()].setText("");
-        newImage = deck.getCards()[newMove.getSecondCardIDNumber()].getCardImage().getImage().getScaledInstance(
-                deck.getCards()[newMove.getSecondCardIDNumber()].getCardImage().getIconWidth() / 2, -1, Image.SCALE_SMOOTH);
-        deck.getCards()[newMove.getSecondCardIDNumber()].setIcon(new ImageIcon(newImage));
+        deck.getCards()[newMove.getFirstCardIDNumber()].showCard();
+        deck.getCards()[newMove.getSecondCardIDNumber()].showCard();
 
         try {
             Thread.sleep(1000);
@@ -165,7 +124,7 @@ public class Game implements Serializable, Runnable{
     }
     
     protected void compareCards() {
-        if (deck.getCards()[newMove.getFirstCardIDNumber()].getCompareNumber() == deck.getCards()[newMove.getSecondCardIDNumber()].getCompareNumber()) {
+        if (deck.getCards()[newMove.getFirstCardIDNumber()].equals(deck.getCards()[newMove.getSecondCardIDNumber()])) {
             deck.getCards()[newMove.getFirstCardIDNumber()].setVisible(false);
             deck.getCards()[newMove.getSecondCardIDNumber()].setVisible(false);
             uncoveredCards += 2;
@@ -202,7 +161,7 @@ public class Game implements Serializable, Runnable{
                 }
             }
             newMove = null;
-            CardAL.unmarkCards();
+//            CardAL.unmarkCards();
         } else {
             if (playerOnTurn) {
                 
@@ -236,13 +195,11 @@ public class Game implements Serializable, Runnable{
                     }
                 }
             }
-            deck.getCards()[newMove.getFirstCardIDNumber()].setText("CARD");
-            deck.getCards()[newMove.getFirstCardIDNumber()].setIcon(null);
-            deck.getCards()[newMove.getSecondCardIDNumber()].setText("CARD");
-            deck.getCards()[newMove.getSecondCardIDNumber()].setIcon(null);
+            deck.getCards()[newMove.getFirstCardIDNumber()].turnBack();
+            deck.getCards()[newMove.getSecondCardIDNumber()].turnBack();
             changePlayerOnTurn();
             newMove = null;
-            CardAL.unmarkCards();
+//            CardAL.unmarkCards();
         }
     }
     

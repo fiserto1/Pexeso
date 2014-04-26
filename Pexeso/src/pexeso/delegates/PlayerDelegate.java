@@ -6,6 +6,7 @@
 
 package pexeso.delegates;
 
+import pexeso.cards.CardAL;
 import pexeso.players.AbstractPlayer;
 
 /**
@@ -19,4 +20,10 @@ public interface PlayerDelegate {
     public void nameChanged(AbstractPlayer player);
     
     public void avatarChanged(AbstractPlayer player);
+    
+    public void showPlayerOnBoard(AbstractPlayer player);
+    
+    public void activateCards(CardAL listener);
+    
+    public void deactivateCards(CardAL listener);
 }

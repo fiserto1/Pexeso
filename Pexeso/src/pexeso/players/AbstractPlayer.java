@@ -77,6 +77,9 @@ public abstract class AbstractPlayer implements Serializable {
     
     public void setDelegate(PlayerDelegate delegate) {
         this.delegate = delegate;
+        if (delegate != null) {
+            delegate.showPlayerOnBoard(this);
+        }
     }
 
     public void setPlayerNumber(int playerNumber) {

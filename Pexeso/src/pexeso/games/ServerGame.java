@@ -13,12 +13,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pexeso.players.AbstractPlayer;
-import pexeso.cards.CardAL;
 import pexeso.cards.DeckOfCards;
-import pexeso.players.HumanPlayer;
 import pexeso.OneMove;
 
 /**
@@ -66,6 +62,7 @@ public class ServerGame extends Game {
         
         try {
             player2 = (AbstractPlayer) objInStream.readObject();
+            player2.setPlayerNumber(2);
             player2.setDelegate(player1.getDelegate());
         } catch (IOException ex) {
             output.setErrorMessage("IOExp.");
@@ -86,14 +83,6 @@ public class ServerGame extends Game {
         if (player1.getName().equals(player2.getName())) {
             player2.setName("Opponent");
         }
-        player2.setPlayerNumber(2);
-        player1.setName(player1.getName());
-        player1.setScore(player1.getScore());
-        player1.setAvatar(player1.getAvatar());
-        player2.setName(player2.getName());
-        player2.setScore(player2.getScore());
-        player2.setAvatar(player2.getAvatar());
-        
         if (playerOnTurn) {
             output.setHeadMessage(player1.getName() + "'s turn.");
         } else {
@@ -105,23 +94,8 @@ public class ServerGame extends Game {
         while (!endOfGame) {
 
             if (playerOnTurn) {
-                CardAL listener = new CardAL();
-                //add click listener
-                if (player2 instanceof HumanPlayer) {
-                    CardAL.setMoveCompleted(false);
-                    for (int i = 0; i < deck.getCards().length; i++) {
-                        deck.getCards()[i].addActionListener(listener);
-                    }
-                }
                 
                 newMove = player1.move(lastPlayer1Move, player2Moves);
-                
-                //remove click listener
-                if (player1 instanceof HumanPlayer) {
-                    for (int i = 0; i < deck.getCards().length; i++) {
-                        deck.getCards()[i].removeActionListener(listener);
-                    }
-                }
                 
                 try {
                     int[] myOnlineMove = {newMove.getFirstCardIDNumber(),

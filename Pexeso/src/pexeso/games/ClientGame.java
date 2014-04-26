@@ -11,18 +11,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import pexeso.HeadFrame;
 import pexeso.players.AbstractPlayer;
-import pexeso.cards.CardAL;
 import pexeso.cards.DeckOfCards;
-import pexeso.players.HumanPlayer;
 import pexeso.OneMove;
 
 /**
@@ -67,6 +58,7 @@ public class ClientGame extends Game {
         
         try {
             player2 = (AbstractPlayer) objInStream.readObject();
+            player2.setPlayerNumber(2);
             player2.setDelegate(player1.getDelegate());
         } catch (IOException ex) {
             output.setErrorMessage("IOExp.");
@@ -86,13 +78,7 @@ public class ClientGame extends Game {
             player2.setName("Opponent");
         }
         
-        player2.setPlayerNumber(2);
-        player1.setName(player1.getName());
-        player1.setScore(player1.getScore());
-        player1.setAvatar(player1.getAvatar());
-        player2.setName(player2.getName());
-        player2.setScore(player2.getScore());
-        player2.setAvatar(player2.getAvatar());
+        
         
         
         if (playerOnTurn) {
@@ -106,22 +92,7 @@ public class ClientGame extends Game {
         while (!endOfGame) {
 
             if (playerOnTurn) {
-                CardAL listener = new CardAL();
-                //add click listeners
-                if (player1 instanceof HumanPlayer) {
-                    CardAL.setMoveCompleted(false);
-                    for (int i = 0; i < deck.getCards().length; i++) {
-                        deck.getCards()[i].addActionListener(listener);
-                    }
-                }
                 newMove = player1.move(lastPlayer1Move, player2Moves);
-                
-                //remove click listeners
-                if (player1 instanceof HumanPlayer) {
-                    for (int i = 0; i < deck.getCards().length; i++) {
-                        deck.getCards()[i].removeActionListener(listener);
-                    }
-                }
                 try {
                     int[] myOnlineMove = {newMove.getFirstCardIDNumber(),
                         newMove.getSecondCardIDNumber()};
