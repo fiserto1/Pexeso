@@ -21,11 +21,7 @@ public class DeckOfCards implements Serializable {
             cards[i] = new Card("CARD");
             cards[i].setCompareNumber(j);
             cards[i].setFocusPainted(false);
-            ImageIcon image = new ImageIcon(getClass().getResource(
-                    "/images/" + j + ".jpg"));
-            ImageIcon newImage = new ImageIcon(image.getImage().getScaledInstance(
-                    image.getIconWidth() / 2, -1, Image.SCALE_SMOOTH));
-            cards[i].setCardImage(newImage);
+            cards[i].setCardImage(loadImgFromFile(j));
             cards[i].setIdNumber(i);
             if (i % 2 != 0) {
                 j++;
@@ -41,7 +37,6 @@ public class DeckOfCards implements Serializable {
             Card temp = cards[i];
             cards[i] = cards[change];
             cards[change] = temp;
-            
         }
         
         //turn
@@ -50,15 +45,12 @@ public class DeckOfCards implements Serializable {
             cards[i].setVisible(true);
             cards[i].setIdNumber(i);
         }
-        
     }
     
     public void recreateDeckForOnlineGame(int[] input) {
         for (int i = 0; i < cards.length; i++) {
             cards[i].setCompareNumber(input[i]);
-            cards[i].setCardImage(new ImageIcon(getClass().getResource(
-                    "/images/" + input[i] + ".jpg")));
-            
+            cards[i].setCardImage(loadImgFromFile(input[i]));
             cards[i].setIdNumber(i);
         }
     }
@@ -72,5 +64,13 @@ public class DeckOfCards implements Serializable {
             onlineCards[i] = cards[i].getCompareNumber();
         }
         return onlineCards;
+    }
+    
+    private ImageIcon loadImgFromFile(int fileNumber) {
+        ImageIcon image = new ImageIcon(getClass().getResource(
+                "/images/" + fileNumber + ".jpg"));
+        ImageIcon newImage = new ImageIcon(image.getImage().getScaledInstance(
+                image.getIconWidth() / 2, -1, Image.SCALE_SMOOTH));
+        return newImage;
     }
 }
