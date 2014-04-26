@@ -18,6 +18,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import pexeso.HeadFrame;
 import pexeso.players.AbstractPlayer;
 import pexeso.cards.CardAL;
 import pexeso.cards.DeckOfCards;
@@ -41,17 +42,13 @@ public class ClientGame extends Game {
         ObjectOutputStream objOutStream = null;
         ObjectInputStream objInStream = null;
 
-        JTextField ipAdressTF = new JTextField();
-        ipAdressTF.setText("127.0.0.1");
         
-        final JComponent[] inputs = new JComponent[]{
-            new JLabel("Enter the IP adress of the host."),
-            ipAdressTF,
-        };
-        JOptionPane.showConfirmDialog(null, inputs, "Connecting to host...", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        ipAdressTF.requestFocus();
+        String ipAdress =(String) JOptionPane.showInputDialog(null, 
+                "Enter the IP adress of the host.", "Connecting to host...", 
+                JOptionPane.PLAIN_MESSAGE, null, null, "127.0.0.1");
+
         try {
-            clientSocket = new Socket(ipAdressTF.getText(), 4444);
+            clientSocket = new Socket(ipAdress, 4444);
             objOutStream = new ObjectOutputStream(clientSocket.getOutputStream());
             objInStream = new ObjectInputStream(clientSocket.getInputStream());
         } catch (UnknownHostException e) {
