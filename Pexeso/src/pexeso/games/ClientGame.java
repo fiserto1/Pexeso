@@ -66,8 +66,8 @@ public class ClientGame extends Game {
             output.setErrorMessage("Opp player class not found.");
         }
         try {
-            int[] cc = (int[]) objInStream.readObject();
-            deck.recreateDeckForOnlineGame(cc);
+            deck = (DeckOfCards) objInStream.readObject();
+            player1.getDelegate().refreshDeck(deck);
         } catch (IOException ex) {
             output.setErrorMessage("IOExp.");
         } catch (ClassNotFoundException ex) {
@@ -102,8 +102,7 @@ public class ClientGame extends Game {
                 }
             } else {
                 try {
-                    int[] oppOnlineMove = (int[]) objInStream.readObject();
-                    newMove = new OneMove(oppOnlineMove[0], oppOnlineMove[1]);
+                    newMove = (OneMove) objInStream.readObject();
                 } catch (IOException ex) {
                     output.setErrorMessage("IOExp.");
                 } catch (ClassNotFoundException ex) {

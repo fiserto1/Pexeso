@@ -29,17 +29,17 @@ public class CardAL implements ActionListener, Serializable {
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() instanceof Card) {
-            Card card = (Card) e.getSource();
-            if (card.getIcon() == null) {
+        if (e.getSource() instanceof CardButton) {
+            CardButton cardBut = (CardButton) e.getSource();
+            if (cardBut.getIcon() == null) {
                 if (move.getFirstCardIDNumber() == -1) {
-                    card.showCard();
-                    move.setFirstCardIDNumber(card.getIdNumber());
-                    move.setFirstCardCompareNumber(card.getCompareNumber());
+                    cardBut.showCard();
+                    move.setFirstCardIDNumber(cardBut.getCard().getIdNumber());
+                    move.setFirstCardCompareNumber(cardBut.getCard().getCompareNumber());
                 } else if (move.getSecondCardIDNumber() == -1) {
-                    card.showCard();
-                    move.setSecondCardIDNumber(card.getIdNumber());
-                    move.setSecondCardCompareNumber(card.getCompareNumber());
+                    cardBut.showCard();
+                    move.setSecondCardIDNumber(cardBut.getCard().getIdNumber());
+                    move.setSecondCardCompareNumber(cardBut.getCard().getCompareNumber());
                     player.setMyMove(move);
                     player.setMoveCompleted(true);
                 }

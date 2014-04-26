@@ -11,44 +11,32 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import pexeso.delegates.CardDelegate;
 
 /**
  *
  * @author Tomas
  */
-public class Card extends JButton implements Serializable {
-    private final String REVERSE_SIDE = "CARD";
+public class Card implements Serializable {
+    private String reverseSide = "CARD";
     private ImageIcon cardImage = new ImageIcon();
     private int compareNumber;
     private int idNumber;
+    private transient CardDelegate delegate;
 
-    public Card() {
-    }
 
-    public Card(Icon icon) {
-        super(icon);
-    }
-
-    public Card(String text) {
-        super(text);
-    }
-
-    public Card(Action a) {
-        super(a);
-    }
-
-    public Card(String text, Icon icon) {
-        super(text, icon);
+    
+    
+    public void revealed() {
+        delegate.cardRevealed(this);
     }
     
     public void showCard() {
-        this.setText("");
-        this.setIcon(cardImage);
+        delegate.showCard(this);
     }
-    
+
     public void turnBack() {
-        this.setText(REVERSE_SIDE);
-        this.setIcon(null);
+        delegate.turnBackCard(this);
     }
     
     public ImageIcon getCardImage() {
@@ -74,6 +62,16 @@ public class Card extends JButton implements Serializable {
     public void setIdNumber(int idNumber) {
         this.idNumber = idNumber;
     }
+
+    public String getReverseSide() {
+        return reverseSide;
+    }
+
+    public void setDelegate(CardDelegate delegate) {
+        this.delegate = delegate;
+    }
+    
+    
     
     @Override
     public int hashCode() {

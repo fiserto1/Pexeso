@@ -21,10 +21,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import pexeso.cards.Card;
+import pexeso.cards.CardButton;
+import pexeso.delegates.CardDelegate;
 import pexeso.delegates.MessageDelegate;
 import pexeso.delegates.PlayerDelegate;
 import pexeso.games.ClientGame;
@@ -33,7 +36,7 @@ import pexeso.games.ServerGame;
  *
  * @author Tomas
  */
-public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, MessageDelegate {
+public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, MessageDelegate, CardDelegate {
     
     //Menu
     private final JMenuBar headMenuBar = new JMenuBar();
@@ -65,6 +68,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     private JLabel errorLabel;
     //cards
     private DeckOfCards deck = new DeckOfCards();
+    private ArrayList<CardButton> buttDeck = new ArrayList<CardButton>();
     
     private Game newGame;
     private ServerGame newServerGame;
@@ -89,6 +93,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         createMenu();
         //Panels
         createPanels();
+        
         
         getContentPane().setLayout(new java.awt.BorderLayout(30, 30));
         getContentPane().add(leftPanel, java.awt.BorderLayout.LINE_START);
@@ -266,6 +271,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
             @Override
             public void actionPerformed(ActionEvent e) {
                 deck.shuffleCards();
+                deck.setDelegateToCards(HeadFrame.this);
                 AbstractPlayer player1 = new HumanPlayer("You", defaultPlayerAvatar, 1);
                 player1.setDelegate(HeadFrame.this);
                 newServerGame = new ServerGame(player1, deck);
@@ -276,9 +282,13 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
                 saveGameMenuItem.setEnabled(true);
 
                 centerPanel.removeAll();
+                buttDeck = new ArrayList<CardButton>();
 
                 for (int i = 0; i < deck.getCards().length; i++) {
-                    centerPanel.add(deck.getCards()[i]);
+                    buttDeck.add(new CardButton(deck.getCards()[i]));
+                }
+                for (int i = 0; i < deck.getCards().length; i++) {
+                    centerPanel.add(buttDeck.get(i));
                 }
                 centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
                 pack();
@@ -292,13 +302,13 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                deck.shuffleCards();
+//                deck.shuffleCards();
                 AbstractPlayer player2 = new HumanPlayer("You", defaultPlayerAvatar, 1);
                 player2.setDelegate(HeadFrame.this);
-                newClientGame = new ClientGame(player2, deck);
-                for (int i = 0; i < deck.getCards().length; i++) {
-                    centerPanel.add(deck.getCards()[i]);
-                }
+                newClientGame = new ClientGame(player2, null);
+//                for (int i = 0; i < buttDeck.size(); i++) {
+//                    centerPanel.add(buttDeck.get(i));
+//                }
                 setPreferredSize(new java.awt.Dimension(1050, 700));
                 leftPanel.setVisible(true);
                 rightPanel.setVisible(true);
@@ -320,15 +330,20 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         saveGameMenuItem.setEnabled(true);
         
         centerPanel.removeAll();
-        
+        deck.setDelegateToCards(this);
+        buttDeck = new ArrayList<CardButton>();
         for (int i = 0; i < deck.getCards().length; i++) {
-            centerPanel.add(deck.getCards()[i]);
+            buttDeck.add(new CardButton(deck.getCards()[i]));
+            
+        }
+        for (int i = 0; i < deck.getCards().length; i++) {
+            centerPanel.add(buttDeck.get(i));
         }
         centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
         
-//        if (gameThread != null) {
-//            System.out.println(gameThread.isAlive());
-//        }
+        if (gameThread != null) {
+            System.out.println(gameThread.isAlive());
+        }
         
         
         Game.gameInterrupted = false;
@@ -443,15 +458,42 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 
     @Override
     public void activateCards(CardAL listener) {
-        for (Card card : deck.getCards()) {
-            card.addActionListener(listener);
+        for (CardButton cardBut : buttDeck) {
+            cardBut.addActionListener(listener);
         }
     }
 
     @Override
     public void deactivateCards(CardAL listener) {
-        for (Card card : deck.getCards()) {
-            card.removeActionListener(listener);
+        for (CardButton cardBut : buttDeck) {
+            cardBut.removeActionListener(listener);
+        }
+    }
+
+    @Override
+    public void cardRevealed(Card card) {
+        buttDeck.get(card.getIdNumber()).setVisible(false);
+    }
+
+    @Override
+    public void showCard(Card card) {
+        buttDeck.get(card.getIdNumber()).showCard();
+    }
+
+    @Override
+    public void turnBackCard(Card card) {
+        buttDeck.get(card.getIdNumber()).turnBack();
+    }
+
+    @Override
+    public void refreshDeck(DeckOfCards deck) {
+        this.deck = deck;
+        deck.setDelegateToCards(this);
+        buttDeck = new ArrayList<CardButton>();
+        centerPanel.removeAll();
+        for (int i = 0; i < deck.getCards().length; i++) {
+            buttDeck.add(new CardButton(deck.getCards()[i]));
+            centerPanel.add(buttDeck.get(i));
         }
     }
 }

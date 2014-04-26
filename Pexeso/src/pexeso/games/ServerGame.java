@@ -76,7 +76,7 @@ public class ServerGame extends Game {
             output.setErrorMessage("IOExp.");
         }
         try {
-            objOutStream.writeObject(deck.getOnlineCards());
+            objOutStream.writeObject(deck);
         } catch (IOException ex) {
             output.setErrorMessage("IOExp.");
         }
@@ -98,10 +98,7 @@ public class ServerGame extends Game {
                 newMove = player1.move(lastPlayer1Move, player2Moves);
                 
                 try {
-                    int[] myOnlineMove = {newMove.getFirstCardIDNumber(),
-                        newMove.getSecondCardIDNumber()};
-                    
-                    objOutStream.writeObject(myOnlineMove);
+                    objOutStream.writeObject(newMove);
                 } catch (IOException ex) {
                     output.setErrorMessage("IOExp.");
                 }

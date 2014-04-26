@@ -7,6 +7,7 @@
 package pexeso.delegates;
 
 import pexeso.cards.CardAL;
+import pexeso.cards.DeckOfCards;
 import pexeso.players.AbstractPlayer;
 
 /**
@@ -26,4 +27,6 @@ public interface PlayerDelegate {
     public void activateCards(CardAL listener);
     
     public void deactivateCards(CardAL listener);
+    
+    public void refreshDeck(DeckOfCards deck);
 }

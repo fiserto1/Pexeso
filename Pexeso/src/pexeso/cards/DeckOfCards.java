@@ -5,6 +5,8 @@ import java.awt.Image;
 import java.io.Serializable;
 import java.util.Random;
 import javax.swing.ImageIcon;
+import pexeso.HeadFrame;
+import pexeso.delegates.CardDelegate;
 
 /**
  *
@@ -18,9 +20,8 @@ public class DeckOfCards implements Serializable {
     public DeckOfCards() {
         int j = 1;
         for (int i = 0; i < cards.length; i++) {
-            cards[i] = new Card("CARD");
+            cards[i] = new Card();
             cards[i].setCompareNumber(j);
-            cards[i].setFocusPainted(false);
             cards[i].setCardImage(loadImgFromFile(j));
             cards[i].setIdNumber(i);
             if (i % 2 != 0) {
@@ -28,6 +29,13 @@ public class DeckOfCards implements Serializable {
             }
         }
     }
+    
+    public void setDelegateToCards(CardDelegate cardDelegate) {
+        for (Card card : cards) {
+            card.setDelegate(cardDelegate);
+        }
+    }
+    
     
     public void shuffleCards() {
         Random rnd = new Random();
@@ -41,18 +49,18 @@ public class DeckOfCards implements Serializable {
         
         //turn
         for (int i = 0; i < cards.length; i++) {
-            cards[i].turnBack();
-            cards[i].setVisible(true);
+//            cards[i].turnBack();
+//            cards[i].setVisible(true);
             cards[i].setIdNumber(i);
         }
     }
     
     public void recreateDeckForOnlineGame(int[] input) {
-        for (int i = 0; i < cards.length; i++) {
-            cards[i].setCompareNumber(input[i]);
-            cards[i].setCardImage(loadImgFromFile(input[i]));
-            cards[i].setIdNumber(i);
-        }
+//        for (int i = 0; i < cards.length; i++) {
+//            cards[i].setCompareNumber(input[i]);
+//            cards[i].setCardImage(loadImgFromFile(input[i]));
+//            cards[i].setIdNumber(i);
+//        }
     }
     
     public Card[] getCards() {
