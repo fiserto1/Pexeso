@@ -17,6 +17,7 @@ import javax.swing.JButton;
  * @author Tomas
  */
 public class Card extends JButton implements Serializable {
+    private final String REVERSE_SIDE = "CARD";
     private ImageIcon cardImage = new ImageIcon();
     private int compareNumber;
     private int idNumber;
@@ -39,7 +40,17 @@ public class Card extends JButton implements Serializable {
     public Card(String text, Icon icon) {
         super(text, icon);
     }
-
+    
+    public void showCard() {
+        this.setText("");
+        this.setIcon(cardImage);
+    }
+    
+    public void turnBack() {
+        this.setText(REVERSE_SIDE);
+        this.setIcon(null);
+    }
+    
     public ImageIcon getCardImage() {
         return cardImage;
     }
