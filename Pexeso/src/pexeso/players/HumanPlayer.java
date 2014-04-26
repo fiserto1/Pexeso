@@ -20,19 +20,26 @@ import pexeso.OneMove;
  */
 public class HumanPlayer extends AbstractPlayer {
     
+    private boolean moveCompleted;
+    private OneMove myMove;
+    
     public HumanPlayer(String name, ImageIcon avatar, int playerNumber) {
         super(name, avatar, playerNumber);
     }
+    
     
     @Override
     public OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves) {
         
         //wait for user choice
-        CardAL.setMoveCompleted(false);
-        while (!CardAL.isMoveCompleted()) {
+        myMove = null;
+        moveCompleted = false;
+        CardAL listener = new CardAL(this);
+        getDelegate().activateCards(listener);
+        while (!moveCompleted) {
             if (Game.gameInterrupted) {
-                CardAL.setMoveCompleted(false);
-                CardAL.unmarkCards();
+                moveCompleted = false;
+                myMove = null;
                 break;
             }
             try {
@@ -41,7 +48,18 @@ public class HumanPlayer extends AbstractPlayer {
                 Logger.getLogger(HumanPlayer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        getDelegate().deactivateCards(listener);
         
-        return CardAL.getMove();
+        return myMove;
     }
+
+    public void setMoveCompleted(boolean moveCompleted) {
+        this.moveCompleted = moveCompleted;
+    }
+
+    public void setMyMove(OneMove myMove) {
+        this.myMove = myMove;
+    }
+    
+    
 }
