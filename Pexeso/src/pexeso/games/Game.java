@@ -125,8 +125,8 @@ public class Game implements Serializable, Runnable{
     
     protected void compareCards() {
         if (deck.getCards()[newMove.getFirstCardIDNumber()].equals(deck.getCards()[newMove.getSecondCardIDNumber()])) {
-            deck.getCards()[newMove.getFirstCardIDNumber()].revealed();
-            deck.getCards()[newMove.getSecondCardIDNumber()].revealed();
+            deck.getCards()[newMove.getFirstCardIDNumber()].hideCard();
+            deck.getCards()[newMove.getSecondCardIDNumber()].hideCard();
             uncoveredCards += 2;
             if (playerOnTurn) {
                 player1.setScore(player1.getScore() + 10);

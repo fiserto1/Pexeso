@@ -13,6 +13,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import pexeso.players.AbstractPlayer;
 import pexeso.cards.DeckOfCards;
 import pexeso.OneMove;
@@ -23,6 +25,10 @@ import pexeso.OneMove;
  */
 public class ServerGame extends Game {
     
+    private ServerSocket serverSock;
+    private Socket clientSock;
+    private ObjectOutputStream objOutStream;
+    private ObjectInputStream objInStream;
 
     public ServerGame(AbstractPlayer serverPlayer, DeckOfCards deck) {
         super(serverPlayer, null, deck);
@@ -32,64 +38,31 @@ public class ServerGame extends Game {
     
     @Override
     public void run() {
-        ServerSocket serverSock = null;
         try {
-            output.setHeadMessage(InetAddress.getLocalHost().getHostAddress());
+            connectClient();
         } catch (UnknownHostException ex) {
-            output.setErrorMessage("Fuck.");
-        }
-        try {
-            serverSock = new ServerSocket(4444);
-        } catch (IOException e) {
-            output.setErrorMessage("Could not listen on port: 4444.");
-        }
-
-        Socket clientSock = null;
-        try {
-            clientSock = serverSock.accept();
-        } catch (IOException e) {
-            output.setErrorMessage("Accept failed.");
-        }
-
-        ObjectOutputStream objOutStream = null;
-        ObjectInputStream objInStream = null;
-        try {
-            objOutStream = new ObjectOutputStream(clientSock.getOutputStream());
-            objInStream = new ObjectInputStream(clientSock.getInputStream());
-        } catch (IOException ex) {
-            output.setErrorMessage("IOExp.");
-        }
-        
-        try {
-            player2 = (AbstractPlayer) objInStream.readObject();
-            player2.setPlayerNumber(2);
-            player2.setDelegate(player1.getDelegate());
-        } catch (IOException ex) {
-            output.setErrorMessage("IOExp.");
+            output.setErrorMessage("IP not found.");
+            return;
         } catch (ClassNotFoundException ex) {
-            output.setErrorMessage("Class not found.");
+            output.setErrorMessage("Player class not found.");
+            return;
+        } catch (IOException ex) {
+            output.setErrorMessage(ex.getMessage());
+            return;
         }
         
         try {
-            objOutStream.writeObject(player1);
+            sendGameToClient();
         } catch (IOException ex) {
-            output.setErrorMessage("IOExp.");
+            output.setErrorMessage("Can't send game to client.");
+            return;
         }
-        try {
-            objOutStream.writeObject(deck);
-        } catch (IOException ex) {
-            output.setErrorMessage("IOExp.");
-        }
-        if (player1.getName().equals(player2.getName())) {
-            player2.setName("Opponent");
-        }
+        
         if (playerOnTurn) {
             output.setHeadMessage(player1.getName() + "'s turn.");
         } else {
             output.setHeadMessage(player2.getName() + "'s turn.");
         }
-        
-        output.setErrorMessage(player2.getName() + " joined.");
         
         while (!endOfGame) {
 
@@ -100,16 +73,18 @@ public class ServerGame extends Game {
                 try {
                     objOutStream.writeObject(newMove);
                 } catch (IOException ex) {
-                    output.setErrorMessage("IOExp.");
+                    output.setErrorMessage("Can't send my move to client.");
+                    return;
                 }
             } else {
                 try {
-                    int[] oppOnlineMove = (int[]) objInStream.readObject();
-                    newMove = new OneMove(oppOnlineMove[0], oppOnlineMove[1]);
+                    newMove = (OneMove) objInStream.readObject();
                 } catch (IOException ex) {
-                    output.setErrorMessage("IOExp.");
+                    output.setErrorMessage("Can't read move from client.");
+                    return;
                 } catch (ClassNotFoundException ex) {
-                    output.setErrorMessage("Opp move Class not found.");
+                    output.setErrorMessage("OneMove class not found.");
+                    return;
                 }
             }
 
@@ -132,5 +107,26 @@ public class ServerGame extends Game {
         } catch (IOException ex) {
             output.setErrorMessage("Cant close streams.");
         }
+    }
+    
+    private void connectClient() throws UnknownHostException, ClassNotFoundException, IOException {
+        output.setHeadMessage("Your IP adress: "
+                + InetAddress.getLocalHost().getHostAddress());
+        serverSock = new ServerSocket(4444);
+        clientSock = serverSock.accept();
+        objOutStream = new ObjectOutputStream(clientSock.getOutputStream());
+        objInStream = new ObjectInputStream(clientSock.getInputStream());
+        player2 = (AbstractPlayer) objInStream.readObject();
+        player2.setPlayerNumber(2);
+        player2.setDelegate(player1.getDelegate());
+    }
+    
+    private void sendGameToClient() throws IOException {
+        objOutStream.writeObject(player1);
+        objOutStream.writeObject(deck);
+        if (player1.getName().equals(player2.getName())) {
+            player2.setName("Opponent");
+        }
+        output.setErrorMessage(player2.getName() + " joined.");
     }
 }
