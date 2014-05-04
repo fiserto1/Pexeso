@@ -7,17 +7,12 @@
 package pexeso.games;
 
 import pexeso.players.AbstractPlayer;
-import pexeso.players.HumanPlayer;
-import java.awt.Image;
 import java.io.Serializable;
 import java.util.ArrayList;
-import javax.swing.ImageIcon;
-import pexeso.cards.CardAL;
 import pexeso.cards.DeckOfCards;
 import pexeso.HeadFrame;
 import pexeso.Message;
 import pexeso.OneMove;
-import pexeso.cards.Card;
 import pexeso.delegates.MessageDelegate;
 
 
@@ -77,10 +72,10 @@ public class Game implements Serializable, Runnable{
 
         while (!endOfGame) {
             if (playerOnTurn) {
-                newMove = player1.move(lastPlayer1Move, player2Moves);
+                newMove = player1.move(lastPlayer1Move, player2Moves, deck.size());
             } 
             else {
-                newMove = player2.move(lastPlayer2Move, player1Moves);
+                newMove = player2.move(lastPlayer2Move, player1Moves, deck.size());
             }
 
             if (gameInterrupted) {
@@ -93,7 +88,7 @@ public class Game implements Serializable, Runnable{
                     newMove.getSecondCardIDNumber() != -1) {
                 compareCards();
             }
-            if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
+            if (uncoveredCards == deck.size()) {
                 endGame();
             }
         }
@@ -161,7 +156,6 @@ public class Game implements Serializable, Runnable{
                 }
             }
             newMove = null;
-//            CardAL.unmarkCards();
         } else {
             if (playerOnTurn) {
                 
@@ -199,7 +193,6 @@ public class Game implements Serializable, Runnable{
             deck.getCards()[newMove.getSecondCardIDNumber()].turnBack();
             changePlayerOnTurn();
             newMove = null;
-//            CardAL.unmarkCards();
         }
     }
     

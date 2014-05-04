@@ -63,7 +63,7 @@ public class ClientGame extends Game {
         while (!endOfGame) {
 
             if (playerOnTurn) {
-                newMove = player1.move(lastPlayer1Move, player2Moves);
+                newMove = player1.move(lastPlayer1Move, player2Moves, deck.getCards().length);
                 try {
                     objOutStream.writeObject(newMove);
                 } catch (IOException ex) {
@@ -82,13 +82,16 @@ public class ClientGame extends Game {
                 }
             }
 
+            if (gameInterrupted) {
+                return;
+            }
             showCards();
 
             if (newMove.getFirstCardIDNumber()!= -1 &&
                     newMove.getSecondCardIDNumber() != -1) {
                 compareCards();
             }
-            if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
+            if (uncoveredCards == deck.getCards().length) {
                 endGame();
             }
         }

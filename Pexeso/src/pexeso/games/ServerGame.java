@@ -13,8 +13,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pexeso.players.AbstractPlayer;
 import pexeso.cards.DeckOfCards;
 import pexeso.OneMove;
@@ -50,7 +48,6 @@ public class ServerGame extends Game {
             output.setErrorMessage(ex.getMessage());
             return;
         }
-        
         try {
             sendGameToClient();
         } catch (IOException ex) {
@@ -68,7 +65,7 @@ public class ServerGame extends Game {
 
             if (playerOnTurn) {
                 
-                newMove = player1.move(lastPlayer1Move, player2Moves);
+                newMove = player1.move(lastPlayer1Move, player2Moves, deck.getCards().length);
                 
                 try {
                     objOutStream.writeObject(newMove);
@@ -88,13 +85,16 @@ public class ServerGame extends Game {
                 }
             }
 
+            if (gameInterrupted) {
+                return;
+            }
             showCards();
 
             if (newMove.getFirstCardIDNumber()!= -1 &&
                     newMove.getSecondCardIDNumber() != -1) {
                 compareCards();
             }
-            if (uncoveredCards == DeckOfCards.NUMBER_OF_CARDS) {
+            if (uncoveredCards == deck.getCards().length) {
                 endGame();
             }
         }
