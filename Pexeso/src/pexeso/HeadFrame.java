@@ -122,6 +122,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
                 player2 = new ComputerPlayer("Computer", defaultComputerAvatar, 2);
                 player1.setDelegate(HeadFrame.this);
                 player2.setDelegate(HeadFrame.this);
+                player1.setScore(0);
                 newGame = new Game(player1, player2, deck);
                 showGameBoard();
             }
@@ -138,6 +139,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
                 player2 = new HumanPlayer("Player 2", defaultPlayerAvatar, 2);
                 player1.setDelegate(HeadFrame.this);
                 player2.setDelegate(HeadFrame.this);
+                player1.setScore(0);
                 newGame = new Game(player1, player2, deck);
                 showGameBoard();
             }
@@ -216,8 +218,38 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                gameMenu.setEnabled(false);
+                
                 tryToEndThread();
+                
+                JTextField firstTF = new JTextField(player1.getName());
+                JRadioButton[] buttons = {new JRadioButton("64", true),
+                    new JRadioButton("36"), new JRadioButton("16"),
+                    new JRadioButton("4")};
+                ButtonGroup bGroup = new ButtonGroup();
+                JPanel panel = new JPanel();
+                for (JRadioButton button : buttons) {
+                    bGroup.add(button);
+                    panel.add(button);
+                }
+                final JComponent[] inputs = new JComponent[]{
+                    new JLabel("Player name:"), firstTF,
+                    new JLabel("Number of cards:"),
+                    panel
+                };
+                
+                int choice = JOptionPane.showConfirmDialog(null, inputs, "Creating game...", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                if (choice != JOptionPane.OK_OPTION) {
+                    return;
+                }
+                gameMenu.setEnabled(false);
+                for (JRadioButton rBut : buttons) {
+                    if (rBut.isSelected()) {
+                        settings.setNumberOfCards(Integer.parseInt(rBut.getText()));
+                        break;
+                    }
+                }
+                player1.setName(firstTF.getText());
+                
                 deck = new DeckOfCards(settings.getNumberOfCards());
                 deck.shuffleCards();
                 for (Card card : deck.getCards()) {
@@ -225,6 +257,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
                 }
 //                AbstractPlayer player1 = new HumanPlayer("You", defaultPlayerAvatar, 1);
                 player1.setDelegate(HeadFrame.this);
+                player1.setScore(0);
                 newGame = new ServerGame(player1, deck);
                 
                 setPreferredSize(new java.awt.Dimension(1050, 700));
@@ -232,9 +265,8 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
                 rightPanel.setVisible(true);
 
                 centerPanel.removeAll();
-                
-                for (int i = 0; i < deck.getCards().length; i++) {
-                    centerPanel.add(new CardButton(deck.getCards()[i]));
+                for (Card card : deck.getCards()) {
+                    centerPanel.add(new CardButton(card));
                 }
                 
                 centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
@@ -257,6 +289,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
                 
 //                AbstractPlayer player1 = new HumanPlayer("You", defaultPlayerAvatar, 1);
                 player1.setDelegate(HeadFrame.this);
+                player1.setScore(0);
                 newGame = new ClientGame(player1, null);
                 setPreferredSize(new java.awt.Dimension(1050, 700));
                 leftPanel.setVisible(true);
@@ -434,6 +467,9 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 
     @Override
     public void headMessageChanged(Message mess) {
+        if (newGame.isEndOfGame()) {
+            gameMenu.setEnabled(true);
+        }
         headOutputLabel.setText(mess.getHeadMessage());
         pack();
     }

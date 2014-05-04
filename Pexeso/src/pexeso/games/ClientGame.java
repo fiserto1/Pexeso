@@ -11,7 +11,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import pexeso.players.AbstractPlayer;
 import pexeso.cards.DeckOfCards;
 import pexeso.OneMove;
@@ -104,12 +107,17 @@ public class ClientGame extends Game {
             output.setErrorMessage("Can't close streams or socket.");
         }
     }
-    
+//    "Enter the IP adress of the host."
     private void connectToServer() throws UnknownHostException, IOException {
+        JTextField firstTF = new JTextField(player1.getName());
+        final JComponent[] inputs = new JComponent[] {
+            new JLabel("Player name:"), firstTF, 
+            new JLabel("Enter the IP adress of the host.")
+        };
         String ipAdress = (String) JOptionPane.showInputDialog(null,
-                "Enter the IP adress of the host.", "Connecting to host...",
+                inputs, "Connecting to host...",
                 JOptionPane.PLAIN_MESSAGE, null, null, "127.0.0.1");
-        
+        player1.setName(firstTF.getText());
         clientSocket = new Socket(ipAdress, 4444);
         objOutStream = new ObjectOutputStream(clientSocket.getOutputStream());
         objInStream = new ObjectInputStream(clientSocket.getInputStream());

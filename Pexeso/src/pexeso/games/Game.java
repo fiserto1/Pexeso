@@ -106,6 +106,7 @@ public class Game implements Serializable, Runnable{
     }
     
     public void endGame() {
+        endOfGame = true;
         if (player1.getScore() > player2.getScore()) {
             output.setHeadMessage(player1.getName() + " WON!!");
         } 
@@ -115,7 +116,6 @@ public class Game implements Serializable, Runnable{
         else {
             output.setHeadMessage("DRAW");
         }
-        endOfGame = true;
     }
     
     protected void compareCards() {
