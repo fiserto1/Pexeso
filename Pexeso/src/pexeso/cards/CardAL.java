@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.Serializable;
 import pexeso.OneMove;
-import pexeso.players.AbstractPlayer;
 import pexeso.players.HumanPlayer;
 
 /**

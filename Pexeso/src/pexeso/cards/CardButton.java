@@ -21,6 +21,7 @@ public class CardButton extends JButton {
         setText(card.getReverseSide());
     }
     
+    
     public void showCard() {
         this.setText("");
         this.setIcon(card.getCardImage());
@@ -29,12 +30,10 @@ public class CardButton extends JButton {
     public void turnBack() {
         this.setText(card.getReverseSide());
         this.setIcon(null);
+        this.setVisible(true);
     }
 
     public Card getCard() {
         return card;
     }
-    
-    
-    
 }

@@ -174,11 +174,6 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
             public void actionPerformed(ActionEvent e) {
                 
                 if (newGame != null) {
-//                    if (CardAL.getMove().getFirstCardIDNumber() != -1) {
-//                        deck.getCards()[CardAL.getMove().getFirstCardIDNumber()].setText("CARD");
-//                        deck.getCards()[CardAL.getMove().getFirstCardIDNumber()].setIcon(null);
-//                        CardAL.unmarkCards();
-//                    }
                     Game.gameInterrupted = true;
                     while (gameThread.isAlive()) {
                         try {
@@ -271,7 +266,9 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
             @Override
             public void actionPerformed(ActionEvent e) {
                 deck.shuffleCards();
-                deck.setDelegateToCards(HeadFrame.this);
+                for (Card card : deck.getCards()) {
+                    card.setDelegate(HeadFrame.this);
+                }
                 AbstractPlayer player1 = new HumanPlayer("You", defaultPlayerAvatar, 1);
                 player1.setDelegate(HeadFrame.this);
                 newServerGame = new ServerGame(player1, deck);
@@ -330,7 +327,9 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         saveGameMenuItem.setEnabled(true);
         
         centerPanel.removeAll();
-        deck.setDelegateToCards(this);
+        for (Card card : deck.getCards()) {
+            card.setDelegate(this);
+        }
         buttDeck = new ArrayList<CardButton>();
         for (int i = 0; i < deck.getCards().length; i++) {
             buttDeck.add(new CardButton(deck.getCards()[i]));
@@ -488,7 +487,9 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     @Override
     public void refreshDeck(DeckOfCards deck) {
         this.deck = deck;
-        deck.setDelegateToCards(this);
+        for (Card card : deck.getCards()) {
+            card.setDelegate(this);
+        }
         buttDeck = new ArrayList<CardButton>();
         centerPanel.removeAll();
         for (int i = 0; i < deck.getCards().length; i++) {

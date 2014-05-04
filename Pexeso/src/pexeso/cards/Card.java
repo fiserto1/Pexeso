@@ -7,10 +7,7 @@
 package pexeso.cards;
 
 import java.io.Serializable;
-import javax.swing.Action;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import pexeso.delegates.CardDelegate;
 
 /**
@@ -19,24 +16,28 @@ import pexeso.delegates.CardDelegate;
  */
 public class Card implements Serializable {
     private String reverseSide = "CARD";
-    private ImageIcon cardImage = new ImageIcon();
+    private ImageIcon cardImage;
     private int compareNumber;
     private int idNumber;
     private transient CardDelegate delegate;
-
-
     
     
-    public void revealed() {
-        delegate.cardRevealed(this);
+    public void hideCard() {
+        if (delegate != null) {
+            delegate.cardRevealed(this);
+        }
     }
     
     public void showCard() {
-        delegate.showCard(this);
+        if (delegate != null) {
+            delegate.showCard(this);
+        }
     }
 
     public void turnBack() {
-        delegate.turnBackCard(this);
+        if (delegate != null) {
+            delegate.turnBackCard(this);
+        }
     }
     
     public ImageIcon getCardImage() {
