@@ -6,12 +6,11 @@
 
 package pexeso;
 
-import pexeso.cards.CardAL;
-import pexeso.cards.DeckOfCards;
-import pexeso.games.Game;
-import pexeso.players.ComputerPlayer;
-import pexeso.players.AbstractPlayer;
-import pexeso.players.HumanPlayer;
+import java.awt.GridLayout;
+import pexeso.cards.*;
+import pexeso.games.*;
+import pexeso.players.*;
+import pexeso.delegates.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileInputStream;
@@ -21,17 +20,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
-import pexeso.cards.Card;
-import pexeso.cards.CardButton;
-import pexeso.delegates.CardDelegate;
-import pexeso.delegates.MessageDelegate;
-import pexeso.delegates.PlayerDelegate;
-import pexeso.games.ClientGame;
-import pexeso.games.ServerGame;
 /**
  *
  * @author Tomas
@@ -49,6 +38,8 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     private final JMenuItem loadGameMenuItem = new JMenuItem("Load game");
     private final JMenuItem createOnlineGameMenuItem = new JMenuItem("Create game");
     private final JMenuItem joinOnlineGameMenuItem = new JMenuItem("Join game");
+    private final JMenuItem nameSetMenuItem = new JMenuItem("Change name");
+    private final JMenuItem numOfCardsSetMenuItem = new JMenuItem("Number of Cards");
     //Panels
     private JPanel northPanel;
     private JPanel southPanel;
@@ -67,15 +58,12 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     private JLabel headOutputLabel;
     private JLabel errorLabel;
     //cards
-    private DeckOfCards deck = new DeckOfCards();
-    private ArrayList<CardButton> buttDeck = new ArrayList<CardButton>();
-    
+    private DeckOfCards deck;
+    private Settings settings;
     private Game newGame;
-    private ServerGame newServerGame;
-    private ClientGame newClientGame;
     
-//    private AbstractPlayer player1;
-//    private AbstractPlayer player2;
+    private AbstractPlayer player1;
+    private AbstractPlayer player2;
     
     private final ImageIcon defaultPlayerAvatar = 
             new ImageIcon(getClass().getResource("/avatars/Professor.png"));
@@ -88,12 +76,13 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     public HeadFrame() {
         //Close
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        
         //Menu
         createMenu();
         //Panels
         createPanels();
         
+        this.player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
+        settings = new Settings(64, 1);
         
         getContentPane().setLayout(new java.awt.BorderLayout(30, 30));
         getContentPane().add(leftPanel, java.awt.BorderLayout.LINE_START);
@@ -119,24 +108,18 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         gameMenu.add(joinOnlineGameMenuItem);
         newGameMenu.add(onePlayerGameMenuItem);
         newGameMenu.add(twoPlayersGameMenuItem);
+        settingsMenu.add(nameSetMenuItem);
+        settingsMenu.add(numOfCardsSetMenuItem);
         setJMenuBar(headMenuBar);
         
         onePlayerGameMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (newGame != null) {
-                    Game.gameInterrupted = true;
-                    while (gameThread.isAlive()) {
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException ie) {
-                            System.out.println("ouha");
-                        }
-                    }
-                }
+                tryToEndThread();
+                deck = new DeckOfCards(settings.getNumberOfCards());
                 deck.shuffleCards();
-                AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
-                AbstractPlayer player2 = new ComputerPlayer("Computer", defaultComputerAvatar, 2);
+//                AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
+                player2 = new ComputerPlayer("Computer", defaultComputerAvatar, 2);
                 player1.setDelegate(HeadFrame.this);
                 player2.setDelegate(HeadFrame.this);
                 newGame = new Game(player1, player2, deck);
@@ -147,20 +130,12 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         twoPlayersGameMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                tryToEndThread();
                 
-                if (newGame != null) {
-                    Game.gameInterrupted = true;
-                    while (gameThread.isAlive()) {
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException ie) {
-                            System.out.println("ouha");
-                        }
-                    }
-                }
+                deck = new DeckOfCards(settings.getNumberOfCards());
                 deck.shuffleCards();
-                AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
-                AbstractPlayer player2 = new HumanPlayer("Player 2", defaultPlayerAvatar, 2);
+//                AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
+                player2 = new HumanPlayer("Player 2", defaultPlayerAvatar, 2);
                 player1.setDelegate(HeadFrame.this);
                 player2.setDelegate(HeadFrame.this);
                 newGame = new Game(player1, player2, deck);
@@ -172,18 +147,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-                if (newGame != null) {
-                    Game.gameInterrupted = true;
-                    while (gameThread.isAlive()) {
-                        try {
-                            Thread.sleep(10);
-                        }
-                        catch (InterruptedException ie) {
-                            System.out.println("ouha");
-                        }
-                    }
-                }
+                tryToEndThread();
                 
                 String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
                 ObjectOutputStream objOutStr = null;
@@ -196,12 +160,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
                 } catch (FileNotFoundException fnfe) {
                     errorLabel.setText("File not found.");
                 } catch (IOException ioe) {
-                    try {
-                        throw new IOException("IOExp.",ioe);
-//                    errorLabel.setText("IOExp");
-                    } catch (IOException ex) {
-                        Logger.getLogger(HeadFrame.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    errorLabel.setText("IOExp");
                 } finally {
                     try {
                         if (objOutStr != null) {
@@ -218,16 +177,8 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (newGame != null) {
-                    Game.gameInterrupted = true;
-                    while (gameThread.isAlive()) {
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException ie) {
-                            errorLabel.setText("InterruptedExp.");
-                        }
-                    }
-                }
+                tryToEndThread();
+                
                 ObjectInputStream objInStr = null;
                 String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
                 try {
@@ -265,32 +216,34 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                gameMenu.setEnabled(false);
+                tryToEndThread();
+                deck = new DeckOfCards(settings.getNumberOfCards());
                 deck.shuffleCards();
                 for (Card card : deck.getCards()) {
                     card.setDelegate(HeadFrame.this);
                 }
-                AbstractPlayer player1 = new HumanPlayer("You", defaultPlayerAvatar, 1);
+//                AbstractPlayer player1 = new HumanPlayer("You", defaultPlayerAvatar, 1);
                 player1.setDelegate(HeadFrame.this);
-                newServerGame = new ServerGame(player1, deck);
+                newGame = new ServerGame(player1, deck);
                 
                 setPreferredSize(new java.awt.Dimension(1050, 700));
                 leftPanel.setVisible(true);
                 rightPanel.setVisible(true);
-                saveGameMenuItem.setEnabled(true);
 
                 centerPanel.removeAll();
-                buttDeck = new ArrayList<CardButton>();
-
+                
                 for (int i = 0; i < deck.getCards().length; i++) {
-                    buttDeck.add(new CardButton(deck.getCards()[i]));
+                    centerPanel.add(new CardButton(deck.getCards()[i]));
                 }
-                for (int i = 0; i < deck.getCards().length; i++) {
-                    centerPanel.add(buttDeck.get(i));
-                }
+                
                 centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
+                int rows = (int) Math.sqrt(deck.size());
+                centerPanel.setLayout(new GridLayout(rows, rows, 5, 5));
                 pack();
-                Thread t = new Thread(newServerGame);
-                t.start();
+                Game.gameInterrupted = false;
+                gameThread = new Thread(newGame);
+                gameThread.start();
                 
             }
         });
@@ -299,25 +252,66 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 
             @Override
             public void actionPerformed(ActionEvent e) {
-//                deck.shuffleCards();
-                AbstractPlayer player2 = new HumanPlayer("You", defaultPlayerAvatar, 1);
-                player2.setDelegate(HeadFrame.this);
-                newClientGame = new ClientGame(player2, null);
-//                for (int i = 0; i < buttDeck.size(); i++) {
-//                    centerPanel.add(buttDeck.get(i));
-//                }
+                saveGameMenuItem.setEnabled(false);
+                tryToEndThread();
+                
+//                AbstractPlayer player1 = new HumanPlayer("You", defaultPlayerAvatar, 1);
+                player1.setDelegate(HeadFrame.this);
+                newGame = new ClientGame(player1, null);
                 setPreferredSize(new java.awt.Dimension(1050, 700));
                 leftPanel.setVisible(true);
                 rightPanel.setVisible(true);
-                saveGameMenuItem.setEnabled(true);
                 
                 centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
                 pack();
-                
-                Thread t = new Thread(newClientGame);
-                t.start();
+                Game.gameInterrupted = false;
+                gameThread = new Thread(newGame);
+                gameThread.start();
             }
         });
+        
+        nameSetMenuItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String newName = JOptionPane.showInputDialog("Enter new name.");
+                if (newName != null) {
+                    player1.setName(newName);
+                }
+            }
+        });
+        
+        numOfCardsSetMenuItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int num = 0;
+                do {
+                    String newNumber = JOptionPane.showInputDialog("Enter number of cards. {64, 36, 16, 4}");
+                    try {
+                        num = Integer.parseInt(newNumber);
+                    }
+                    catch (NumberFormatException nfe) {
+                        errorLabel.setText("Wrong number. Try again.");
+                    }
+                }
+                while(num != 64 && num != 36 && num != 16 && num != 4);
+                settings.setNumberOfCards(num);
+            }
+        });
+    }
+    
+    private void tryToEndThread() {
+        if (gameThread != null) {
+            Game.gameInterrupted = true;
+            while (gameThread.isAlive()) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ie) {
+                    System.out.println("ouha");
+                }
+            }
+        }
     }
     
     private void showGameBoard() {
@@ -329,21 +323,17 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         centerPanel.removeAll();
         for (Card card : deck.getCards()) {
             card.setDelegate(this);
-        }
-        buttDeck = new ArrayList<CardButton>();
-        for (int i = 0; i < deck.getCards().length; i++) {
-            buttDeck.add(new CardButton(deck.getCards()[i]));
-            
-        }
-        for (int i = 0; i < deck.getCards().length; i++) {
-            centerPanel.add(buttDeck.get(i));
+            centerPanel.add(new CardButton(card));
+            if (card.isDiscovered()) {
+                cardRevealed(card);
+            }
         }
         centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
-        
+        int rows = (int) Math.sqrt(deck.size());
+        centerPanel.setLayout(new GridLayout(rows, rows, 5, 5));
         if (gameThread != null) {
             System.out.println(gameThread.isAlive());
         }
-        
         
         Game.gameInterrupted = false;
         gameThread = new Thread(newGame);
@@ -457,31 +447,35 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
 
     @Override
     public void activateCards(CardAL listener) {
-        for (CardButton cardBut : buttDeck) {
-            cardBut.addActionListener(listener);
+        for (int i = 0; i < centerPanel.getComponentCount(); i++) {
+            CardButton cb = (CardButton) centerPanel.getComponent(i);
+            cb.addActionListener(listener);
         }
     }
 
     @Override
     public void deactivateCards(CardAL listener) {
-        for (CardButton cardBut : buttDeck) {
-            cardBut.removeActionListener(listener);
+        for (int i = 0; i < centerPanel.getComponentCount(); i++) {
+            CardButton cb = (CardButton) centerPanel.getComponent(i);
+            cb.removeActionListener(listener);
         }
     }
 
     @Override
     public void cardRevealed(Card card) {
-        buttDeck.get(card.getIdNumber()).setVisible(false);
+        centerPanel.getComponent(card.getIdNumber()).setVisible(false);
     }
 
     @Override
     public void showCard(Card card) {
-        buttDeck.get(card.getIdNumber()).showCard();
+        CardButton cardBut = (CardButton) centerPanel.getComponent(card.getIdNumber());
+        cardBut.showCard();
     }
 
     @Override
     public void turnBackCard(Card card) {
-        buttDeck.get(card.getIdNumber()).turnBack();
+        CardButton cardBut = (CardButton) centerPanel.getComponent(card.getIdNumber());
+        cardBut.turnBack();
     }
 
     @Override
@@ -490,11 +484,12 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         for (Card card : deck.getCards()) {
             card.setDelegate(this);
         }
-        buttDeck = new ArrayList<CardButton>();
+        
         centerPanel.removeAll();
-        for (int i = 0; i < deck.getCards().length; i++) {
-            buttDeck.add(new CardButton(deck.getCards()[i]));
-            centerPanel.add(buttDeck.get(i));
+        for (Card card : deck.getCards()) {
+            centerPanel.add(new CardButton(card));
         }
+        int rows = (int) Math.sqrt(deck.getCards().length);
+        centerPanel.setLayout(new GridLayout(rows, rows, 5, 5));
     }
 }
