@@ -1,7 +1,6 @@
 
 package pexeso.cards;
 
-import java.awt.Image;
 import java.io.Serializable;
 import java.util.Random;
 import javax.swing.ImageIcon;
@@ -11,10 +10,16 @@ import javax.swing.ImageIcon;
  * @author Tomas
  */
 public class DeckOfCards implements Serializable {
-    public static final int NUMBER_OF_CARDS = 64;
-    private final Card[] cards = new Card[NUMBER_OF_CARDS];
+//    public static final int NUMBER_OF_CARDS = 64;
+    private int numberOfCards;
+    private final Card[] cards;
 
-    public DeckOfCards() {
+    public DeckOfCards(int numberOfCards) {
+        if (numberOfCards < 4 || numberOfCards > 64) {
+            throw new IllegalArgumentException("Wrong number of cards.");
+        }
+        this.numberOfCards = numberOfCards;
+        this.cards = new Card[numberOfCards];
         int j = 1;
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new Card();
@@ -37,11 +42,14 @@ public class DeckOfCards implements Serializable {
             cards[change] = temp;
         }
         
-        //turn
+        //turn back
         for (int i = 0; i < cards.length; i++) {
             cards[i].turnBack();
             cards[i].setIdNumber(i);
         }
+    }
+    public int size() {
+        return numberOfCards;
     }
     
     public Card[] getCards() {
@@ -51,8 +59,6 @@ public class DeckOfCards implements Serializable {
     private ImageIcon loadImgFromFile(int fileNumber) {
         ImageIcon image = new ImageIcon(getClass().getResource(
                 "/images/" + fileNumber + ".jpg"));
-        ImageIcon newImage = new ImageIcon(image.getImage().getScaledInstance(
-                image.getIconWidth() / 2, -1, Image.SCALE_SMOOTH));
-        return newImage;
+        return image;
     }
 }

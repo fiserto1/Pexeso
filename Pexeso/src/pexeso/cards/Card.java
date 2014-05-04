@@ -20,9 +20,11 @@ public class Card implements Serializable {
     private int compareNumber;
     private int idNumber;
     private transient CardDelegate delegate;
+    private boolean discovered;
     
     
     public void hideCard() {
+        discovered = true;
         if (delegate != null) {
             delegate.cardRevealed(this);
         }
@@ -72,7 +74,13 @@ public class Card implements Serializable {
         this.delegate = delegate;
     }
     
+    public boolean isDiscovered() {
+        return discovered;
+    }
     
+    public void setDiscovered(boolean discovered) {
+        this.discovered = discovered;
+    }
     
     @Override
     public int hashCode() {

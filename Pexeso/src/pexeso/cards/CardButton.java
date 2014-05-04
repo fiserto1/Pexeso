@@ -6,6 +6,8 @@
 
 package pexeso.cards;
 
+import java.awt.Image;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 /**
@@ -24,7 +26,9 @@ public class CardButton extends JButton {
     
     public void showCard() {
         this.setText("");
-        this.setIcon(card.getCardImage());
+        ImageIcon newImage = new ImageIcon(card.getCardImage().getImage().getScaledInstance(
+                (this.getHeight()-(this.getHeight()/5)), -1, Image.SCALE_SMOOTH));
+        this.setIcon(newImage);
     }
 
     public void turnBack() {
