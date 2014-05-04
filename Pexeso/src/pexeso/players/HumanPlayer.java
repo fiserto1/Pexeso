@@ -29,7 +29,7 @@ public class HumanPlayer extends AbstractPlayer {
     
     
     @Override
-    public OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves) {
+    public OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves, int numberOfCards) {
         
         //wait for user choice
         myMove = null;

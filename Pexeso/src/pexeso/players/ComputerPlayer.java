@@ -30,7 +30,7 @@ public class ComputerPlayer extends AbstractPlayer {
     }
     
     @Override
-    public OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves) {
+    public OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves, int numberOfCards) {
         saveToMemory(myLastMove);
         
         if (oppMoves != null) {
@@ -46,17 +46,17 @@ public class ComputerPlayer extends AbstractPlayer {
             }
         }
         
-        return playRandom();
+        return playRandom(numberOfCards);
     }
     
-    private OneMove playRandom() {
+    private OneMove playRandom(int numberOfCards) {
         Random rnd = new Random();
         int firstTurn;
         int secondTurn;
         boolean pass = false;
         while (!pass) {
-            firstTurn = rnd.nextInt(DeckOfCards.NUMBER_OF_CARDS);
-            secondTurn = rnd.nextInt(DeckOfCards.NUMBER_OF_CARDS);
+            firstTurn = rnd.nextInt(numberOfCards);
+            secondTurn = rnd.nextInt(numberOfCards);
             if (firstTurn == secondTurn) {
                 continue;
             }

@@ -31,7 +31,7 @@ public abstract class AbstractPlayer implements Serializable {
     }
 
     
-    public abstract OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves);
+    public abstract OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves, int numberOfCards);
     
     
     public int getPlayerNumber() {
