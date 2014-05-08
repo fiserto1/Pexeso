@@ -351,7 +351,9 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
     @Override
     public void cardShowed(Card card) {
         CardButton cardBut = (CardButton) centerPanel.getComponent(card.getIdNumber());
+        cardBut.setVisible(false);
         cardBut.showCard();
+        cardBut.setVisible(true);
     }
 
     @Override

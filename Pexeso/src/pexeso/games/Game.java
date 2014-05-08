@@ -17,8 +17,8 @@ import pexeso.OneMove;
 import pexeso.delegates.MessageDelegate;
 
 /**
- * Trida pro hru.
- * Implementuje Serializable, Runnable
+ * Trida pro hru. Implementuje Serializable, Runnable
+ *
  * @author Tomas
  */
 public class Game implements Serializable, Runnable {
@@ -97,7 +97,7 @@ public class Game implements Serializable, Runnable {
      * Vyhodnoti tah prislusneho hrace.
      */
     protected void evaluateMove() {
-        
+
         if (newMove != null) {
             showCards();
             if (newMove.getFirstCardIDNumber() != -1
@@ -143,95 +143,114 @@ public class Game implements Serializable, Runnable {
      * Porovna karty a ulozi, aby je mohl pozdeji poslat protihraci.
      */
     protected void compareCards() {
-        if (deck.getCards()[newMove.getFirstCardIDNumber()].equals(
-                deck.getCards()[newMove.getSecondCardIDNumber()])) {
+        int firstCardIDNum = newMove.getFirstCardIDNumber();
+        int secondCardIDNum = newMove.getSecondCardIDNumber();
+        if (deck.getCards()[firstCardIDNum].equals(
+                deck.getCards()[secondCardIDNum])) {
 
-            deck.getCards()[newMove.getFirstCardIDNumber()].hideCard();
-            deck.getCards()[newMove.getSecondCardIDNumber()].hideCard();
-            uncoveredCards += 2;
-            if (playerOnTurn) {
-                player1.setScore(player1.getScore() + 10);
-                lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(),
-                        newMove.getSecondCardIDNumber());
-                if (lastPlayer1Move.getFirstCardIDNumber() != -1
-                        && lastPlayer1Move.getSecondCardIDNumber() != -1) {
-                    lastPlayer1Move.setFirstCardCompareNumber(
-                            deck.getCards()[lastPlayer1Move.getFirstCardIDNumber()].getCompareNumber());
-                    lastPlayer1Move.setSecondCardCompareNumber(
-                            deck.getCards()[lastPlayer1Move.getSecondCardIDNumber()].getCompareNumber());
-                    if (!rightMoveByPlayer1) {
-                        rightMoveByPlayer1 = true;
-                        player1Moves = new ArrayList<OneMove>();
-                        player1Moves.add(lastPlayer1Move);
-                    } else {
-                        player1Moves.add(lastPlayer1Move);
-                    }
-                }
-            } else {
-                player2.setScore(player2.getScore() + 10);
-                lastPlayer2Move = new OneMove(newMove.getFirstCardIDNumber(),
-                        newMove.getSecondCardIDNumber());
+            rightMove(firstCardIDNum, secondCardIDNum);
 
-                if (lastPlayer2Move.getFirstCardIDNumber() != -1
-                        && lastPlayer2Move.getSecondCardIDNumber() != -1) {
-                    lastPlayer2Move.setFirstCardCompareNumber(
-                            deck.getCards()[lastPlayer2Move.getFirstCardIDNumber()].getCompareNumber());
-                    lastPlayer2Move.setSecondCardCompareNumber(
-                            deck.getCards()[lastPlayer2Move.getSecondCardIDNumber()].getCompareNumber());
-                    if (!rightMoveByPlayer2) {
-                        rightMoveByPlayer2 = true;
-                        player2Moves = new ArrayList<OneMove>();
-                        player2Moves.add(lastPlayer2Move);
-                    } else {
-                        player2Moves.add(lastPlayer2Move);
-                    }
-                }
-            }
-            newMove = null;
         } else {
-            if (playerOnTurn) {
 
-                lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(),
-                        newMove.getSecondCardIDNumber());
-                if (lastPlayer1Move.getFirstCardIDNumber() != -1
-                        && lastPlayer1Move.getSecondCardIDNumber() != -1) {
-                    lastPlayer1Move.setFirstCardCompareNumber(
-                            deck.getCards()[lastPlayer1Move.getFirstCardIDNumber()].getCompareNumber());
-                    lastPlayer1Move.setSecondCardCompareNumber(
-                            deck.getCards()[lastPlayer1Move.getSecondCardIDNumber()].getCompareNumber());
+            falseMove(firstCardIDNum, secondCardIDNum);
 
-                    if (!rightMoveByPlayer1) {
-                        player1Moves = new ArrayList<OneMove>();
-                        player1Moves.add(lastPlayer1Move);
-                    } else {
-                        rightMoveByPlayer1 = false;
-                        player1Moves.add(lastPlayer1Move);
-                    }
-                }
-            } else {
-                player2Moves = new ArrayList<OneMove>();
-                lastPlayer2Move = new OneMove(newMove.getFirstCardIDNumber(),
-                        newMove.getSecondCardIDNumber());
-
-                if (lastPlayer2Move.getFirstCardIDNumber() != -1
-                        && lastPlayer2Move.getSecondCardIDNumber() != -1) {
-                    lastPlayer2Move.setFirstCardCompareNumber(
-                            deck.getCards()[lastPlayer2Move.getFirstCardIDNumber()].getCompareNumber());
-                    lastPlayer2Move.setSecondCardCompareNumber(
-                            deck.getCards()[lastPlayer2Move.getSecondCardIDNumber()].getCompareNumber());
-                    if (!rightMoveByPlayer2) {
-                        player2Moves = new ArrayList<OneMove>();
-                        player2Moves.add(lastPlayer2Move);
-                    } else {
-                        rightMoveByPlayer2 = false;
-                        player2Moves.add(lastPlayer2Move);
-                    }
-                }
-            }
-            deck.getCards()[newMove.getFirstCardIDNumber()].turnBack();
-            deck.getCards()[newMove.getSecondCardIDNumber()].turnBack();
+            deck.getCards()[firstCardIDNum].turnBack();
+            deck.getCards()[secondCardIDNum].turnBack();
             changePlayerOnTurn();
             newMove = null;
+        }
+    }
+
+    /**
+     * Hrac nasel dvojici.
+     *
+     * @param firstCardIDNum ID prvni karty.
+     * @param secondCardIDNum ID druhe karty.
+     */
+    private void rightMove(int firstCardIDNum, int secondCardIDNum) {
+        deck.getCards()[firstCardIDNum].hideCard();
+        deck.getCards()[secondCardIDNum].hideCard();
+        uncoveredCards += 2;
+        if (playerOnTurn) {
+            player1.setScore(player1.getScore() + 10);
+            lastPlayer1Move = new OneMove(firstCardIDNum, secondCardIDNum);
+            if (firstCardIDNum != -1 && secondCardIDNum != -1) {
+                lastPlayer1Move.setFirstCardCompareNumber(
+                        deck.getCards()[firstCardIDNum].getCompareNumber());
+                lastPlayer1Move.setSecondCardCompareNumber(
+                        deck.getCards()[secondCardIDNum].getCompareNumber());
+                if (!rightMoveByPlayer1) {
+                    rightMoveByPlayer1 = true;
+                    player1Moves = new ArrayList<OneMove>();
+                    player1Moves.add(lastPlayer1Move);
+                } else {
+                    player1Moves.add(lastPlayer1Move);
+                }
+            }
+        } else {
+            player2.setScore(player2.getScore() + 10);
+            lastPlayer2Move = new OneMove(firstCardIDNum, secondCardIDNum);
+
+            if (firstCardIDNum != -1 && secondCardIDNum != -1) {
+                lastPlayer2Move.setFirstCardCompareNumber(
+                        deck.getCards()[firstCardIDNum].getCompareNumber());
+                lastPlayer2Move.setSecondCardCompareNumber(
+                        deck.getCards()[secondCardIDNum].getCompareNumber());
+                if (!rightMoveByPlayer2) {
+                    rightMoveByPlayer2 = true;
+                    player2Moves = new ArrayList<OneMove>();
+                    player2Moves.add(lastPlayer2Move);
+                } else {
+                    player2Moves.add(lastPlayer2Move);
+                }
+            }
+        }
+        newMove = null;
+    }
+
+    /**
+     * Hrac netrefil dvojici.
+     *
+     * @param firstCardIDNum ID prvni karty.
+     * @param secondCardIDNum ID druhe karty.
+     */
+    private void falseMove(int firstCardIDNum, int secondCardIDNum) {
+        if (playerOnTurn) {
+
+            lastPlayer1Move = new OneMove(firstCardIDNum, secondCardIDNum);
+            if (firstCardIDNum != -1 && secondCardIDNum != -1) {
+                lastPlayer1Move.setFirstCardCompareNumber(
+                        deck.getCards()[firstCardIDNum].getCompareNumber());
+                lastPlayer1Move.setSecondCardCompareNumber(
+                        deck.getCards()[secondCardIDNum].getCompareNumber());
+
+                if (!rightMoveByPlayer1) {
+                    player1Moves = new ArrayList<OneMove>();
+                    player1Moves.add(lastPlayer1Move);
+                } else {
+                    rightMoveByPlayer1 = false;
+                    player1Moves.add(lastPlayer1Move);
+                }
+            }
+        } else {
+            player2Moves = new ArrayList<OneMove>();
+            lastPlayer2Move = new OneMove(firstCardIDNum,
+                    newMove.getSecondCardIDNumber());
+
+            if (firstCardIDNum != -1
+                    && secondCardIDNum != -1) {
+                lastPlayer2Move.setFirstCardCompareNumber(
+                        deck.getCards()[firstCardIDNum].getCompareNumber());
+                lastPlayer2Move.setSecondCardCompareNumber(
+                        deck.getCards()[secondCardIDNum].getCompareNumber());
+                if (!rightMoveByPlayer2) {
+                    player2Moves = new ArrayList<OneMove>();
+                    player2Moves.add(lastPlayer2Move);
+                } else {
+                    rightMoveByPlayer2 = false;
+                    player2Moves.add(lastPlayer2Move);
+                }
+            }
         }
     }
 
