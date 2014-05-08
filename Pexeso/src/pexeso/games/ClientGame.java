@@ -15,7 +15,8 @@ import pexeso.cards.DeckOfCards;
 import pexeso.OneMove;
 
 /**
- *
+ * Trida pro hru z pohledu klienta.
+ * Rozsiruje Game.
  * @author Tomas
  */
 public class ClientGame extends Game {
@@ -23,6 +24,11 @@ public class ClientGame extends Game {
     private ObjectOutputStream objOutStream;
     private ObjectInputStream objInStream;
 
+    /**
+     * Nastavi hrace na tahu na false. (hru zacina server)
+     * @param clientPlayer Hrac. (klient)
+     * @param deck Balicek karet.
+     */
     public ClientGame(AbstractPlayer clientPlayer, DeckOfCards deck) {
         super(clientPlayer, null, deck);
         playerOnTurn = false;
@@ -35,9 +41,11 @@ public class ClientGame extends Game {
             connectToServer();
         } catch (UnknownHostException e) {
             output.setErrorMessage("Wrong ip adress.");
+            closeStreams();
             return;
         } catch (IOException e) {
             output.setErrorMessage("Can't connect to host.");
+            closeStreams();
             return;
         }
 
@@ -45,9 +53,11 @@ public class ClientGame extends Game {
             loadFromServer();
         } catch (ClassNotFoundException ex) {
             output.setErrorMessage("Class not found. " + ex.getMessage());
+            closeStreams();
             return;
         } catch (IOException ex) {
             output.setErrorMessage("Can't load data from server.");
+            closeStreams();
             return;
         }
 
@@ -65,6 +75,7 @@ public class ClientGame extends Game {
                     objOutStream.writeObject(newMove);
                 } catch (IOException ex) {
                     output.setErrorMessage("Can't send my move to server.");
+                    closeStreams();
                     return;
                 }
             } else {
@@ -72,25 +83,49 @@ public class ClientGame extends Game {
                     newMove = (OneMove) objInStream.readObject();
                 } catch (IOException ex) {
                     output.setErrorMessage("Can't read move from server.");
+                    closeStreams();
                     return;
                 } catch (ClassNotFoundException ex) {
                     output.setErrorMessage("OneMove class not found.");
+                    closeStreams();
                     return;
                 }
             }
 
+            if (gameInterrupted) {
+                closeStreams();
+                return;
+            }
             evaluateMove();
         }
 
+        closeStreams();
+    }
+    
+    /**
+     * Zavre proudy.
+     */
+    private void closeStreams() {
         try {
-            objOutStream.close();
-            objInStream.close();
-            clientSock.close();
+            if (objInStream != null) {
+                objInStream.close();
+            }
+            if (objOutStream != null) {
+                objOutStream.close();
+            }
+            if (clientSock != null) {
+                clientSock.close();
+            }
         } catch (IOException ex) {
             output.setErrorMessage("Can't close streams or socket.");
         }
     }
 
+    /**
+     * Pripoji se k serveru. Posle serveru hrace(klienta).
+     * @throws UnknownHostException 
+     * @throws IOException 
+     */
     private void connectToServer() throws UnknownHostException, IOException {
         clientSock = new Socket(hostIPAddress, 4444);
         objOutStream = new ObjectOutputStream(clientSock.getOutputStream());
@@ -98,6 +133,11 @@ public class ClientGame extends Game {
         objOutStream.writeObject(player1);
     }
 
+    /**
+     * Nacte hrace a balicek karet ze serveru.
+     * @throws ClassNotFoundException
+     * @throws IOException 
+     */
     private void loadFromServer() throws ClassNotFoundException, IOException {
         player2 = (AbstractPlayer) objInStream.readObject();
         player2.setPlayerNumber(2);

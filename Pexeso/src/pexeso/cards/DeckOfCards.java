@@ -1,18 +1,27 @@
 package pexeso.cards;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Random;
 import javax.swing.ImageIcon;
 
 /**
- *
+ * Trida pro balicek karet.
+ * Implementuje Serializable.
  * @author Tomas
  */
 public class DeckOfCards implements Serializable {
 
     private int numberOfCards;
+    /**
+     * Balicek karet.
+     */
     private final Card[] cards;
 
+    /**
+     * Pocet karet v balicku musi byt v intervalu od 4 do 64 vcetne
+     * @param numberOfCards Pocet karet v balicku.
+     */
     public DeckOfCards(int numberOfCards) {
         if (numberOfCards < 4 || numberOfCards > 64) {
             throw new IllegalArgumentException("Wrong number of cards.");
@@ -22,6 +31,10 @@ public class DeckOfCards implements Serializable {
         createDeck();
     }
 
+    /**
+     * Vytvori balicek dvojic karet do pole.
+     * Priradi kazde karte porovnavaci cislo, ID, predni stranu.
+     */
     private void createDeck() {
         int j = 1;
         for (int i = 0; i < cards.length; i++) {
@@ -35,6 +48,9 @@ public class DeckOfCards implements Serializable {
         }
     }
 
+    /**
+     * Zamicha balicek karet a otoci je rubem vzhuru.
+     */
     public void shuffleCards() {
         Random rnd = new Random();
         //shuffle
@@ -52,17 +68,63 @@ public class DeckOfCards implements Serializable {
         }
     }
 
+    /**
+     * 
+     * @return Vrati pocet karet v balicku.
+     */
     public int size() {
         return numberOfCards;
     }
 
+    /**
+     * Vrati balicek karet v poli.
+     * @return 
+     */
     public Card[] getCards() {
         return cards;
     }
 
+    /**
+     * Nacte predni stranu karty ze souboru.
+     * Cislo souboru je stejne jako porovnavaci cislo karty. Takze vzniknou
+     * dvojice obrazku.
+     * @param fileNumber Cislo souboru.
+     * @return 
+     */
     private ImageIcon loadImgFromFile(int fileNumber) {
         ImageIcon image = new ImageIcon(getClass().getResource(
                 "/images/" + fileNumber + ".jpg"));
         return image;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DeckOfCards other = (DeckOfCards) obj;
+        if (this.numberOfCards != other.numberOfCards) {
+            return false;
+        }
+        if (!Arrays.deepEquals(this.cards, other.cards)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DeckOfCards{" + "numberOfCards=" + numberOfCards + ", cards=" + cards + '}';
+    }
+    
+    
 }

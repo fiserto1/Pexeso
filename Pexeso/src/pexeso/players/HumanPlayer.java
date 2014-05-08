@@ -11,7 +11,8 @@ import pexeso.cards.CardAL;
 import pexeso.OneMove;
 
 /**
- *
+ * Trida pro lidskeho hrace, ktery klika na tlacitka.
+ * Rozsiruje AbstractPlayer.
  * @author Tomas
  */
 public class HumanPlayer extends AbstractPlayer {
@@ -19,6 +20,12 @@ public class HumanPlayer extends AbstractPlayer {
     private boolean moveCompleted;
     private OneMove myMove;
 
+    /**
+     * 
+     * @param name Jmeno hrace.
+     * @param avatar Avatar hrace.
+     * @param playerNumber Cislo hrace.
+     */
     public HumanPlayer(String name, ImageIcon avatar, int playerNumber) {
         super(name, avatar, playerNumber);
     }
@@ -27,12 +34,12 @@ public class HumanPlayer extends AbstractPlayer {
     public OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves,
             int numberOfCards) {
 
-        //wait for user choice
+        
         myMove = null;
         moveCompleted = false;
         CardAL listener = new CardAL(this);
         getDelegate().activateCards(listener);
-
+        //wait for user choice
         while (!moveCompleted) {
             try {
                 Thread.sleep(10);
@@ -48,10 +55,19 @@ public class HumanPlayer extends AbstractPlayer {
         return myMove;
     }
 
+    /**
+     * true - Tah je kompletni.
+     * false - Tah neni kompletni.
+     * @param moveCompleted Kompletni tah.
+     */
     public void setMoveCompleted(boolean moveCompleted) {
         this.moveCompleted = moveCompleted;
     }
 
+    /**
+     * Nastavi hracuv tah.
+     * @param myMove Aktualni tah.
+     */
     public void setMyMove(OneMove myMove) {
         this.myMove = myMove;
     }

@@ -12,7 +12,11 @@ import pexeso.OneMove;
 import pexeso.players.HumanPlayer;
 
 /**
- *
+ * Trida pro posluchace karty.
+ * Dovoluje/zakazuje hraci kliknout na tlacitko s kartou.
+ * Pri kliknuti na tlacitko otoci kartu licem vzhuru a pokud se jedna o druhou
+ * kartu, tak oznami hraci, ze tah je kompletni a posle mu ID karet, na ktere klikl.
+ * Implementuje serializable, ActionListener
  * @author Tomas
  */
 public class CardAL implements ActionListener, Serializable {
@@ -20,6 +24,10 @@ public class CardAL implements ActionListener, Serializable {
     private final OneMove move = new OneMove(-1, -1);
     private final HumanPlayer player;
 
+    /**
+     * 
+     * @param player Hrac ke kteremu se vztahuje posluchac karet.
+     */
     public CardAL(HumanPlayer player) {
         this.player = player;
     }
@@ -44,7 +52,42 @@ public class CardAL implements ActionListener, Serializable {
         }
     }
 
+    /**
+     * 
+     * @return Vrati soucasny tah.
+     */
     public OneMove getMove() {
         return move;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 37 * hash + (this.move != null ? this.move.hashCode() : 0);
+        hash = 37 * hash + (this.player != null ? this.player.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CardAL other = (CardAL) obj;
+        if (this.move != other.move && (this.move == null || !this.move.equals(other.move))) {
+            return false;
+        }
+        if (this.player != other.player && (this.player == null || !this.player.equals(other.player))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "CardAL{" + "move=" + move + ", player=" + player + '}';
     }
 }

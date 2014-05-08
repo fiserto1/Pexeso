@@ -10,23 +10,26 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import pexeso.players.AbstractPlayer;
 import pexeso.cards.DeckOfCards;
 import pexeso.OneMove;
 
 /**
- *
+ * Trida pro hru z pohledu serveru.
+ * Rozsiruje Game.
  * @author Tomas
  */
 public class ServerGame extends Game {
 
-//    private ServerSocket serverSock;
-//    private Socket clientSock;
     private ObjectOutputStream objOutStream;
     private ObjectInputStream objInStream;
 
+    /**
+     * Nastavi hrace na tahu na true - zacina server
+     * @param serverPlayer Hrac. (server)
+     * @param deck Balicek karet.
+     */
     public ServerGame(AbstractPlayer serverPlayer, DeckOfCards deck) {
         super(serverPlayer, null, deck);
         playerOnTurn = true;
@@ -38,19 +41,22 @@ public class ServerGame extends Game {
             connectClient();
         } catch (UnknownHostException ex) {
             output.setErrorMessage("IP not found.");
+            closeStreams();
             return;
         } catch (ClassNotFoundException ex) {
             output.setErrorMessage("Player class not found.");
+            closeStreams();
             return;
         } catch (IOException ex) {
-            System.out.println("rly");
             output.setErrorMessage(ex.getMessage());
+            closeStreams();
             return;
         }
         try {
             sendGameToClient();
         } catch (IOException ex) {
             output.setErrorMessage("Can't send game to client.");
+            closeStreams();
             return;
         }
 
@@ -70,6 +76,7 @@ public class ServerGame extends Game {
                     objOutStream.writeObject(newMove);
                 } catch (IOException ex) {
                     output.setErrorMessage("Can't send my move to client.");
+                    closeStreams();
                     return;
                 }
             } else {
@@ -77,26 +84,53 @@ public class ServerGame extends Game {
                     newMove = (OneMove) objInStream.readObject();
                 } catch (IOException ex) {
                     output.setErrorMessage("Can't read move from client.");
+                    closeStreams();
                     return;
                 } catch (ClassNotFoundException ex) {
                     output.setErrorMessage("OneMove class not found.");
+                    closeStreams();
                     return;
                 }
+            }
+            if (gameInterrupted) {
+                closeStreams();
+                return;
             }
 
             evaluateMove();
         }
 
+        closeStreams();
+    }
+    
+    /**
+     * Zavre proudy.
+     */
+    private void closeStreams() {
         try {
-            objOutStream.close();
-            objInStream.close();
-            clientSock.close();
-            serverSock.close();
+            if (objInStream != null) {
+                objInStream.close();
+            }
+            if (objOutStream != null) {
+                objOutStream.close();
+            }
+            if (clientSock != null) {
+                clientSock.close();
+            }
+            if (serverSock != null) {
+                serverSock.close();
+            }
         } catch (IOException ex) {
             output.setErrorMessage("Cant close streams.");
         }
     }
 
+    /**
+     * Pripoji klienta. Nacte hrace (klienta).
+     * @throws UnknownHostException
+     * @throws ClassNotFoundException
+     * @throws IOException 
+     */
     private void connectClient() throws UnknownHostException, ClassNotFoundException, IOException {
         output.setHeadMessage("Your IP adress: "
                 + InetAddress.getLocalHost().getHostAddress());
@@ -109,6 +143,10 @@ public class ServerGame extends Game {
         player2.setDelegate(player1.getDelegate());
     }
 
+    /**
+     * Odesle hrace (server) a balicek karet klientovi.
+     * @throws IOException 
+     */
     private void sendGameToClient() throws IOException {
         objOutStream.writeObject(player1);
         objOutStream.writeObject(deck);

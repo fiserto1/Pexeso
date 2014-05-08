@@ -17,7 +17,8 @@ import pexeso.OneMove;
 import pexeso.delegates.MessageDelegate;
 
 /**
- *
+ * Trida pro hru.
+ * Implementuje Serializable, Runnable
  * @author Tomas
  */
 public class Game implements Serializable, Runnable {
@@ -30,12 +31,12 @@ public class Game implements Serializable, Runnable {
 
     // true - player one's turn
     // false - player two's turn
-    protected boolean playerOnTurn = true;
+    protected boolean playerOnTurn;
     protected AbstractPlayer player1;
     protected AbstractPlayer player2;
     protected DeckOfCards deck;
 
-    protected int uncoveredCards = 0;
+    protected int uncoveredCards;
 
     protected OneMove newMove;
     protected OneMove lastPlayer1Move;
@@ -50,12 +51,20 @@ public class Game implements Serializable, Runnable {
     protected transient Message output;
     protected boolean endOfGame;
 
+    /**
+     * Zacina prvni hrac.
+     *
+     * @param player1 Privni hrac.
+     * @param player2 Druhy hrac.
+     * @param deck Balicek karet.
+     */
     public Game(AbstractPlayer player1, AbstractPlayer player2, DeckOfCards deck) {
         this.player1 = player1;
         this.player2 = player2;
         this.deck = deck;
         this.lastPlayer1Move = null;
         this.lastPlayer2Move = null;
+        this.playerOnTurn = true;
         if (player1 != null) {
             this.output = new Message((HeadFrame) player1.getDelegate());
         } else {
@@ -77,14 +86,18 @@ public class Game implements Serializable, Runnable {
             } else {
                 newMove = player2.move(lastPlayer2Move, player1Moves, deck.size());
             }
+            if (gameInterrupted) {
+                return;
+            }
             evaluateMove();
         }
     }
 
+    /**
+     * Vyhodnoti tah prislusneho hrace.
+     */
     protected void evaluateMove() {
-        if (gameInterrupted) {
-            return;
-        }
+        
         if (newMove != null) {
             showCards();
             if (newMove.getFirstCardIDNumber() != -1
@@ -98,6 +111,9 @@ public class Game implements Serializable, Runnable {
         }
     }
 
+    /**
+     * Otoci karticky po dobu jedne vteriny licem vzhuru.
+     */
     protected void showCards() {
         deck.getCards()[newMove.getFirstCardIDNumber()].showCard();
         deck.getCards()[newMove.getSecondCardIDNumber()].showCard();
@@ -109,6 +125,9 @@ public class Game implements Serializable, Runnable {
         }
     }
 
+    /**
+     * Ukonci hru a urci viteze.
+     */
     public void endGame() {
         endOfGame = true;
         if (player1.getScore() > player2.getScore()) {
@@ -120,17 +139,26 @@ public class Game implements Serializable, Runnable {
         }
     }
 
+    /**
+     * Porovna karty a ulozi, aby je mohl pozdeji poslat protihraci.
+     */
     protected void compareCards() {
-        if (deck.getCards()[newMove.getFirstCardIDNumber()].equals(deck.getCards()[newMove.getSecondCardIDNumber()])) {
+        if (deck.getCards()[newMove.getFirstCardIDNumber()].equals(
+                deck.getCards()[newMove.getSecondCardIDNumber()])) {
+
             deck.getCards()[newMove.getFirstCardIDNumber()].hideCard();
             deck.getCards()[newMove.getSecondCardIDNumber()].hideCard();
             uncoveredCards += 2;
             if (playerOnTurn) {
                 player1.setScore(player1.getScore() + 10);
-                lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
-                if (lastPlayer1Move.getFirstCardIDNumber() != -1 && lastPlayer1Move.getSecondCardIDNumber() != -1) {
-                    lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer1Move.getFirstCardIDNumber()].getCompareNumber());
-                    lastPlayer1Move.setSecondCardCompareNumber(deck.getCards()[lastPlayer1Move.getSecondCardIDNumber()].getCompareNumber());
+                lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(),
+                        newMove.getSecondCardIDNumber());
+                if (lastPlayer1Move.getFirstCardIDNumber() != -1
+                        && lastPlayer1Move.getSecondCardIDNumber() != -1) {
+                    lastPlayer1Move.setFirstCardCompareNumber(
+                            deck.getCards()[lastPlayer1Move.getFirstCardIDNumber()].getCompareNumber());
+                    lastPlayer1Move.setSecondCardCompareNumber(
+                            deck.getCards()[lastPlayer1Move.getSecondCardIDNumber()].getCompareNumber());
                     if (!rightMoveByPlayer1) {
                         rightMoveByPlayer1 = true;
                         player1Moves = new ArrayList<OneMove>();
@@ -141,11 +169,15 @@ public class Game implements Serializable, Runnable {
                 }
             } else {
                 player2.setScore(player2.getScore() + 10);
-                lastPlayer2Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
+                lastPlayer2Move = new OneMove(newMove.getFirstCardIDNumber(),
+                        newMove.getSecondCardIDNumber());
 
-                if (lastPlayer2Move.getFirstCardIDNumber() != -1 && lastPlayer2Move.getSecondCardIDNumber() != -1) {
-                    lastPlayer2Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer2Move.getFirstCardIDNumber()].getCompareNumber());
-                    lastPlayer2Move.setSecondCardCompareNumber(deck.getCards()[lastPlayer2Move.getSecondCardIDNumber()].getCompareNumber());
+                if (lastPlayer2Move.getFirstCardIDNumber() != -1
+                        && lastPlayer2Move.getSecondCardIDNumber() != -1) {
+                    lastPlayer2Move.setFirstCardCompareNumber(
+                            deck.getCards()[lastPlayer2Move.getFirstCardIDNumber()].getCompareNumber());
+                    lastPlayer2Move.setSecondCardCompareNumber(
+                            deck.getCards()[lastPlayer2Move.getSecondCardIDNumber()].getCompareNumber());
                     if (!rightMoveByPlayer2) {
                         rightMoveByPlayer2 = true;
                         player2Moves = new ArrayList<OneMove>();
@@ -159,10 +191,14 @@ public class Game implements Serializable, Runnable {
         } else {
             if (playerOnTurn) {
 
-                lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
-                if (lastPlayer1Move.getFirstCardIDNumber() != -1 && lastPlayer1Move.getSecondCardIDNumber() != -1) {
-                    lastPlayer1Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer1Move.getFirstCardIDNumber()].getCompareNumber());
-                    lastPlayer1Move.setSecondCardCompareNumber(deck.getCards()[lastPlayer1Move.getSecondCardIDNumber()].getCompareNumber());
+                lastPlayer1Move = new OneMove(newMove.getFirstCardIDNumber(),
+                        newMove.getSecondCardIDNumber());
+                if (lastPlayer1Move.getFirstCardIDNumber() != -1
+                        && lastPlayer1Move.getSecondCardIDNumber() != -1) {
+                    lastPlayer1Move.setFirstCardCompareNumber(
+                            deck.getCards()[lastPlayer1Move.getFirstCardIDNumber()].getCompareNumber());
+                    lastPlayer1Move.setSecondCardCompareNumber(
+                            deck.getCards()[lastPlayer1Move.getSecondCardIDNumber()].getCompareNumber());
 
                     if (!rightMoveByPlayer1) {
                         player1Moves = new ArrayList<OneMove>();
@@ -174,11 +210,15 @@ public class Game implements Serializable, Runnable {
                 }
             } else {
                 player2Moves = new ArrayList<OneMove>();
-                lastPlayer2Move = new OneMove(newMove.getFirstCardIDNumber(), newMove.getSecondCardIDNumber());
+                lastPlayer2Move = new OneMove(newMove.getFirstCardIDNumber(),
+                        newMove.getSecondCardIDNumber());
 
-                if (lastPlayer2Move.getFirstCardIDNumber() != -1 && lastPlayer2Move.getSecondCardIDNumber() != -1) {
-                    lastPlayer2Move.setFirstCardCompareNumber(deck.getCards()[lastPlayer2Move.getFirstCardIDNumber()].getCompareNumber());
-                    lastPlayer2Move.setSecondCardCompareNumber(deck.getCards()[lastPlayer2Move.getSecondCardIDNumber()].getCompareNumber());
+                if (lastPlayer2Move.getFirstCardIDNumber() != -1
+                        && lastPlayer2Move.getSecondCardIDNumber() != -1) {
+                    lastPlayer2Move.setFirstCardCompareNumber(
+                            deck.getCards()[lastPlayer2Move.getFirstCardIDNumber()].getCompareNumber());
+                    lastPlayer2Move.setSecondCardCompareNumber(
+                            deck.getCards()[lastPlayer2Move.getSecondCardIDNumber()].getCompareNumber());
                     if (!rightMoveByPlayer2) {
                         player2Moves = new ArrayList<OneMove>();
                         player2Moves.add(lastPlayer2Move);
@@ -195,6 +235,9 @@ public class Game implements Serializable, Runnable {
         }
     }
 
+    /**
+     * Vymeni hrace na tahu.
+     */
     public void changePlayerOnTurn() {
         if (playerOnTurn) {
             playerOnTurn = false;
@@ -206,64 +249,181 @@ public class Game implements Serializable, Runnable {
         }
     }
 
+    /**
+     * true - prvni hrac je na tahu. false - druha hrac je na tahu.
+     *
+     * @return Vrati hrace na tahu.
+     */
     public boolean isPlayerOnTurn() {
         return playerOnTurn;
     }
 
+    /**
+     *
+     * @return Vrati pocet uhadnutych karet.
+     */
     public int getUncoveredCards() {
         return uncoveredCards;
     }
 
+    /**
+     *
+     * @return Vrati balicek karet.
+     */
     public DeckOfCards getDeck() {
         return deck;
     }
 
+    /**
+     * Nastavi balicek karet.
+     *
+     * @param deck Balicek karet.
+     */
     public void setDeck(DeckOfCards deck) {
         this.deck = deck;
     }
 
+    /**
+     *
+     * @return Vrati prvniho hrace.
+     */
     public AbstractPlayer getPlayer1() {
         return player1;
     }
 
+    /**
+     *
+     * @return Vrati druheho hrace.
+     */
     public AbstractPlayer getPlayer2() {
         return player2;
     }
 
+    /**
+     *
+     * @return Vrati aktualni tah.
+     */
     public OneMove getNewMove() {
         return newMove;
     }
 
+    /**
+     *
+     * @return Vrati zpravu hry.
+     */
     public Message getOutput() {
         return output;
     }
 
+    /**
+     * true - konec hry. false - hra stale bezi.
+     *
+     * @return Vrati, zda je hra u konce.
+     */
     public boolean isEndOfGame() {
         return endOfGame;
     }
 
+    /**
+     * Nastavi delegata zprave.
+     *
+     * @param delegate Delegat zpravy.
+     */
     public void setOutputDelegate(MessageDelegate delegate) {
         this.output = new Message(delegate);
     }
 
+    /**
+     * true - Hra byla prerusena. false - Hra nebyla prerusena.
+     *
+     * @return Vrati, zda byla hra prerusena.
+     */
     public boolean isGameInterrupted() {
         return gameInterrupted;
     }
 
+    /**
+     * true - Hra byla prerusena. false - Hra nebyla prerusena.
+     *
+     * @param gameInterrupted Hra prerusena.
+     */
     public void setGameInterrupted(boolean gameInterrupted) {
         this.gameInterrupted = gameInterrupted;
     }
 
+    /**
+     *
+     * @return Vrati socket klienta.
+     */
     public Socket getClientSock() {
         return clientSock;
     }
 
+    /**
+     *
+     * @return Vrati socket serveru.
+     */
     public ServerSocket getServerSock() {
         return serverSock;
     }
 
+    /**
+     * Nastavi IP Adresu hostitele(serveru).
+     *
+     * @param hostIPAddress IP Adresa hostitele(serveru).
+     */
     public void setHostIPAddress(String hostIPAddress) {
         this.hostIPAddress = hostIPAddress;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 41 * hash + (this.playerOnTurn ? 1 : 0);
+        hash = 41 * hash + (this.player1 != null ? this.player1.hashCode() : 0);
+        hash = 41 * hash + (this.player2 != null ? this.player2.hashCode() : 0);
+        hash = 41 * hash + (this.deck != null ? this.deck.hashCode() : 0);
+        hash = 41 * hash + this.uncoveredCards;
+        hash = 41 * hash + (this.newMove != null ? this.newMove.hashCode() : 0);
+        hash = 41 * hash + (this.endOfGame ? 1 : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Game other = (Game) obj;
+        if (this.playerOnTurn != other.playerOnTurn) {
+            return false;
+        }
+        if (this.player1 != other.player1 && (this.player1 == null || !this.player1.equals(other.player1))) {
+            return false;
+        }
+        if (this.player2 != other.player2 && (this.player2 == null || !this.player2.equals(other.player2))) {
+            return false;
+        }
+        if (this.deck != other.deck && (this.deck == null || !this.deck.equals(other.deck))) {
+            return false;
+        }
+        if (this.uncoveredCards != other.uncoveredCards) {
+            return false;
+        }
+        if (this.newMove != other.newMove && (this.newMove == null || !this.newMove.equals(other.newMove))) {
+            return false;
+        }
+        if (this.endOfGame != other.endOfGame) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Game{" + "playerOnTurn=" + playerOnTurn + ", player1=" + player1 + ", player2=" + player2 + ", deck=" + deck + ", uncoveredCards=" + uncoveredCards + ", newMove=" + newMove + ", endOfGame=" + endOfGame + '}';
+    }
 }

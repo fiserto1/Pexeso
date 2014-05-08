@@ -22,6 +22,8 @@ import java.io.Serializable;
 import javax.swing.*;
 
 /**
+ * Trida pro hravni okno. Rozsiruje JFrame Implementuje Serializable,
+ * PlayerDelegate, MessageDelegate, CardDelegate
  *
  * @author Tomas
  */
@@ -94,6 +96,9 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
 
     }
 
+    /**
+     * Zalozi menu.
+     */
     private void createMenu() {
         saveGameMenuItem.setEnabled(false);
         headMenuBar.add(gameMenu);
@@ -111,6 +116,9 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         addMenuListeners();
     }
 
+    /**
+     * Vytvori panely.
+     */
     private void createPanels() {
         //Panels
         northPanel = new JPanel();
@@ -150,6 +158,9 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         southPanel.add(errorLabel);
     }
 
+    /**
+     * Zobrazi dialog pro nastaveni hry a nasledne zmeni nastaveni.
+     */
     private void showSettingsDialog() {
         JTextField playerNameTF = new JTextField(player1.getName());
         ButtonGroup radButGroup = new ButtonGroup();
@@ -183,7 +194,12 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         }
         player1.setName(playerNameTF.getText());
     }
-    
+
+    /**
+     * Zobrazi dialog pro pripojeni ke hre.
+     *
+     * @return Vrati zadanou IP adresu serveru(hostitele).
+     */
     private String showJoinGameDialog() {
         JTextField firstTF = new JTextField(player1.getName());
         final JComponent[] inputs = new JComponent[]{
@@ -197,6 +213,9 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         return ipAdress;
     }
 
+    /**
+     * Ukonci vlakno aktualni hry. Aby bylo mozne zacit hru novou.
+     */
     private void endCurrentGameThread() {
         if (gameThread != null) {
             newGame.setGameInterrupted(true);
@@ -219,11 +238,18 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         }
     }
 
+    /**
+     * Zobrazi hraci plochu.
+     */
     private void showGameBoard() {
+        
+        
         setPreferredSize(new java.awt.Dimension(1050, 700));
         leftPanel.setVisible(true);
         rightPanel.setVisible(true);
+        centerPanel.setVisible(false);
         centerPanel.removeAll();
+        centerPanel.setVisible(true);
 
         for (Card card : deck.getCards()) {
             card.setDelegate(this);
@@ -241,12 +267,12 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         pack();
     }
 
+    /**
+     *
+     * @return Vrati balicek karet.
+     */
     public DeckOfCards getDeck() {
         return deck;
-    }
-
-    public JLabel getHeadOutputLabel() {
-        return headOutputLabel;
     }
 
     @Override
@@ -323,13 +349,13 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
     }
 
     @Override
-    public void showCard(Card card) {
+    public void cardShowed(Card card) {
         CardButton cardBut = (CardButton) centerPanel.getComponent(card.getIdNumber());
         cardBut.showCard();
     }
 
     @Override
-    public void turnBackCard(Card card) {
+    public void cardTurnedBack(Card card) {
         CardButton cardBut = (CardButton) centerPanel.getComponent(card.getIdNumber());
         cardBut.turnBack();
     }
@@ -349,7 +375,30 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         centerPanel.setLayout(new GridLayout(rows, rows, 5, 5));
     }
 
+    /**
+     * Prida vsechny posluchace pro menu.
+     */
     private void addMenuListeners() {
+        addOnePlGameMenuListener();
+        addTwoPlGameMenuListener();
+        addSaveGameMenuListener();
+        addLoadGameMenuListener();
+        addCreateOnlineGameMenuListener();
+        addJoinGameMenuListener();
+
+        gameSetMenuItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showSettingsDialog();
+            }
+        });
+    }
+
+    /**
+     * Prida posluchace pro hru jednoho hrace.
+     */
+    private void addOnePlGameMenuListener() {
         onePlayerGameMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -365,7 +414,12 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
                 showGameBoard();
             }
         });
+    }
 
+    /**
+     * Prida posluchace pro hru dvou hracu.
+     */
+    private void addTwoPlGameMenuListener() {
         twoPlayersGameMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -382,7 +436,12 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
                 showGameBoard();
             }
         });
+    }
 
+    /**
+     * Prida posluchace pro ulozeni hry.
+     */
+    private void addSaveGameMenuListener() {
         saveGameMenuItem.addActionListener(new ActionListener() {
 
             @Override
@@ -412,7 +471,12 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
                 }
             }
         });
+    }
 
+    /**
+     * Prida posluchace pro nacteni hry.
+     */
+    private void addLoadGameMenuListener() {
         loadGameMenuItem.addActionListener(new ActionListener() {
 
             @Override
@@ -452,25 +516,38 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
                 }
             }
         });
+    }
 
+    /**
+     * Prida posluchace pro zalozeni hry.
+     */
+    private void addCreateOnlineGameMenuListener() {
         createOnlineGameMenuItem.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                
                 saveGameMenuItem.setEnabled(false);
                 endCurrentGameThread();
                 showSettingsDialog();
 
                 deck = new DeckOfCards(settings.getNumberOfCards());
                 deck.shuffleCards();
-
+                
                 player1.setDelegate(HeadFrame.this);
                 player1.setScore(0);
+                
                 newGame = new ServerGame(player1, deck);
                 showGameBoard();
             }
         });
 
+    }
+
+    /**
+     * Prida posluchace pro pripojeni ke hre.
+     */
+    private void addJoinGameMenuListener() {
         joinOnlineGameMenuItem.addActionListener(new ActionListener() {
 
             @Override
@@ -486,19 +563,11 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
                 rightPanel.setVisible(true);
 
                 newGame.setHostIPAddress(showJoinGameDialog());
-                
+
                 newGame.setGameInterrupted(false);
                 gameThread = new Thread(newGame);
                 gameThread.start();
                 pack();
-            }
-        });
-
-        gameSetMenuItem.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showSettingsDialog();
             }
         });
     }

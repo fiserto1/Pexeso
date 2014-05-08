@@ -13,6 +13,8 @@ import javax.swing.ImageIcon;
 import pexeso.OneMove;
 
 /**
+ * Trida pro pocitacoveho hrace. Hrac hraje s pameti 8 predchozich tahu.
+ * Rozsiruje AbstractPlayer.
  *
  * @author Tomas
  */
@@ -22,6 +24,12 @@ public class ComputerPlayer extends AbstractPlayer {
     private final ArrayList<Integer> uncoveredCards;
     private final ArrayList<int[]> memory;
 
+    /**
+     *
+     * @param playerName Jmeno hrace.
+     * @param avatar Avatar hrace.
+     * @param playerNumber Cislo hrace.
+     */
     public ComputerPlayer(String playerName, ImageIcon avatar, int playerNumber) {
         super(playerName, avatar, playerNumber);
         correctMoves = new TreeMap<Integer, ArrayList<Integer>>();
@@ -34,11 +42,11 @@ public class ComputerPlayer extends AbstractPlayer {
 
         refreshMemory();
         deleteOldMemory();
-        sameMoves(myLastMove);
+        saveMoves(myLastMove);
 
         if (oppMoves != null) {
             for (int i = 0; i < oppMoves.size(); i++) {
-                sameMoves(oppMoves.get(i));
+                saveMoves(oppMoves.get(i));
             }
         }
 
@@ -51,12 +59,20 @@ public class ComputerPlayer extends AbstractPlayer {
         return playRandom(numberOfCards);
     }
 
+    /**
+     * Posune stari tahu.
+     */
     private void refreshMemory() {
         for (int[] card : memory) {
             card[0]++;
         }
     }
 
+    /**
+     * Jakmile dosahne protihracuv nebo hracuv tah "stari" 5, tak se smaze.
+     * Stari se pricita a maze jeste pred pred vyhodnocenim taktiky, tudiz
+     * opravdove stari je 4 (4 x 2 hraci) tj. 8 tahu zpet.
+     */
     private void deleteOldMemory() {
         for (int[] card : memory) {
             if (card[0] == 5) {
@@ -73,6 +89,12 @@ public class ComputerPlayer extends AbstractPlayer {
         }
     }
 
+    /**
+     * Kdyz hrac nevi kam hrat na jistotu, tak zvoli nahodny mozny tah.
+     *
+     * @param numberOfCards Uvodni pocet karet.
+     * @return Vrati nahodny tah.
+     */
     private OneMove playRandom(int numberOfCards) {
         Random rnd = new Random();
         int firstTurn;
@@ -92,7 +114,13 @@ public class ComputerPlayer extends AbstractPlayer {
         return null;
     }
 
-    private void sameMoves(OneMove move) {
+    /**
+     * Ulozi svuj predesly tah a protihracuv tah/y do pameti a mapy, pokud to ma
+     * cenu.
+     *
+     * @param move
+     */
+    private void saveMoves(OneMove move) {
         if (move != null) {
             saveToMap(move.getFirstCardCompareNumber(), move.getFirstCardIDNumber());
             saveToMap(move.getSecondCardCompareNumber(), move.getSecondCardIDNumber());
@@ -108,6 +136,12 @@ public class ComputerPlayer extends AbstractPlayer {
         }
     }
 
+    /**
+     * Ulozi tah do pameti.
+     *
+     * @param compareNumber Porovnavaci cislo karty.
+     * @param idNumber ID cislo karty.
+     */
     private void saveToMemory(int compareNumber, int idNumber) {
         //0 - age
         //1 - key
@@ -116,6 +150,13 @@ public class ComputerPlayer extends AbstractPlayer {
         memory.add(card);
     }
 
+    /**
+     * Ulozi tah do mapy. Klic je porovnavaci cislo a hodnota je jednice nebo
+     * dvojice ID karticek.
+     *
+     * @param compareNumber Porovnavaci cislo karty.
+     * @param idNumber ID cislo karty.
+     */
     private void saveToMap(int compareNumber, int idNumber) {
         if (compareNumber != -1) {
             saveToMemory(compareNumber, idNumber);
