@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pexeso;
 
 import java.awt.GridLayout;
@@ -21,12 +20,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import javax.swing.*;
+
 /**
  *
  * @author Tomas
  */
-public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, MessageDelegate, CardDelegate {
-    
+public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
+        MessageDelegate, CardDelegate {
+
     //Menu
     private final JMenuBar headMenuBar = new JMenuBar();
     private final JMenu gameMenu = new JMenu("Game");
@@ -38,8 +39,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     private final JMenuItem loadGameMenuItem = new JMenuItem("Load game");
     private final JMenuItem createOnlineGameMenuItem = new JMenuItem("Create game");
     private final JMenuItem joinOnlineGameMenuItem = new JMenuItem("Join game");
-    private final JMenuItem nameSetMenuItem = new JMenuItem("Change name");
-    private final JMenuItem numOfCardsSetMenuItem = new JMenuItem("Number of Cards");
+    private final JMenuItem gameSetMenuItem = new JMenuItem("Change settings");
     //Panels
     private JPanel northPanel;
     private JPanel southPanel;
@@ -47,32 +47,30 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     private JPanel rightPanel;
     private JPanel leftPanel;
     //Player 1
+    private AbstractPlayer player1;
     private JLabel playerOneNameLabel;
     private JLabel playerOneScoreLabel;
     private JButton playerOnePictureButton;
     //Player 2
+    private AbstractPlayer player2;
     private JLabel playerTwoNameLabel;
     private JLabel playerTwoScoreLabel;
     private JButton playerTwoPictureButton;
-    //top and bottom label
+    //Top and bottom label
     private JLabel headOutputLabel;
     private JLabel errorLabel;
-    //cards
+    //Cards
     private DeckOfCards deck;
-    private Settings settings;
+    private final Settings settings = new Settings(64, 1);
     private Game newGame;
-    
-    private AbstractPlayer player1;
-    private AbstractPlayer player2;
-    
-    private final ImageIcon defaultPlayerAvatar = 
-            new ImageIcon(getClass().getResource("/avatars/Professor.png"));
-    private final ImageIcon defaultComputerAvatar = 
-            new ImageIcon(getClass().getResource("/avatars/Female.png"));
-    
+    //Thread
     private Thread gameThread;
+    //Avatars
+    private final ImageIcon defaultPlayerAvatar
+            = new ImageIcon(getClass().getResource("/avatars/Professor.png"));
+    private final ImageIcon defaultComputerAvatar
+            = new ImageIcon(getClass().getResource("/avatars/Female.png"));
 
-    
     public HeadFrame() {
         //Close
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -80,10 +78,9 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         createMenu();
         //Panels
         createPanels();
-        
+
         this.player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
-        settings = new Settings(64, 1);
-        
+
         getContentPane().setLayout(new java.awt.BorderLayout(30, 30));
         getContentPane().add(leftPanel, java.awt.BorderLayout.LINE_START);
         getContentPane().add(rightPanel, java.awt.BorderLayout.LINE_END);
@@ -94,9 +91,9 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         pack();
         setLocationRelativeTo(null);
 //        setResizable(false);
-        
+
     }
-    
+
     private void createMenu() {
         saveGameMenuItem.setEnabled(false);
         headMenuBar.add(gameMenu);
@@ -108,272 +105,12 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         gameMenu.add(joinOnlineGameMenuItem);
         newGameMenu.add(onePlayerGameMenuItem);
         newGameMenu.add(twoPlayersGameMenuItem);
-        settingsMenu.add(nameSetMenuItem);
-        settingsMenu.add(numOfCardsSetMenuItem);
+        settingsMenu.add(gameSetMenuItem);
         setJMenuBar(headMenuBar);
-        
-        onePlayerGameMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                tryToEndThread();
-                deck = new DeckOfCards(settings.getNumberOfCards());
-                deck.shuffleCards();
-//                AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
-                player2 = new ComputerPlayer("Computer", defaultComputerAvatar, 2);
-                player1.setDelegate(HeadFrame.this);
-                player2.setDelegate(HeadFrame.this);
-                player1.setScore(0);
-                newGame = new Game(player1, player2, deck);
-                showGameBoard();
-            }
-        });
 
-        twoPlayersGameMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                tryToEndThread();
-                
-                deck = new DeckOfCards(settings.getNumberOfCards());
-                deck.shuffleCards();
-//                AbstractPlayer player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
-                player2 = new HumanPlayer("Player 2", defaultPlayerAvatar, 2);
-                player1.setDelegate(HeadFrame.this);
-                player2.setDelegate(HeadFrame.this);
-                player1.setScore(0);
-                newGame = new Game(player1, player2, deck);
-                showGameBoard();
-            }
-        });
-        
-        saveGameMenuItem.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                tryToEndThread();
-                
-                String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
-                ObjectOutputStream objOutStr = null;
-                try {
-                    objOutStr = new ObjectOutputStream(new FileOutputStream(filepath));
-                    objOutStr.writeObject(newGame);
-                    objOutStr.close();
-                    errorLabel.setText("Save successful.");
-                    showGameBoard();
-                } catch (FileNotFoundException fnfe) {
-                    errorLabel.setText("File not found.");
-                } catch (IOException ioe) {
-                    errorLabel.setText("IOExp");
-                } finally {
-                    try {
-                        if (objOutStr != null) {
-                            objOutStr.close();
-                        }
-                    } catch (IOException ex) {
-                        errorLabel.setText("Stream not closed.");
-                    }
-                }
-            }
-        });
-        
-        loadGameMenuItem.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                tryToEndThread();
-                
-                ObjectInputStream objInStr = null;
-                String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
-                try {
-                    objInStr = new ObjectInputStream(new FileInputStream(filepath));
-
-                    Game loadGame = (Game) objInStr.readObject();
-                    objInStr.close();
-                    errorLabel.setText("Load successful.");
-
-                    deck = loadGame.getDeck();
-                    newGame = loadGame;
-                    newGame.getPlayer1().setDelegate(HeadFrame.this);
-                    newGame.getPlayer2().setDelegate(HeadFrame.this);
-                    newGame.setOutputDelegate(HeadFrame.this);
-                    showGameBoard();
-                } catch (FileNotFoundException fnfe) {
-                    errorLabel.setText("File not found.");
-                } catch (IOException ioe) {
-                    errorLabel.setText("IOExp");
-                } catch (ClassNotFoundException ex) {
-                    errorLabel.setText("Class not found");
-                } finally {
-                    try {
-                        if (objInStr != null) {
-                            objInStr.close();
-                        }
-                    } catch (IOException ex) {
-                        errorLabel.setText("Nepodarilo se zavrit soubor");
-                    }
-                } 
-            }
-        });
-        
-        createOnlineGameMenuItem.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-                tryToEndThread();
-                
-                JTextField firstTF = new JTextField(player1.getName());
-                JRadioButton[] buttons = {new JRadioButton("64", true),
-                    new JRadioButton("36"), new JRadioButton("16"),
-                    new JRadioButton("4")};
-                ButtonGroup bGroup = new ButtonGroup();
-                JPanel panel = new JPanel();
-                for (JRadioButton button : buttons) {
-                    bGroup.add(button);
-                    panel.add(button);
-                }
-                final JComponent[] inputs = new JComponent[]{
-                    new JLabel("Player name:"), firstTF,
-                    new JLabel("Number of cards:"),
-                    panel
-                };
-                
-                int choice = JOptionPane.showConfirmDialog(null, inputs, "Creating game...", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-                if (choice != JOptionPane.OK_OPTION) {
-                    return;
-                }
-                gameMenu.setEnabled(false);
-                for (JRadioButton rBut : buttons) {
-                    if (rBut.isSelected()) {
-                        settings.setNumberOfCards(Integer.parseInt(rBut.getText()));
-                        break;
-                    }
-                }
-                player1.setName(firstTF.getText());
-                
-                deck = new DeckOfCards(settings.getNumberOfCards());
-                deck.shuffleCards();
-                for (Card card : deck.getCards()) {
-                    card.setDelegate(HeadFrame.this);
-                }
-//                AbstractPlayer player1 = new HumanPlayer("You", defaultPlayerAvatar, 1);
-                player1.setDelegate(HeadFrame.this);
-                player1.setScore(0);
-                newGame = new ServerGame(player1, deck);
-                
-                setPreferredSize(new java.awt.Dimension(1050, 700));
-                leftPanel.setVisible(true);
-                rightPanel.setVisible(true);
-
-                centerPanel.removeAll();
-                for (Card card : deck.getCards()) {
-                    centerPanel.add(new CardButton(card));
-                }
-                
-                centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
-                int rows = (int) Math.sqrt(deck.size());
-                centerPanel.setLayout(new GridLayout(rows, rows, 5, 5));
-                pack();
-                Game.gameInterrupted = false;
-                gameThread = new Thread(newGame);
-                gameThread.start();
-                
-            }
-        });
-        
-        joinOnlineGameMenuItem.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                saveGameMenuItem.setEnabled(false);
-                tryToEndThread();
-                
-//                AbstractPlayer player1 = new HumanPlayer("You", defaultPlayerAvatar, 1);
-                player1.setDelegate(HeadFrame.this);
-                player1.setScore(0);
-                newGame = new ClientGame(player1, null);
-                setPreferredSize(new java.awt.Dimension(1050, 700));
-                leftPanel.setVisible(true);
-                rightPanel.setVisible(true);
-                
-                centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
-                pack();
-                Game.gameInterrupted = false;
-                gameThread = new Thread(newGame);
-                gameThread.start();
-            }
-        });
-        
-        nameSetMenuItem.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String newName = JOptionPane.showInputDialog("Enter new name.");
-                if (newName != null) {
-                    player1.setName(newName);
-                }
-            }
-        });
-        
-        numOfCardsSetMenuItem.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int num = 0;
-                do {
-                    String newNumber = JOptionPane.showInputDialog("Enter number of cards. {64, 36, 16, 4}");
-                    try {
-                        num = Integer.parseInt(newNumber);
-                    }
-                    catch (NumberFormatException nfe) {
-                        errorLabel.setText("Wrong number. Try again.");
-                    }
-                }
-                while(num != 64 && num != 36 && num != 16 && num != 4);
-                settings.setNumberOfCards(num);
-            }
-        });
+        addMenuListeners();
     }
-    
-    private void tryToEndThread() {
-        if (gameThread != null) {
-            Game.gameInterrupted = true;
-            while (gameThread.isAlive()) {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException ie) {
-                    System.out.println("ouha");
-                }
-            }
-        }
-    }
-    
-    private void showGameBoard() {
-        setPreferredSize(new java.awt.Dimension(1050, 700));
-        leftPanel.setVisible(true);
-        rightPanel.setVisible(true);
-        saveGameMenuItem.setEnabled(true);
-        
-        centerPanel.removeAll();
-        for (Card card : deck.getCards()) {
-            card.setDelegate(this);
-            centerPanel.add(new CardButton(card));
-            if (card.isDiscovered()) {
-                cardRevealed(card);
-            }
-        }
-        centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
-        int rows = (int) Math.sqrt(deck.size());
-        centerPanel.setLayout(new GridLayout(rows, rows, 5, 5));
-        if (gameThread != null) {
-            System.out.println(gameThread.isAlive());
-        }
-        
-        Game.gameInterrupted = false;
-        gameThread = new Thread(newGame);
-        gameThread.start();
-        pack();
-    }
-    
+
     private void createPanels() {
         //Panels
         northPanel = new JPanel();
@@ -392,36 +129,109 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         playerTwoPictureButton = new JButton();
         playerTwoPictureButton.setHorizontalAlignment(SwingConstants.CENTER);
         //Top and bottom label
-        headOutputLabel = new JLabel("Player on turn: ");
-        errorLabel = new JLabel("");
+        headOutputLabel = new JLabel("Welcome in Pexeso");
+        errorLabel = new JLabel();
 
-        
         //leftPanel
         leftPanel.add(playerOneNameLabel);
         leftPanel.add(playerOnePictureButton);
         leftPanel.add(playerOneScoreLabel);
         leftPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         leftPanel.setVisible(false);
-//        leftPanel.setPreferredSize(new java.awt.Dimension(150, 250));
         //rightPanel
         rightPanel.add(playerTwoNameLabel);
         rightPanel.add(playerTwoPictureButton);
         rightPanel.add(playerTwoScoreLabel);
         rightPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         rightPanel.setVisible(false);
-//        rightPanel.setPreferredSize(new java.awt.Dimension(150, 250));
         //northPanel
         northPanel.add(headOutputLabel);
         //southPanel
         southPanel.add(errorLabel);
-        //centerPanel
-        centerPanel.setPreferredSize(new java.awt.Dimension(550, 550));
     }
-    
+
+    private void showSettingsDialog() {
+        JTextField playerNameTF = new JTextField(player1.getName());
+        ButtonGroup radButGroup = new ButtonGroup();
+        JPanel radButPanel = new JPanel();
+        JRadioButton[] radButts = {new JRadioButton("64", true),
+            new JRadioButton("36"), new JRadioButton("16"),
+            new JRadioButton("4")};
+
+        for (JRadioButton button : radButts) {
+            radButGroup.add(button);
+            radButPanel.add(button);
+        }
+        final JComponent[] inputs = new JComponent[]{
+            new JLabel("Player name:"), playerNameTF,
+            new JLabel("Number of cards:"),
+            radButPanel
+        };
+
+        int choice = JOptionPane.showConfirmDialog(null, inputs,
+                "Creating game...", JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE);
+
+        if (choice != JOptionPane.OK_OPTION) {
+            return;
+        }
+        for (JRadioButton rBut : radButts) {
+            if (rBut.isSelected()) {
+                settings.setNumberOfCards(Integer.parseInt(rBut.getText()));
+                break;
+            }
+        }
+        player1.setName(playerNameTF.getText());
+    }
+
+    private void endCurrentGameThread() {
+        if (gameThread != null) {
+            newGame.setGameInterrupted(true);
+            if (newGame.getServerSock() != null) {
+                try {
+                    newGame.getServerSock().close();
+                } catch (IOException ex) {
+                    errorLabel.setText("Server socket not closed.");
+                }
+            }
+            gameThread.interrupt();
+
+            while (gameThread.isAlive()) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ie) {
+                    errorLabel.setText("Gui thread can't sleep.");
+                }
+            }
+        }
+    }
+
+    private void showGameBoard() {
+        setPreferredSize(new java.awt.Dimension(1050, 700));
+        leftPanel.setVisible(true);
+        rightPanel.setVisible(true);
+        centerPanel.removeAll();
+
+        for (Card card : deck.getCards()) {
+            card.setDelegate(this);
+            centerPanel.add(new CardButton(card));
+            if (card.isDiscovered()) {
+                cardRevealed(card);
+            }
+        }
+        int rows = (int) Math.sqrt(deck.size());
+        centerPanel.setLayout(new GridLayout(rows, rows, 5, 5));
+
+        newGame.setGameInterrupted(false);
+        gameThread = new Thread(newGame);
+        gameThread.start();
+        pack();
+    }
+
     public DeckOfCards getDeck() {
         return deck;
     }
-    
+
     public JLabel getHeadOutputLabel() {
         return headOutputLabel;
     }
@@ -430,8 +240,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     public void scoreChanged(AbstractPlayer player) {
         if (player.getPlayerNumber() == 1) {
             playerOneScoreLabel.setText("Score: " + player.getScore());
-        }
-        else {
+        } else {
             playerTwoScoreLabel.setText("Score: " + player.getScore());
         }
         pack();
@@ -441,8 +250,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     public void nameChanged(AbstractPlayer player) {
         if (player.getPlayerNumber() == 1) {
             playerOneNameLabel.setText(player.getName());
-        } 
-        else {
+        } else {
             playerTwoNameLabel.setText(player.getName());
         }
         pack();
@@ -452,8 +260,7 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
     public void avatarChanged(AbstractPlayer player) {
         if (player.getPlayerNumber() == 1) {
             playerOnePictureButton.setIcon(player.getAvatar());
-        } 
-        else {
+        } else {
             playerTwoPictureButton.setIcon(player.getAvatar());
         }
         pack();
@@ -520,12 +327,164 @@ public class HeadFrame extends JFrame  implements Serializable, PlayerDelegate, 
         for (Card card : deck.getCards()) {
             card.setDelegate(this);
         }
-        
+
         centerPanel.removeAll();
         for (Card card : deck.getCards()) {
             centerPanel.add(new CardButton(card));
         }
         int rows = (int) Math.sqrt(deck.getCards().length);
         centerPanel.setLayout(new GridLayout(rows, rows, 5, 5));
+    }
+
+    private void addMenuListeners() {
+        onePlayerGameMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveGameMenuItem.setEnabled(true);
+                endCurrentGameThread();
+                deck = new DeckOfCards(settings.getNumberOfCards());
+                deck.shuffleCards();
+                player2 = new ComputerPlayer("Computer", defaultComputerAvatar, 2);
+                player1.setDelegate(HeadFrame.this);
+                player2.setDelegate(HeadFrame.this);
+                player1.setScore(0);
+                newGame = new Game(player1, player2, deck);
+                showGameBoard();
+            }
+        });
+
+        twoPlayersGameMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveGameMenuItem.setEnabled(true);
+                endCurrentGameThread();
+
+                deck = new DeckOfCards(settings.getNumberOfCards());
+                deck.shuffleCards();
+                player2 = new HumanPlayer("Player 2", defaultPlayerAvatar, 2);
+                player1.setDelegate(HeadFrame.this);
+                player2.setDelegate(HeadFrame.this);
+                player1.setScore(0);
+                newGame = new Game(player1, player2, deck);
+                showGameBoard();
+            }
+        });
+
+        saveGameMenuItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                endCurrentGameThread();
+
+                String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
+                ObjectOutputStream objOutStr = null;
+                try {
+                    objOutStr = new ObjectOutputStream(new FileOutputStream(filepath));
+                    objOutStr.writeObject(newGame);
+                    objOutStr.close();
+                    errorLabel.setText("Save successful.");
+                    showGameBoard();
+                } catch (FileNotFoundException fnfe) {
+                    errorLabel.setText("File not found.");
+                } catch (IOException ioe) {
+                    errorLabel.setText("Save failed.");
+                } finally {
+                    try {
+                        if (objOutStr != null) {
+                            objOutStr.close();
+                        }
+                    } catch (IOException ex) {
+                        errorLabel.setText("Stream not closed.");
+                    }
+                }
+            }
+        });
+
+        loadGameMenuItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveGameMenuItem.setEnabled(true);
+                endCurrentGameThread();
+
+                ObjectInputStream objInStr = null;
+                String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
+                try {
+                    objInStr = new ObjectInputStream(new FileInputStream(filepath));
+
+                    Game loadGame = (Game) objInStr.readObject();
+                    objInStr.close();
+                    errorLabel.setText("Load successful.");
+
+                    deck = loadGame.getDeck();
+                    newGame = loadGame;
+                    newGame.getPlayer1().setDelegate(HeadFrame.this);
+                    newGame.getPlayer2().setDelegate(HeadFrame.this);
+                    newGame.setOutputDelegate(HeadFrame.this);
+                    showGameBoard();
+                } catch (FileNotFoundException fnfe) {
+                    errorLabel.setText("File not found.");
+                } catch (IOException ioe) {
+                    errorLabel.setText("Load failed.");
+                } catch (ClassNotFoundException ex) {
+                    errorLabel.setText("Class not found");
+                } finally {
+                    try {
+                        if (objInStr != null) {
+                            objInStr.close();
+                        }
+                    } catch (IOException ex) {
+                        errorLabel.setText("Stream not closed.");
+                    }
+                }
+            }
+        });
+
+        createOnlineGameMenuItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveGameMenuItem.setEnabled(false);
+                endCurrentGameThread();
+                showSettingsDialog();
+
+                deck = new DeckOfCards(settings.getNumberOfCards());
+                deck.shuffleCards();
+
+                player1.setDelegate(HeadFrame.this);
+                player1.setScore(0);
+                newGame = new ServerGame(player1, deck);
+                showGameBoard();
+            }
+        });
+
+        joinOnlineGameMenuItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveGameMenuItem.setEnabled(false);
+                endCurrentGameThread();
+
+                player1.setDelegate(HeadFrame.this);
+                player1.setScore(0);
+                newGame = new ClientGame(player1, null);
+                setPreferredSize(new java.awt.Dimension(1050, 700));
+                leftPanel.setVisible(true);
+                rightPanel.setVisible(true);
+
+                newGame.setGameInterrupted(false);
+                gameThread = new Thread(newGame);
+                gameThread.start();
+                pack();
+            }
+        });
+
+        gameSetMenuItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showSettingsDialog();
+            }
+        });
     }
 }
