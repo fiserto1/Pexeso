@@ -16,7 +16,7 @@ import pexeso.OneMove;
 
 /**
  * Trida pro hru z pohledu klienta.
- * Rozsiruje Game.
+ *
  * @author Tomas
  */
 public class ClientGame extends Game {
@@ -26,6 +26,7 @@ public class ClientGame extends Game {
 
     /**
      * Nastavi hrace na tahu na false. (hru zacina server)
+     *
      * @param clientPlayer Hrac. (klient)
      * @param deck Balicek karet.
      */
@@ -101,7 +102,7 @@ public class ClientGame extends Game {
 
         closeStreams();
     }
-    
+
     /**
      * Zavre proudy.
      */
@@ -123,8 +124,9 @@ public class ClientGame extends Game {
 
     /**
      * Pripoji se k serveru. Posle serveru hrace(klienta).
-     * @throws UnknownHostException 
-     * @throws IOException 
+     *
+     * @throws UnknownHostException
+     * @throws IOException
      */
     private void connectToServer() throws UnknownHostException, IOException {
         clientSock = new Socket(hostIPAddress, 4444);
@@ -135,8 +137,9 @@ public class ClientGame extends Game {
 
     /**
      * Nacte hrace a balicek karet ze serveru.
+     *
      * @throws ClassNotFoundException
-     * @throws IOException 
+     * @throws IOException
      */
     private void loadFromServer() throws ClassNotFoundException, IOException {
         player2 = (AbstractPlayer) objInStream.readObject();

@@ -14,7 +14,6 @@ import pexeso.OneMove;
 
 /**
  * Trida pro pocitacoveho hrace. Hrac hraje s pameti 8 predchozich tahu.
- * Rozsiruje AbstractPlayer.
  *
  * @author Tomas
  */

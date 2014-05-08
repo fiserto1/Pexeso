@@ -11,7 +11,7 @@ import javax.swing.JButton;
 
 /**
  * Trida pro tlacitko s kartickou.
- * Rozsiruje tridu JButton
+ *
  * @author Tomas
  */
 public class CardButton extends JButton {
@@ -19,7 +19,9 @@ public class CardButton extends JButton {
     private final Card card;
 
     /**
-     * Nastavi tlacitku zadni stranu karty a zakaze vykreslovani posledniho kliknuti.
+     * Nastavi tlacitku zadni stranu karty a zakaze vykreslovani posledniho
+     * kliknuti.
+     *
      * @param card Karta pridruzena k tlacitku.
      */
     public CardButton(Card card) {
@@ -48,7 +50,7 @@ public class CardButton extends JButton {
     }
 
     /**
-     * 
+     *
      * @return Vrati kartu pridruzenou k tlacitku.
      */
     public Card getCard() {

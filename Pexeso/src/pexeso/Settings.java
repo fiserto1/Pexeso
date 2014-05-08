@@ -7,6 +7,7 @@ package pexeso;
 
 /**
  * Trida pro nasteveni hry. (obtiznost hry, pocet karet ve hre)
+ *
  * @author Tomas
  */
 public class Settings {
@@ -15,7 +16,7 @@ public class Settings {
     private int difficulty;
 
     /**
-     * 
+     *
      * @param numberOfCards Pocet hracich karet.
      * @param difficulty Obtiznost PC protihrace.
      */
@@ -25,7 +26,7 @@ public class Settings {
     }
 
     /**
-     * 
+     *
      * @return Vrati pocet karet se kterymi se ma hrat.
      */
     public int getNumberOfCards() {
@@ -34,6 +35,7 @@ public class Settings {
 
     /**
      * Nastavi pocet karet se kterymi se ma hrat.
+     *
      * @param numberOfCards Pocet karet.
      */
     public void setNumberOfCards(int numberOfCards) {
@@ -41,9 +43,8 @@ public class Settings {
     }
 
     /**
-     * 1 - lehka
-     * 2 - stredni
-     * 3 - tezka
+     * 1 - lehka 2 - stredni 3 - tezka
+     *
      * @return Vrati obtiznost hry.
      */
     public int getDifficulty() {
@@ -51,10 +52,8 @@ public class Settings {
     }
 
     /**
-     * Nastavi obtiznost hry.
-     * 1 - lehka
-     * 2 - stredni
-     * 3 - tezka
+     * Nastavi obtiznost hry. 1 - lehka 2 - stredni 3 - tezka
+     *
      * @param difficulty Obtiznost hry.
      */
     public void setDifficulty(int difficulty) {

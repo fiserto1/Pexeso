@@ -13,7 +13,7 @@ import pexeso.delegates.PlayerDelegate;
 
 /**
  * Abstraktni trida pro hrace.
- * Implementuje Serializable.
+ *
  * @author Tomas
  */
 public abstract class AbstractPlayer implements Serializable {
@@ -25,7 +25,7 @@ public abstract class AbstractPlayer implements Serializable {
     private transient PlayerDelegate delegate;
 
     /**
-     * 
+     *
      * @param name Jmeno hrace.
      * @param avatar Avatar hrace.
      * @param playerNumber Cislo hrace.
@@ -37,9 +37,10 @@ public abstract class AbstractPlayer implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param myLastMove Hracuv posledni tah - jiz vyhodnoceny.
-     * @param oppMoves Protihracuv posledni tah/y (zalezi jestli protihrac uhodl dvojici).
+     * @param oppMoves Protihracuv posledni tah/y (zalezi jestli protihrac uhodl
+     * dvojici).
      * @param numberOfCards Pocatecni pocet karet ve hre.
      * @return Vrati tah hrace.
      */
@@ -47,7 +48,7 @@ public abstract class AbstractPlayer implements Serializable {
             int numberOfCards);
 
     /**
-     * 
+     *
      * @return Vrati cislo hrace.
      */
     public int getPlayerNumber() {
@@ -55,7 +56,7 @@ public abstract class AbstractPlayer implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return Vrati hracovo skore.
      */
     public int getScore() {
@@ -63,7 +64,7 @@ public abstract class AbstractPlayer implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return Vrati jmeno hrace.
      */
     public String getName() {
@@ -71,7 +72,7 @@ public abstract class AbstractPlayer implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return Vrati avatara hrace.
      */
     public ImageIcon getAvatar() {
@@ -79,7 +80,7 @@ public abstract class AbstractPlayer implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return Vrati delegata hrace.
      */
     public PlayerDelegate getDelegate() {
@@ -88,6 +89,7 @@ public abstract class AbstractPlayer implements Serializable {
 
     /**
      * Nastavi hracovo skore.
+     *
      * @param score Hracovo skore.
      */
     public void setScore(int score) {
@@ -99,6 +101,7 @@ public abstract class AbstractPlayer implements Serializable {
 
     /**
      * Nastavi jmeno hrace.
+     *
      * @param name Hracovo jmeno.
      */
     public void setName(String name) {
@@ -110,6 +113,7 @@ public abstract class AbstractPlayer implements Serializable {
 
     /**
      * Nastavi avatara hracovi.
+     *
      * @param avatar Hracuv avatar.
      */
     public void setAvatar(ImageIcon avatar) {
@@ -121,6 +125,7 @@ public abstract class AbstractPlayer implements Serializable {
 
     /**
      * Nastavi delegata hracovi.
+     *
      * @param delegate Hracuv delegat.
      */
     public void setDelegate(PlayerDelegate delegate) {
@@ -132,6 +137,7 @@ public abstract class AbstractPlayer implements Serializable {
 
     /**
      * Nastavi cislo hrace.
+     *
      * @param playerNumber Cislo hrace.
      */
     public void setPlayerNumber(int playerNumber) {

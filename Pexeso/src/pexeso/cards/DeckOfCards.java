@@ -7,7 +7,7 @@ import javax.swing.ImageIcon;
 
 /**
  * Trida pro balicek karet.
- * Implementuje Serializable.
+ * 
  * @author Tomas
  */
 public class DeckOfCards implements Serializable {

@@ -22,8 +22,7 @@ import java.io.Serializable;
 import javax.swing.*;
 
 /**
- * Trida pro hravni okno. Rozsiruje JFrame Implementuje Serializable,
- * PlayerDelegate, MessageDelegate, CardDelegate
+ * Trida pro hlavni okno.
  *
  * @author Tomas
  */

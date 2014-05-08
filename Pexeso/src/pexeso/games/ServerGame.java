@@ -17,7 +17,7 @@ import pexeso.OneMove;
 
 /**
  * Trida pro hru z pohledu serveru.
- * Rozsiruje Game.
+ *
  * @author Tomas
  */
 public class ServerGame extends Game {
@@ -27,6 +27,7 @@ public class ServerGame extends Game {
 
     /**
      * Nastavi hrace na tahu na true - zacina server
+     *
      * @param serverPlayer Hrac. (server)
      * @param deck Balicek karet.
      */
@@ -102,7 +103,7 @@ public class ServerGame extends Game {
 
         closeStreams();
     }
-    
+
     /**
      * Zavre proudy.
      */
@@ -127,9 +128,10 @@ public class ServerGame extends Game {
 
     /**
      * Pripoji klienta. Nacte hrace (klienta).
+     *
      * @throws UnknownHostException
      * @throws ClassNotFoundException
-     * @throws IOException 
+     * @throws IOException
      */
     private void connectClient() throws UnknownHostException, ClassNotFoundException, IOException {
         output.setHeadMessage("Your IP adress: "
@@ -145,7 +147,8 @@ public class ServerGame extends Game {
 
     /**
      * Odesle hrace (server) a balicek karet klientovi.
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     private void sendGameToClient() throws IOException {
         objOutStream.writeObject(player1);

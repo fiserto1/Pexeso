@@ -10,7 +10,7 @@ import pexeso.delegates.MessageDelegate;
 
 /**
  * Trida pro zpravu, ktera se pres delegata vypisuje kam je potreba.
- * Implementuje serializable.
+ * 
  * @author Tomas
  */
 public class Message implements Serializable {

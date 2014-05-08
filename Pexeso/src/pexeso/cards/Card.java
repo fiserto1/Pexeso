@@ -11,7 +11,7 @@ import pexeso.delegates.CardDelegate;
 
 /**
  * Trida pro jednu karticku.
- * Implementuje serializable.
+ *
  * @author Tomas
  */
 public class Card implements Serializable {
@@ -21,11 +21,10 @@ public class Card implements Serializable {
      */
     private final String reverseSide = "CARD";
     /**
-     * Predni strana karty. (líc)
-     * Odviji se od porovnavaciho cisla karty.
+     * Predni strana karty. (líc) Odviji se od porovnavaciho cisla karty.
      */
     private ImageIcon cardImage;
-    
+
     /**
      * Porovnavaci cislo karty.
      */
@@ -39,8 +38,8 @@ public class Card implements Serializable {
      */
     private transient CardDelegate delegate;
     /**
-     * true - karta jiz byla uhadnuta. (jiz neni soucasti hry)
-     * false - karta zatim nebyla uhadnuta.
+     * true - karta jiz byla uhadnuta. (jiz neni soucasti hry) false - karta
+     * zatim nebyla uhadnuta.
      */
     private boolean discovered;
 
@@ -73,7 +72,7 @@ public class Card implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return Vrati predni stranu karty.
      */
     public ImageIcon getCardImage() {
@@ -82,6 +81,7 @@ public class Card implements Serializable {
 
     /**
      * Nastavi predni stranu karty.
+     *
      * @param cardIcon Obrazek predni strany karty.
      */
     public void setCardImage(ImageIcon cardIcon) {
@@ -89,7 +89,7 @@ public class Card implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return Vrati porovnavaci cislo karty.
      */
     public int getCompareNumber() {
@@ -98,6 +98,7 @@ public class Card implements Serializable {
 
     /**
      * Nastavi porovnavaci cislo karty.
+     *
      * @param compareNumber porovnavaci cislo karty.
      */
     public void setCompareNumber(int compareNumber) {
@@ -105,7 +106,7 @@ public class Card implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return Vrati ID karty.
      */
     public int getIdNumber() {
@@ -114,6 +115,7 @@ public class Card implements Serializable {
 
     /**
      * Nastavi ID karty.
+     *
      * @param idNumber ID karty.
      */
     public void setIdNumber(int idNumber) {
@@ -122,6 +124,7 @@ public class Card implements Serializable {
 
     /**
      * Vrati rub karty.
+     *
      * @return Napis rubu karty.
      */
     public String getReverseSide() {
@@ -130,6 +133,7 @@ public class Card implements Serializable {
 
     /**
      * Nastavi delegata karty.
+     *
      * @param delegate Delegat karty.
      */
     public void setDelegate(CardDelegate delegate) {
@@ -137,8 +141,9 @@ public class Card implements Serializable {
     }
 
     /**
-     * true - karta jiz byla uhadnuta. (jiz neni soucasti hry)
-     * false - karta zatim nebyla uhadnuta.
+     * true - karta jiz byla uhadnuta. (jiz neni soucasti hry) false - karta
+     * zatim nebyla uhadnuta.
+     *
      * @return Vrati zda byla karta uhadnuta.
      */
     public boolean isDiscovered() {
@@ -146,9 +151,9 @@ public class Card implements Serializable {
     }
 
     /**
-     * Nastavi zda byla karta uhadnuta.
-     * true - karta jiz byla uhadnuta. (jiz neni soucasti hry)
-     * false - karta zatim nebyla uhadnuta.
+     * Nastavi zda byla karta uhadnuta. true - karta jiz byla uhadnuta. (jiz
+     * neni soucasti hry) false - karta zatim nebyla uhadnuta.
+     *
      * @param discovered uhodnoto
      */
     public void setDiscovered(boolean discovered) {

@@ -17,7 +17,7 @@ import pexeso.OneMove;
 import pexeso.delegates.MessageDelegate;
 
 /**
- * Trida pro hru. Implementuje Serializable, Runnable
+ * Trida pro jednu hru hru.
  *
  * @author Tomas
  */

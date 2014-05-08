@@ -8,7 +8,7 @@ package pexeso;
 import java.io.Serializable;
 
 /**
- * Trida pro jeden tah, tj. jedna dvojice karet. Implementuje serializable.
+ * Trida pro jeden tah, tj. jedna dvojice karet.
  *
  * @author Tomas
  */

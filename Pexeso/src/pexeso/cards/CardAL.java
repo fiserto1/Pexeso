@@ -12,11 +12,11 @@ import pexeso.OneMove;
 import pexeso.players.HumanPlayer;
 
 /**
- * Trida pro posluchace karty.
- * Dovoluje/zakazuje hraci kliknout na tlacitko s kartou.
- * Pri kliknuti na tlacitko otoci kartu licem vzhuru a pokud se jedna o druhou
- * kartu, tak oznami hraci, ze tah je kompletni a posle mu ID karet, na ktere klikl.
- * Implementuje serializable, ActionListener
+ * Trida pro posluchace karty. Dovoluje/zakazuje hraci kliknout na tlacitko s
+ * kartou. Pri kliknuti na tlacitko otoci kartu licem vzhuru a pokud se jedna o
+ * druhou kartu, tak oznami hraci, ze tah je kompletni a posle mu ID karet, na
+ * ktere klikl.
+ *
  * @author Tomas
  */
 public class CardAL implements ActionListener, Serializable {
@@ -25,7 +25,7 @@ public class CardAL implements ActionListener, Serializable {
     private final HumanPlayer player;
 
     /**
-     * 
+     *
      * @param player Hrac ke kteremu se vztahuje posluchac karet.
      */
     public CardAL(HumanPlayer player) {
@@ -53,7 +53,7 @@ public class CardAL implements ActionListener, Serializable {
     }
 
     /**
-     * 
+     *
      * @return Vrati soucasny tah.
      */
     public OneMove getMove() {
