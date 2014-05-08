@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pexeso.players;
 
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import javax.swing.ImageIcon;
-import pexeso.cards.DeckOfCards;
 import pexeso.OneMove;
 
 /**
@@ -19,36 +17,62 @@ import pexeso.OneMove;
  * @author Tomas
  */
 public class ComputerPlayer extends AbstractPlayer {
-    
-    private TreeMap<Integer, ArrayList<Integer>> correctMoves;
-    private ArrayList<Integer> uncoveredCards;
+
+    private final TreeMap<Integer, ArrayList<Integer>> correctMoves;
+    private final ArrayList<Integer> uncoveredCards;
+    private final ArrayList<int[]> memory;
 
     public ComputerPlayer(String playerName, ImageIcon avatar, int playerNumber) {
         super(playerName, avatar, playerNumber);
         correctMoves = new TreeMap<Integer, ArrayList<Integer>>();
         uncoveredCards = new ArrayList<Integer>();
+        memory = new ArrayList<int[]>();
     }
-    
+
     @Override
     public OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves, int numberOfCards) {
-        saveToMemory(myLastMove);
-        
+
+        refreshMemory();
+        deleteOldMemory();
+        sameMoves(myLastMove);
+
         if (oppMoves != null) {
             for (int i = 0; i < oppMoves.size(); i++) {
-                saveToMemory(oppMoves.get(i));
+                sameMoves(oppMoves.get(i));
             }
         }
-        
+
         for (Map.Entry<Integer, ArrayList<Integer>> entry : correctMoves.entrySet()) {
             if (entry.getValue().size() == 2) {
-//                System.out.println("Playing remembered move: " + entry.getValue().get(0)+","+ entry.getValue().get(1) );
                 return new OneMove(entry.getValue().get(0), entry.getValue().get(1));
             }
         }
-        
+
         return playRandom(numberOfCards);
     }
-    
+
+    private void refreshMemory() {
+        for (int[] card : memory) {
+            card[0]++;
+        }
+    }
+
+    private void deleteOldMemory() {
+        for (int[] card : memory) {
+            if (card[0] == 5) {
+                if (correctMoves.containsKey(card[1])) {
+                    ArrayList<Integer> oldCard = correctMoves.get(card[1]);
+                    oldCard.remove((Integer) card[2]);
+                    if (oldCard.isEmpty()) {
+                        correctMoves.remove(card[1]);
+                    } else {
+                        correctMoves.put(card[1], oldCard);
+                    }
+                }
+            }
+        }
+    }
+
     private OneMove playRandom(int numberOfCards) {
         Random rnd = new Random();
         int firstTurn;
@@ -63,14 +87,12 @@ public class ComputerPlayer extends AbstractPlayer {
             if (uncoveredCards.contains(firstTurn) || uncoveredCards.contains(secondTurn)) {
                 continue;
             }
-
-//            System.out.println("playing random: " + firstTurn + "," + secondTurn);
             return new OneMove(firstTurn, secondTurn);
         }
         return null;
     }
 
-    private void saveToMemory(OneMove move) {
+    private void sameMoves(OneMove move) {
         if (move != null) {
             saveToMap(move.getFirstCardCompareNumber(), move.getFirstCardIDNumber());
             saveToMap(move.getSecondCardCompareNumber(), move.getSecondCardIDNumber());
@@ -86,8 +108,18 @@ public class ComputerPlayer extends AbstractPlayer {
         }
     }
 
+    private void saveToMemory(int compareNumber, int idNumber) {
+        //0 - age
+        //1 - key
+        //2 - value
+        int[] card = {1, compareNumber, idNumber};
+        memory.add(card);
+    }
+
     private void saveToMap(int compareNumber, int idNumber) {
         if (compareNumber != -1) {
+            saveToMemory(compareNumber, idNumber);
+
             if (correctMoves.containsKey(compareNumber)) {
                 ArrayList<Integer> newCard = correctMoves.get(compareNumber);
                 if (newCard.size() == 1 && newCard.get(0) != idNumber) {
