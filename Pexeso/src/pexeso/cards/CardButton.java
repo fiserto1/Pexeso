@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pexeso.cards;
 
 import java.awt.Image;
@@ -15,19 +14,19 @@ import javax.swing.JButton;
  * @author Tomas
  */
 public class CardButton extends JButton {
-    Card card;
+
+    private final Card card;
 
     public CardButton(Card card) {
         this.card = card;
         setFocusPainted(false);
         setText(card.getReverseSide());
     }
-    
-    
+
     public void showCard() {
         this.setText("");
         ImageIcon newImage = new ImageIcon(card.getCardImage().getImage().getScaledInstance(
-                (this.getHeight()-(this.getHeight()/5)), -1, Image.SCALE_SMOOTH));
+                (this.getHeight() - (this.getHeight() / 5)), -1, Image.SCALE_SMOOTH));
         this.setIcon(newImage);
     }
 

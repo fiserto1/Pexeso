@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pexeso;
 
 import java.io.Serializable;
@@ -13,7 +12,7 @@ import java.io.Serializable;
  * @author Tomas
  */
 public class OneMove implements Serializable {
-    
+
     private int firstCardIDNumber;
     private int firstCardCompareNumber;
     private int secondCardIDNumber;

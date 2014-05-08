@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pexeso.players;
 
 import java.io.Serializable;
@@ -17,7 +16,7 @@ import pexeso.delegates.PlayerDelegate;
  * @author Tomas
  */
 public abstract class AbstractPlayer implements Serializable {
-    
+
     protected int score;
     protected String name;
     protected ImageIcon avatar;
@@ -30,14 +29,13 @@ public abstract class AbstractPlayer implements Serializable {
         this.playerNumber = playerNumber;
     }
 
-    
-    public abstract OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves, int numberOfCards);
-    
-    
+    public abstract OneMove move(OneMove myLastMove, ArrayList<OneMove> oppMoves,
+            int numberOfCards);
+
     public int getPlayerNumber() {
         return playerNumber;
     }
-    
+
     public int getScore() {
         return score;
     }
@@ -53,14 +51,14 @@ public abstract class AbstractPlayer implements Serializable {
     public PlayerDelegate getDelegate() {
         return delegate;
     }
-    
+
     public void setScore(int score) {
         this.score = score;
         if (delegate != null) {
             delegate.scoreChanged(this);
         }
     }
-    
+
     public void setName(String name) {
         this.name = name;
         if (delegate != null) {
@@ -74,7 +72,7 @@ public abstract class AbstractPlayer implements Serializable {
             delegate.avatarChanged(this);
         }
     }
-    
+
     public void setDelegate(PlayerDelegate delegate) {
         this.delegate = delegate;
         if (delegate != null) {

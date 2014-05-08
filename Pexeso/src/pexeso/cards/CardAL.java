@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pexeso.cards;
 
 import java.awt.event.ActionEvent;
@@ -17,15 +16,14 @@ import pexeso.players.HumanPlayer;
  * @author Tomas
  */
 public class CardAL implements ActionListener, Serializable {
-    
-    private OneMove move = new OneMove(-1, -1);
-    private HumanPlayer player;
+
+    private final OneMove move = new OneMove(-1, -1);
+    private final HumanPlayer player;
 
     public CardAL(HumanPlayer player) {
         this.player = player;
     }
-    
-    
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof CardButton) {
@@ -45,7 +43,7 @@ public class CardAL implements ActionListener, Serializable {
             }
         }
     }
-    
+
     public OneMove getMove() {
         return move;
     }

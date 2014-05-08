@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pexeso;
 
 import java.io.Serializable;
@@ -14,6 +13,7 @@ import pexeso.delegates.MessageDelegate;
  * @author Tomas
  */
 public class Message implements Serializable {
+
     private String errorMessage;
     private String headMessage;
     private transient MessageDelegate delegate;
@@ -35,7 +35,7 @@ public class Message implements Serializable {
             delegate.headMessageChanged(this);
         }
     }
-    
+
     public void setDelegate(MessageDelegate delegate) {
         this.delegate = delegate;
     }

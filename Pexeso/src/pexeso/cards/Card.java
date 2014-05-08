@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pexeso.cards;
 
 import java.io.Serializable;
@@ -15,21 +14,21 @@ import pexeso.delegates.CardDelegate;
  * @author Tomas
  */
 public class Card implements Serializable {
-    private String reverseSide = "CARD";
+
+    private final String reverseSide = "CARD";
     private ImageIcon cardImage;
     private int compareNumber;
     private int idNumber;
     private transient CardDelegate delegate;
     private boolean discovered;
-    
-    
+
     public void hideCard() {
         discovered = true;
         if (delegate != null) {
             delegate.cardRevealed(this);
         }
     }
-    
+
     public void showCard() {
         if (delegate != null) {
             delegate.showCard(this);
@@ -41,7 +40,7 @@ public class Card implements Serializable {
             delegate.turnBackCard(this);
         }
     }
-    
+
     public ImageIcon getCardImage() {
         return cardImage;
     }
@@ -73,15 +72,15 @@ public class Card implements Serializable {
     public void setDelegate(CardDelegate delegate) {
         this.delegate = delegate;
     }
-    
+
     public boolean isDiscovered() {
         return discovered;
     }
-    
+
     public void setDiscovered(boolean discovered) {
         this.discovered = discovered;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 7;
@@ -98,9 +97,6 @@ public class Card implements Serializable {
             return false;
         }
         final Card other = (Card) obj;
-        if (this.compareNumber != other.compareNumber) {
-            return false;
-        }
-        return true;
+        return this.compareNumber == other.compareNumber;
     }
 }

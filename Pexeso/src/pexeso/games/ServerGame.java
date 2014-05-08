@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pexeso.games;
 
 import java.io.IOException;
@@ -22,9 +21,9 @@ import pexeso.OneMove;
  * @author Tomas
  */
 public class ServerGame extends Game {
-    
-    private ServerSocket serverSock;
-    private Socket clientSock;
+
+//    private ServerSocket serverSock;
+//    private Socket clientSock;
     private ObjectOutputStream objOutStream;
     private ObjectInputStream objInStream;
 
@@ -32,8 +31,7 @@ public class ServerGame extends Game {
         super(serverPlayer, null, deck);
         playerOnTurn = true;
     }
-    
-    
+
     @Override
     public void run() {
         try {
@@ -45,6 +43,7 @@ public class ServerGame extends Game {
             output.setErrorMessage("Player class not found.");
             return;
         } catch (IOException ex) {
+            System.out.println("rly");
             output.setErrorMessage(ex.getMessage());
             return;
         }
@@ -54,19 +53,19 @@ public class ServerGame extends Game {
             output.setErrorMessage("Can't send game to client.");
             return;
         }
-        
+
         if (playerOnTurn) {
             output.setHeadMessage(player1.getName() + "'s turn.");
         } else {
             output.setHeadMessage(player2.getName() + "'s turn.");
         }
-        
+
         while (!endOfGame) {
 
             if (playerOnTurn) {
-                
+
                 newMove = player1.move(lastPlayer1Move, player2Moves, deck.getCards().length);
-                
+
                 try {
                     objOutStream.writeObject(newMove);
                 } catch (IOException ex) {
@@ -85,20 +84,9 @@ public class ServerGame extends Game {
                 }
             }
 
-            if (gameInterrupted) {
-                return;
-            }
-            showCards();
-
-            if (newMove.getFirstCardIDNumber()!= -1 &&
-                    newMove.getSecondCardIDNumber() != -1) {
-                compareCards();
-            }
-            if (uncoveredCards == deck.getCards().length) {
-                endGame();
-            }
+            evaluateMove();
         }
-        
+
         try {
             objOutStream.close();
             objInStream.close();
@@ -108,7 +96,7 @@ public class ServerGame extends Game {
             output.setErrorMessage("Cant close streams.");
         }
     }
-    
+
     private void connectClient() throws UnknownHostException, ClassNotFoundException, IOException {
         output.setHeadMessage("Your IP adress: "
                 + InetAddress.getLocalHost().getHostAddress());
@@ -120,7 +108,7 @@ public class ServerGame extends Game {
         player2.setPlayerNumber(2);
         player2.setDelegate(player1.getDelegate());
     }
-    
+
     private void sendGameToClient() throws IOException {
         objOutStream.writeObject(player1);
         objOutStream.writeObject(deck);

@@ -1,4 +1,3 @@
-
 package pexeso.cards;
 
 import java.io.Serializable;
@@ -10,7 +9,7 @@ import javax.swing.ImageIcon;
  * @author Tomas
  */
 public class DeckOfCards implements Serializable {
-//    public static final int NUMBER_OF_CARDS = 64;
+
     private int numberOfCards;
     private final Card[] cards;
 
@@ -20,6 +19,10 @@ public class DeckOfCards implements Serializable {
         }
         this.numberOfCards = numberOfCards;
         this.cards = new Card[numberOfCards];
+        createDeck();
+    }
+
+    private void createDeck() {
         int j = 1;
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new Card();
@@ -31,7 +34,7 @@ public class DeckOfCards implements Serializable {
             }
         }
     }
-    
+
     public void shuffleCards() {
         Random rnd = new Random();
         //shuffle
@@ -41,21 +44,22 @@ public class DeckOfCards implements Serializable {
             cards[i] = cards[change];
             cards[change] = temp;
         }
-        
+
         //turn back
         for (int i = 0; i < cards.length; i++) {
             cards[i].turnBack();
             cards[i].setIdNumber(i);
         }
     }
+
     public int size() {
         return numberOfCards;
     }
-    
+
     public Card[] getCards() {
         return cards;
     }
-    
+
     private ImageIcon loadImgFromFile(int fileNumber) {
         ImageIcon image = new ImageIcon(getClass().getResource(
                 "/images/" + fileNumber + ".jpg"));

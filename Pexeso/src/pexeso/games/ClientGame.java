@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pexeso.games;
 
 import java.io.IOException;
@@ -11,10 +10,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import pexeso.players.AbstractPlayer;
 import pexeso.cards.DeckOfCards;
 import pexeso.OneMove;
@@ -24,8 +19,7 @@ import pexeso.OneMove;
  * @author Tomas
  */
 public class ClientGame extends Game {
-    
-    private Socket clientSocket;
+
     private ObjectOutputStream objOutStream;
     private ObjectInputStream objInStream;
 
@@ -36,7 +30,7 @@ public class ClientGame extends Game {
 
     @Override
     public void run() {
-        
+
         try {
             connectToServer();
         } catch (UnknownHostException e) {
@@ -46,7 +40,7 @@ public class ClientGame extends Game {
             output.setErrorMessage("Can't connect to host.");
             return;
         }
-        
+
         try {
             loadFromServer();
         } catch (ClassNotFoundException ex) {
@@ -56,13 +50,13 @@ public class ClientGame extends Game {
             output.setErrorMessage("Can't load data from server.");
             return;
         }
-        
+
         if (playerOnTurn) {
             output.setHeadMessage(player1.getName() + "'s turn.");
         } else {
             output.setHeadMessage(player2.getName() + "'s turn.");
         }
-        
+
         while (!endOfGame) {
 
             if (playerOnTurn) {
@@ -85,52 +79,32 @@ public class ClientGame extends Game {
                 }
             }
 
-            if (gameInterrupted) {
-                return;
-            }
-            showCards();
-
-            if (newMove.getFirstCardIDNumber()!= -1 &&
-                    newMove.getSecondCardIDNumber() != -1) {
-                compareCards();
-            }
-            if (uncoveredCards == deck.getCards().length) {
-                endGame();
-            }
+            evaluateMove();
         }
-        
+
         try {
             objOutStream.close();
             objInStream.close();
-            clientSocket.close();
+            clientSock.close();
         } catch (IOException ex) {
             output.setErrorMessage("Can't close streams or socket.");
         }
     }
-//    "Enter the IP adress of the host."
+
     private void connectToServer() throws UnknownHostException, IOException {
-        JTextField firstTF = new JTextField(player1.getName());
-        final JComponent[] inputs = new JComponent[] {
-            new JLabel("Player name:"), firstTF, 
-            new JLabel("Enter the IP adress of the host.")
-        };
-        String ipAdress = (String) JOptionPane.showInputDialog(null,
-                inputs, "Connecting to host...",
-                JOptionPane.PLAIN_MESSAGE, null, null, "127.0.0.1");
-        player1.setName(firstTF.getText());
-        clientSocket = new Socket(ipAdress, 4444);
-        objOutStream = new ObjectOutputStream(clientSocket.getOutputStream());
-        objInStream = new ObjectInputStream(clientSocket.getInputStream());
+        clientSock = new Socket(hostIPAddress, 4444);
+        objOutStream = new ObjectOutputStream(clientSock.getOutputStream());
+        objInStream = new ObjectInputStream(clientSock.getInputStream());
         objOutStream.writeObject(player1);
     }
-    
+
     private void loadFromServer() throws ClassNotFoundException, IOException {
         player2 = (AbstractPlayer) objInStream.readObject();
         player2.setPlayerNumber(2);
         player2.setDelegate(player1.getDelegate());
         deck = (DeckOfCards) objInStream.readObject();
         player1.getDelegate().refreshDeck(deck);
-        
+
         if (player1.getName().equals(player2.getName())) {
             player2.setName("Opponent");
         }

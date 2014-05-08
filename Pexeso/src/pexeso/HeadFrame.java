@@ -183,6 +183,19 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         }
         player1.setName(playerNameTF.getText());
     }
+    
+    private String showJoinGameDialog() {
+        JTextField firstTF = new JTextField(player1.getName());
+        final JComponent[] inputs = new JComponent[]{
+            new JLabel("Player name:"), firstTF,
+            new JLabel("Enter the IP adress of the host.")
+        };
+        String ipAdress = (String) JOptionPane.showInputDialog(null,
+                inputs, "Connecting to host...",
+                JOptionPane.PLAIN_MESSAGE, null, null, "127.0.0.1");
+        player1.setName(firstTF.getText());
+        return ipAdress;
+    }
 
     private void endCurrentGameThread() {
         if (gameThread != null) {
@@ -472,6 +485,8 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
                 leftPanel.setVisible(true);
                 rightPanel.setVisible(true);
 
+                newGame.setHostIPAddress(showJoinGameDialog());
+                
                 newGame.setGameInterrupted(false);
                 gameThread = new Thread(newGame);
                 gameThread.start();
