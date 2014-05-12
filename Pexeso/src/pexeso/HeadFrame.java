@@ -482,7 +482,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                saveGameMenuItem.setEnabled(true);
+                
                 endCurrentGameThread();
 
                 ObjectInputStream objInStr = null;
@@ -494,6 +494,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
                     objInStr.close();
                     errorLabel.setText("Load successful.");
 
+                    saveGameMenuItem.setEnabled(true);
                     deck = loadGame.getDeck();
                     newGame = loadGame;
                     newGame.getPlayer1().setDelegate(HeadFrame.this);
