@@ -26,7 +26,7 @@ public class Message implements Serializable {
     private transient MessageDelegate delegate;
 
     /**
-     * 
+     * Konstruktor s parametrem pro delegata.
      * @param delegate Delegat pro vypis zpravy.
      */
     public Message(MessageDelegate delegate) {

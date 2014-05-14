@@ -10,7 +10,7 @@ import pexeso.cards.DeckOfCards;
 import pexeso.players.AbstractPlayer;
 
 /**
- * Interface pro delegata hrace
+ * Interface pro delegata hrace.
  *
  * @author Tomas
  */
@@ -38,28 +38,29 @@ public interface PlayerDelegate {
     public void avatarChanged(AbstractPlayer player);
 
     /**
-     * Zobrazi hrace na hraci desce.
+     * Oznami ze je potreba zobrazit hrace na hraci desce.
      *
      * @param player Hrac.
      */
     public void showPlayerOnBoard(AbstractPlayer player);
 
     /**
-     * Aktivuje tlacitka pro karty, aby mohl hrac tahnout.
+     * Oznamuje, ze chceme aktivovat tlacitka pro karty, aby mohl hrac tahnout.
      *
      * @param listener Posluchac karty.
      */
     public void activateCards(CardAL listener);
 
     /**
-     * Deaktivuje tlacitka pro karty, aby hrac jiz nemohl tahnout.
+     * Oznamuje, ze chceme deaktivovat tlacitka pro karty, aby hrac jiz nemohl
+     * tahnout.
      *
      * @param listener Posluchac karty.
      */
     public void deactivateCards(CardAL listener);
 
     /**
-     * Obnovi a zobrazi hraci desku.
+     * Oznamuje, ze je potreba obnovit a zobrazit hraci desku.
      *
      * @param deck Balicek karet.
      */

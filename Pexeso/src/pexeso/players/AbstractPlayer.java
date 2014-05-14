@@ -12,7 +12,8 @@ import pexeso.OneMove;
 import pexeso.delegates.PlayerDelegate;
 
 /**
- * Abstraktni trida pro hrace.
+ * Abstraktni trida pro hrace. Obsahuje zakladni parametry hrace (jmeno, cislo,
+ * score, avatar, delegat). Nuti potomky, aby obsahovali metodu pro tahnuti.
  *
  * @author Tomas
  */

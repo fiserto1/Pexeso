@@ -10,7 +10,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 /**
- * Trida pro tlacitko s kartickou.
+ * Trida pro tlacitko s kartickou. Rozsireny JButton o vlastnost mit na sobe
+ * kartu.
  *
  * @author Tomas
  */
@@ -31,7 +32,7 @@ public class CardButton extends JButton {
     }
 
     /**
-     * Nastavi tlacitku predni stranu karty v rozumnem meritku
+     * Nastavi tlacitku predni stranu karty v rozumnem meritku.
      */
     public void showCard() {
         this.setText("");

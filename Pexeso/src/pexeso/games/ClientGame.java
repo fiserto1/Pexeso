@@ -15,7 +15,8 @@ import pexeso.cards.DeckOfCards;
 import pexeso.OneMove;
 
 /**
- * Trida pro hru z pohledu klienta.
+ * Trida pro hru z pohledu klienta. Zakladni hra obohacena o komunikaci se
+ * serverem.
  *
  * @author Tomas
  */

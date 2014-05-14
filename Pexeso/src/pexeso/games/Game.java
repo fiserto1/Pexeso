@@ -17,7 +17,9 @@ import pexeso.OneMove;
 import pexeso.delegates.MessageDelegate;
 
 /**
- * Trida pro jednu hru hru.
+ * Trida pro zakladni hru. Zajistuje provoz hry. Porovnava karty, urcuje, kdy ma
+ * byt konec, zobrazuje otocene karty po dobu 1 sekundy. Vymenuje hrace na tahu.
+ * Pridava skore prislusnemu hraci.
  *
  * @author Tomas
  */

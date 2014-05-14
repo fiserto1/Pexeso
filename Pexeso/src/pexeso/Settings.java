@@ -43,7 +43,7 @@ public class Settings {
     }
 
     /**
-     * 1 - lehka 2 - stredni 3 - tezka
+     * 1 - lehka, 2 - stredni, 3 - tezka.
      *
      * @return Vrati obtiznost hry.
      */
@@ -52,7 +52,7 @@ public class Settings {
     }
 
     /**
-     * Nastavi obtiznost hry. 1 - lehka 2 - stredni 3 - tezka
+     * Nastavi obtiznost hry. 1 - lehka, 2 - stredni, 3 - tezka.
      *
      * @param difficulty Obtiznost hry.
      */

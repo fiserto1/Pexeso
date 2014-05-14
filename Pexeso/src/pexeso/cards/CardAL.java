@@ -37,11 +37,11 @@ public class CardAL implements ActionListener, Serializable {
         if (e.getSource() instanceof CardButton) {
             CardButton cardBut = (CardButton) e.getSource();
             if (cardBut.getIcon() == null) {
-                if (move.getFirstCardIDNumber() == -1) {
+                if (move.getFirstCardIDNumber() == -1) { //first click
                     cardBut.showCard();
                     move.setFirstCardIDNumber(cardBut.getCard().getIdNumber());
                     move.setFirstCardCompareNumber(cardBut.getCard().getCompareNumber());
-                } else if (move.getSecondCardIDNumber() == -1) {
+                } else if (move.getSecondCardIDNumber() == -1) { //second click
                     cardBut.showCard();
                     move.setSecondCardIDNumber(cardBut.getCard().getIdNumber());
                     move.setSecondCardCompareNumber(cardBut.getCard().getCompareNumber());

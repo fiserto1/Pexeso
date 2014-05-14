@@ -26,7 +26,7 @@ public class OneMove implements Serializable {
     private int secondCardCompareNumber;
 
     /**
-     * Nastavi id obou karet. Porovnavaci cisla karet jsou -1. (zatim je cislo
+     * Nastavi ID obou karet. Porovnavaci cisla karet jsou -1. (zatim je cislo
      * zatajeno)
      *
      * @param firstCardIDNumber ID prvni otocene karty.
@@ -57,9 +57,8 @@ public class OneMove implements Serializable {
     }
 
     /**
-     * Vraci porovnavaci cislo prvni otocene karty.
      *
-     * @return
+     * @return Vraci porovnavaci cislo prvni otocene karty.
      */
     public int getFirstCardCompareNumber() {
         return firstCardCompareNumber;

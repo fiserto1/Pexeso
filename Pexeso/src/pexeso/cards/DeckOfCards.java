@@ -7,7 +7,7 @@ import javax.swing.ImageIcon;
 
 /**
  * Trida pro balicek karet.
- * 
+ *
  * @author Tomas
  */
 public class DeckOfCards implements Serializable {
@@ -20,6 +20,7 @@ public class DeckOfCards implements Serializable {
 
     /**
      * Pocet karet v balicku musi byt v intervalu od 4 do 64 vcetne
+     *
      * @param numberOfCards Pocet karet v balicku.
      */
     public DeckOfCards(int numberOfCards) {
@@ -32,8 +33,8 @@ public class DeckOfCards implements Serializable {
     }
 
     /**
-     * Vytvori balicek dvojic karet do pole.
-     * Priradi kazde karte porovnavaci cislo, ID, predni stranu.
+     * Vytvori balicek dvojic karet do pole. Priradi kazde karte porovnavaci
+     * cislo, ID, predni stranu.
      */
     private void createDeck() {
         int j = 1;
@@ -69,7 +70,7 @@ public class DeckOfCards implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return Vrati pocet karet v balicku.
      */
     public int size() {
@@ -78,18 +79,19 @@ public class DeckOfCards implements Serializable {
 
     /**
      * Vrati balicek karet v poli.
-     * @return 
+     *
+     * @return
      */
     public Card[] getCards() {
         return cards;
     }
 
     /**
-     * Nacte predni stranu karty ze souboru.
-     * Cislo souboru je stejne jako porovnavaci cislo karty. Takze vzniknou
-     * dvojice obrazku.
+     * Nacte predni stranu karty ze souboru. Cislo souboru je stejne jako
+     * porovnavaci cislo karty. Takze vzniknou dvojice obrazku.
+     *
      * @param fileNumber Cislo souboru.
-     * @return 
+     * @return
      */
     private ImageIcon loadImgFromFile(int fileNumber) {
         ImageIcon image = new ImageIcon(getClass().getResource(
@@ -125,6 +127,4 @@ public class DeckOfCards implements Serializable {
     public String toString() {
         return "DeckOfCards{" + "numberOfCards=" + numberOfCards + ", cards=" + cards + '}';
     }
-    
-    
 }

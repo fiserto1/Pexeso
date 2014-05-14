@@ -22,7 +22,8 @@ import java.io.Serializable;
 import javax.swing.*;
 
 /**
- * Trida pro hlavni okno.
+ * Trida pro hlavni okno. Zobrazuje menu, pomoci ktereho se ovlada program.
+ * Zobrazuje hraci desku a 2 hrace.
  *
  * @author Tomas
  */
@@ -72,6 +73,10 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
     private final ImageIcon defaultComputerAvatar
             = new ImageIcon(getClass().getResource("/avatars/Female.png"));
 
+    /**
+     * Kontruktor hlavniho okna. Zalozi menu s posluchaci, panely a hlavniho
+     * hrace.
+     */
     public HeadFrame() {
         //Close
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -96,7 +101,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
     }
 
     /**
-     * Zalozi menu.
+     * Zalozi menu se vsemi posluchaci.
      */
     private void createMenu() {
         saveGameMenuItem.setEnabled(false);
@@ -158,7 +163,8 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
     }
 
     /**
-     * Zobrazi dialog pro nastaveni hry a nasledne zmeni nastaveni.
+     * Zobrazi dialog pro nastaveni hry a nasledne zmeni nastaveni. Lze nastavit
+     * jmeno hrace a pocet karet.
      */
     private void showSettingsDialog() {
         JTextField playerNameTF = new JTextField(player1.getName());
@@ -195,7 +201,8 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
     }
 
     /**
-     * Zobrazi dialog pro pripojeni ke hre.
+     * Zobrazi dialog pro pripojeni ke hre. Je potreba vyplnit jmeno hrace a IP
+     * adresa hry, ke ktere se pripojujeme.
      *
      * @return Vrati zadanou IP adresu serveru(hostitele).
      */
@@ -213,7 +220,8 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
     }
 
     /**
-     * Ukonci vlakno aktualni hry. Aby bylo mozne zacit hru novou.
+     * Ukonci vlakno aktualni hry. Aby bylo mozne zacit novou hru na stejnem
+     * vlakne.
      */
     private void endCurrentGameThread() {
         if (gameThread != null) {
@@ -238,11 +246,10 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
     }
 
     /**
-     * Zobrazi hraci plochu.
+     * Zobrazi hraci plochu a dva hrace.
      */
     private void showGameBoard() {
-        
-        
+
         setPreferredSize(new java.awt.Dimension(1050, 700));
         leftPanel.setVisible(true);
         rightPanel.setVisible(true);
@@ -482,7 +489,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+
                 endCurrentGameThread();
 
                 ObjectInputStream objInStr = null;
@@ -528,17 +535,17 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+
                 saveGameMenuItem.setEnabled(false);
                 endCurrentGameThread();
                 showSettingsDialog();
 
                 deck = new DeckOfCards(settings.getNumberOfCards());
                 deck.shuffleCards();
-                
+
                 player1.setDelegate(HeadFrame.this);
                 player1.setScore(0);
-                
+
                 newGame = new ServerGame(player1, deck);
                 showGameBoard();
             }

@@ -24,7 +24,6 @@ public class Card implements Serializable {
      * Predni strana karty. (líc) Odviji se od porovnavaciho cisla karty.
      */
     private ImageIcon cardImage;
-
     /**
      * Porovnavaci cislo karty.
      */
@@ -38,7 +37,7 @@ public class Card implements Serializable {
      */
     private transient CardDelegate delegate;
     /**
-     * true - karta jiz byla uhadnuta. (jiz neni soucasti hry) false - karta
+     * true - karta jiz byla uhadnuta. (jiz neni soucasti hry), false - karta
      * zatim nebyla uhadnuta.
      */
     private boolean discovered;

@@ -16,7 +16,8 @@ import pexeso.cards.DeckOfCards;
 import pexeso.OneMove;
 
 /**
- * Trida pro hru z pohledu serveru.
+ * Trida pro hru z pohledu serveru. Zakladni hra obohacena o komunikaci s
+ * klientem.
  *
  * @author Tomas
  */
@@ -26,7 +27,7 @@ public class ServerGame extends Game {
     private ObjectInputStream objInStream;
 
     /**
-     * Nastavi hrace na tahu na true - zacina server
+     * Nastavi hrace na tahu na true - zacina server.
      *
      * @param serverPlayer Hrac. (server)
      * @param deck Balicek karet.
