@@ -93,7 +93,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         getContentPane().add(northPanel, java.awt.BorderLayout.PAGE_START);
         getContentPane().add(southPanel, java.awt.BorderLayout.PAGE_END);
         getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
-        setPreferredSize(new java.awt.Dimension(900, 700));
+        setMinimumSize(new java.awt.Dimension(1050, 700));
         pack();
         setLocationRelativeTo(null);
 //        setResizable(false);
@@ -500,6 +500,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
                     Game loadGame = (Game) objInStr.readObject();
                     objInStr.close();
                     errorLabel.setText("Load successful.");
+                    errorLabel.setText("Load successful." + playerOnePictureButton.getHeight() + ", " + playerOnePictureButton.getWidth());
 
                     saveGameMenuItem.setEnabled(true);
                     deck = loadGame.getDeck();
