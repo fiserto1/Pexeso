@@ -172,7 +172,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
      * Zobrazi dialog pro nastaveni hry a nasledne zmeni nastaveni. Lze nastavit
      * jmeno hrace a pocet karet.
      */
-    private void showSettingsDialog() {
+    private boolean showSettingsDialog() {
         JTextField playerNameTF = new JTextField(player1.getName());
         ButtonGroup radButGroup = new ButtonGroup();
         JPanel radButPanel = new JPanel();
@@ -195,7 +195,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
                 JOptionPane.PLAIN_MESSAGE);
 
         if (choice != JOptionPane.OK_OPTION) {
-            return;
+            return false;
         }
         for (JRadioButton rBut : radButts) {
             if (rBut.isSelected()) {
@@ -204,6 +204,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
             }
         }
         player1.setName(playerNameTF.getText());
+        return true;
     }
 
     /**
@@ -550,9 +551,14 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                
+                boolean valid = showSettingsDialog();
+                if (!valid){
+                    return;
+                }
                 saveGameMenuItem.setEnabled(false);
                 endCurrentGameThread();
-                showSettingsDialog();
+                
 
                 deck = new DeckOfCards(settings.getNumberOfCards());
                 deck.shuffleCards();
@@ -575,6 +581,10 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                String ipAdress = showJoinGameDialog();
+                if (ipAdress == null) {
+                    return;
+                }
                 saveGameMenuItem.setEnabled(false);
                 endCurrentGameThread();
 
@@ -585,7 +595,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
                 leftPanel.setVisible(true);
                 rightPanel.setVisible(true);
 
-                newGame.setHostIPAddress(showJoinGameDialog());
+                newGame.setHostIPAddress(ipAdress);
 
                 newGame.setGameInterrupted(false);
                 gameThread = new Thread(newGame);
