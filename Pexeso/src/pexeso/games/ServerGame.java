@@ -24,7 +24,6 @@ import pexeso.OneMove;
 public class ServerGame extends Game {
 
     private ObjectOutputStream objOutStream;
-    private ObjectInputStream objInStream;
 
     /**
      * Nastavi hrace na tahu na true - zacina server.
@@ -85,7 +84,7 @@ public class ServerGame extends Game {
                 try {
                     newMove = (OneMove) objInStream.readObject();
                 } catch (IOException ex) {
-                    output.setErrorMessage("Can't read move from client.");
+                    output.setErrorMessage("Opponent left.");
                     closeStreams();
                     return;
                 } catch (ClassNotFoundException ex) {
@@ -123,7 +122,7 @@ public class ServerGame extends Game {
                 serverSock.close();
             }
         } catch (IOException ex) {
-            output.setErrorMessage("Cant close streams.");
+            output.setErrorMessage("Connection lost.");
         }
     }
 

@@ -5,6 +5,7 @@
  */
 package pexeso.games;
 
+import java.io.ObjectInputStream;
 import pexeso.players.AbstractPlayer;
 import java.io.Serializable;
 import java.net.ServerSocket;
@@ -27,6 +28,7 @@ public class Game implements Serializable, Runnable {
 
     protected Socket clientSock;
     protected ServerSocket serverSock;
+    protected ObjectInputStream objInStream;
     protected String hostIPAddress;
 
     protected boolean gameInterrupted;
@@ -396,6 +398,15 @@ public class Game implements Serializable, Runnable {
     public void setHostIPAddress(String hostIPAddress) {
         this.hostIPAddress = hostIPAddress;
     }
+
+    /**
+     * 
+     * @return Vrati vstupni proud hry.
+     */
+    public ObjectInputStream getObjInStream() {
+        return objInStream;
+    }
+    
 
     @Override
     public int hashCode() {

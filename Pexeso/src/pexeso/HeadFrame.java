@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 
 /**
@@ -231,6 +233,13 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
                     newGame.getServerSock().close();
                 } catch (IOException ex) {
                     errorLabel.setText("Server socket not closed.");
+                }
+            }
+            if(newGame.getObjInStream() != null) {
+                try {
+                    newGame.getObjInStream().close();
+                } catch (IOException ex) {
+                    errorLabel.setText("Input stream not closed.");
                 }
             }
             gameThread.interrupt();
