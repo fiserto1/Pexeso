@@ -468,7 +468,6 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                endCurrentGameThread();
 
                 String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
                 ObjectOutputStream objOutStr = null;
@@ -476,12 +475,13 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
                     objOutStr = new ObjectOutputStream(new FileOutputStream(filepath));
                     objOutStr.writeObject(newGame);
                     objOutStr.close();
-                    errorLabel.setText("Save successful.");
+                    endCurrentGameThread();
+                    JOptionPane.showMessageDialog(null, "Save successful.");
                     showGameBoard();
                 } catch (FileNotFoundException fnfe) {
-                    errorLabel.setText("File not found.");
+                    JOptionPane.showMessageDialog(null, "\"savedGame.txt\" not found.");
                 } catch (IOException ioe) {
-                    errorLabel.setText("Save failed.");
+                    JOptionPane.showMessageDialog(null, "Save failed.");
                 } finally {
                     try {
                         if (objOutStr != null) {
@@ -504,8 +504,6 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                endCurrentGameThread();
-
                 ObjectInputStream objInStr = null;
                 String filepath = System.getProperty("user.dir") + "\\savedGame.txt";
                 try {
@@ -513,9 +511,8 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
 
                     Game loadGame = (Game) objInStr.readObject();
                     objInStr.close();
-                    errorLabel.setText("Load successful.");
-                    errorLabel.setText("Load successful." + playerOnePictureButton.getHeight() + ", " + playerOnePictureButton.getWidth());
-
+                    endCurrentGameThread();
+                    JOptionPane.showMessageDialog(null, "Load successful.");
                     saveGameMenuItem.setEnabled(true);
                     deck = loadGame.getDeck();
                     newGame = loadGame;
@@ -524,11 +521,11 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
                     newGame.setOutputDelegate(HeadFrame.this);
                     showGameBoard();
                 } catch (FileNotFoundException fnfe) {
-                    errorLabel.setText("File not found.");
+                    JOptionPane.showMessageDialog(null, "\"savedGame.txt\" not found. You have to save any game first.");
                 } catch (IOException ioe) {
-                    errorLabel.setText("Load failed.");
+                    JOptionPane.showMessageDialog(null, "\"savedGame.txt\" is corrupted. You have to save any game first.");
                 } catch (ClassNotFoundException ex) {
-                    errorLabel.setText("Class not found");
+                    JOptionPane.showMessageDialog(null, "Class not found");
                 } finally {
                     try {
                         if (objInStr != null) {
