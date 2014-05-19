@@ -7,7 +7,6 @@ package pexeso.cards;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.Serializable;
 import pexeso.OneMove;
 import pexeso.players.HumanPlayer;
 
@@ -19,7 +18,7 @@ import pexeso.players.HumanPlayer;
  *
  * @author Tomas
  */
-public class CardAL implements ActionListener, Serializable {
+public class CardAL implements ActionListener {
 
     private final OneMove move = new OneMove(-1, -1);
     private final HumanPlayer player;
@@ -58,36 +57,5 @@ public class CardAL implements ActionListener, Serializable {
      */
     public OneMove getMove() {
         return move;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 37 * hash + (this.move != null ? this.move.hashCode() : 0);
-        hash = 37 * hash + (this.player != null ? this.player.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final CardAL other = (CardAL) obj;
-        if (this.move != other.move && (this.move == null || !this.move.equals(other.move))) {
-            return false;
-        }
-        if (this.player != other.player && (this.player == null || !this.player.equals(other.player))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "CardAL{" + "move=" + move + ", player=" + player + '}';
     }
 }
