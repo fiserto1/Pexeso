@@ -6,7 +6,6 @@
 package pexeso.cards;
 
 import java.io.Serializable;
-import javax.swing.ImageIcon;
 import pexeso.delegates.CardDelegate;
 
 /**
@@ -23,7 +22,7 @@ public class Card implements Serializable {
     /**
      * Predni strana karty. (líc) Odviji se od porovnavaciho cisla karty.
      */
-    private ImageIcon cardImage;
+//    private ImageIcon cardImage;
     /**
      * Porovnavaci cislo karty.
      */
@@ -68,23 +67,6 @@ public class Card implements Serializable {
         if (delegate != null) {
             delegate.cardTurnedBack(this);
         }
-    }
-
-    /**
-     *
-     * @return Vrati predni stranu karty.
-     */
-    public ImageIcon getCardImage() {
-        return cardImage;
-    }
-
-    /**
-     * Nastavi predni stranu karty.
-     *
-     * @param cardIcon Obrazek predni strany karty.
-     */
-    public void setCardImage(ImageIcon cardIcon) {
-        this.cardImage = cardIcon;
     }
 
     /**

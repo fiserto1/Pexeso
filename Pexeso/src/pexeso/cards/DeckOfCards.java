@@ -3,7 +3,6 @@ package pexeso.cards;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Random;
-import javax.swing.ImageIcon;
 
 /**
  * Trida pro balicek karet.
@@ -41,7 +40,6 @@ public class DeckOfCards implements Serializable {
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new Card();
             cards[i].setCompareNumber(j);
-            cards[i].setCardImage(loadImgFromFile(j));
             cards[i].setIdNumber(i);
             if (i % 2 != 0) {
                 j++;
@@ -84,19 +82,6 @@ public class DeckOfCards implements Serializable {
      */
     public Card[] getCards() {
         return cards;
-    }
-
-    /**
-     * Nacte predni stranu karty ze souboru. Cislo souboru je stejne jako
-     * porovnavaci cislo karty. Takze vzniknou dvojice obrazku.
-     *
-     * @param fileNumber Cislo souboru.
-     * @return
-     */
-    private ImageIcon loadImgFromFile(int fileNumber) {
-        ImageIcon image = new ImageIcon(getClass().getResource(
-                "/images/" + fileNumber + ".jpg"));
-        return image;
     }
 
     @Override

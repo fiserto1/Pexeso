@@ -36,7 +36,7 @@ public class CardButton extends JButton {
      */
     public void showCard() {
         this.setText("");
-        ImageIcon newImage = new ImageIcon(card.getCardImage().getImage().getScaledInstance(
+        ImageIcon newImage = new ImageIcon(loadImgFromFile(card.getCompareNumber()).getImage().getScaledInstance(
                 (this.getHeight() - (this.getHeight() / 5)), -1, Image.SCALE_SMOOTH));
         this.setIcon(newImage);
     }
@@ -48,6 +48,19 @@ public class CardButton extends JButton {
         this.setText(card.getReverseSide());
         this.setIcon(null);
         this.setVisible(true);
+    }
+
+    /**
+     * Nacte predni stranu karty ze souboru. Cislo souboru je stejne jako
+     * porovnavaci cislo karty. Takze vzniknou dvojice obrazku.
+     *
+     * @param fileNumber Cislo souboru.
+     * @return
+     */
+    private ImageIcon loadImgFromFile(int fileNumber) {
+        ImageIcon image = new ImageIcon(getClass().getResource(
+                "/images/" + fileNumber + ".jpg"));
+        return image;
     }
 
     /**
