@@ -327,7 +327,10 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
 
     @Override
     public void errorMessageChanged(Message mess) {
-        errorLabel.setText(mess.getErrorMessage());
+        if (!newGame.isGameInterrupted()) {
+            JOptionPane.showMessageDialog(null, mess.getErrorMessage());
+        }
+//        errorLabel.setText(mess.getErrorMessage());
         pack();
     }
 
@@ -389,7 +392,9 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
             card.setDelegate(this);
         }
 
+        centerPanel.setVisible(false);
         centerPanel.removeAll();
+        centerPanel.setVisible(true);
         for (Card card : deck.getCards()) {
             centerPanel.add(new CardButton(card));
         }

@@ -41,11 +41,11 @@ public class ServerGame extends Game {
         try {
             connectClient();
         } catch (UnknownHostException ex) {
-            output.setErrorMessage("IP not found.");
+//            output.setErrorMessage("IP not found.");
             closeStreams();
             return;
         } catch (ClassNotFoundException ex) {
-            output.setErrorMessage("Player class not found.");
+//            output.setErrorMessage("Player class not found.");
             closeStreams();
             return;
         } catch (IOException ex) {
@@ -56,7 +56,7 @@ public class ServerGame extends Game {
         try {
             sendGameToClient();
         } catch (IOException ex) {
-            output.setErrorMessage("Can't send game to client.");
+//            output.setErrorMessage("Can't send game to client.");
             closeStreams();
             return;
         }
@@ -88,7 +88,7 @@ public class ServerGame extends Game {
                     closeStreams();
                     return;
                 } catch (ClassNotFoundException ex) {
-                    output.setErrorMessage("OneMove class not found.");
+//                    output.setErrorMessage("OneMove class not found.");
                     closeStreams();
                     return;
                 }
@@ -122,7 +122,8 @@ public class ServerGame extends Game {
                 serverSock.close();
             }
         } catch (IOException ex) {
-            output.setErrorMessage("Connection lost.");
+//            output.setErrorMessage("Connection lost.");
+            System.out.println("Connection lost.");
         }
     }
 

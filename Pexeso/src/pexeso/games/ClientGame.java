@@ -53,7 +53,7 @@ public class ClientGame extends Game {
         try {
             loadFromServer();
         } catch (ClassNotFoundException ex) {
-            output.setErrorMessage("Class not found. " + ex.getMessage());
+//            output.setErrorMessage("Class not found. " + ex.getMessage());
             closeStreams();
             return;
         } catch (IOException ex) {
@@ -87,7 +87,7 @@ public class ClientGame extends Game {
                     closeStreams();
                     return;
                 } catch (ClassNotFoundException ex) {
-                    output.setErrorMessage("OneMove class not found.");
+//                    output.setErrorMessage("OneMove class not found.");
                     closeStreams();
                     return;
                 }
@@ -118,7 +118,7 @@ public class ClientGame extends Game {
                 clientSock.close();
             }
         } catch (IOException ex) {
-            output.setErrorMessage("Connection lost.");
+//            output.setErrorMessage("Connection lost.");
         }
     }
 
