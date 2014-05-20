@@ -20,10 +20,6 @@ public class Card implements Serializable {
      */
     private final String reverseSide = "CARD";
     /**
-     * Predni strana karty. (líc) Odviji se od porovnavaciho cisla karty.
-     */
-//    private ImageIcon cardImage;
-    /**
      * Porovnavaci cislo karty.
      */
     private int compareNumber;
