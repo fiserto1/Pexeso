@@ -36,7 +36,7 @@ public class Game implements Serializable, Runnable {
 
     // true - player one's turn
     // false - player two's turn
-    protected boolean playerOnTurn;
+    protected boolean player1OnTurn;
     protected AbstractPlayer player1;
     protected AbstractPlayer player2;
     protected DeckOfCards deck;
@@ -56,6 +56,8 @@ public class Game implements Serializable, Runnable {
     protected transient Message output;
     protected boolean endOfGame;
 
+    private String result;
+
     /**
      * Zacina prvni hrac.
      *
@@ -67,9 +69,10 @@ public class Game implements Serializable, Runnable {
         this.player1 = player1;
         this.player2 = player2;
         this.deck = deck;
+        this.result = "";
         this.lastPlayer1Move = null;
         this.lastPlayer2Move = null;
-        this.playerOnTurn = true;
+        this.player1OnTurn = true;
         if (player1 != null) {
             this.output = new Message((HeadFrame) player1.getDelegate());
         } else {
@@ -79,14 +82,14 @@ public class Game implements Serializable, Runnable {
 
     @Override
     public void run() {
-        if (playerOnTurn) {
+        if (player1OnTurn) {
             output.setHeadMessage(player1.getName() + "'s turn.");
         } else {
             output.setHeadMessage(player2.getName() + "'s turn.");
         }
 
         while (!endOfGame) {
-            if (playerOnTurn) {
+            if (player1OnTurn) {
                 newMove = player1.move(lastPlayer1Move, player2Moves, deck.size());
             } else {
                 newMove = player2.move(lastPlayer2Move, player1Moves, deck.size());
@@ -136,12 +139,13 @@ public class Game implements Serializable, Runnable {
     public void endGame() {
         endOfGame = true;
         if (player1.getScore() > player2.getScore()) {
-            output.setHeadMessage(player1.getName() + " WON!!");
+            result = player1.getName() + " WON!!";
         } else if (player1.getScore() < player2.getScore()) {
-            output.setHeadMessage(player2.getName() + " WON!!");
+            result = player2.getName() + " WON!!";
         } else {
-            output.setHeadMessage("DRAW");
+            result = "DRAW";
         }
+        output.setHeadMessage(result);
     }
 
     /**
@@ -172,11 +176,11 @@ public class Game implements Serializable, Runnable {
      * @param firstCardIDNum ID prvni karty.
      * @param secondCardIDNum ID druhe karty.
      */
-    private void rightMove(int firstCardIDNum, int secondCardIDNum) {
+    public void rightMove(int firstCardIDNum, int secondCardIDNum) {
         deck.getCards()[firstCardIDNum].hideCard();
         deck.getCards()[secondCardIDNum].hideCard();
         uncoveredCards += 2;
-        if (playerOnTurn) {
+        if (player1OnTurn) {
             player1.setScore(player1.getScore() + 10);
             lastPlayer1Move = new OneMove(firstCardIDNum, secondCardIDNum);
             if (firstCardIDNum != -1 && secondCardIDNum != -1) {
@@ -219,8 +223,8 @@ public class Game implements Serializable, Runnable {
      * @param firstCardIDNum ID prvni karty.
      * @param secondCardIDNum ID druhe karty.
      */
-    private void falseMove(int firstCardIDNum, int secondCardIDNum) {
-        if (playerOnTurn) {
+    public void falseMove(int firstCardIDNum, int secondCardIDNum) {
+        if (player1OnTurn) {
 
             lastPlayer1Move = new OneMove(firstCardIDNum, secondCardIDNum);
             if (firstCardIDNum != -1 && secondCardIDNum != -1) {
@@ -263,12 +267,12 @@ public class Game implements Serializable, Runnable {
      * Vymeni hrace na tahu.
      */
     public void changePlayerOnTurn() {
-        if (playerOnTurn) {
-            playerOnTurn = false;
+        if (player1OnTurn) {
+            player1OnTurn = false;
             output.setHeadMessage(player2.getName() + "'s turn.");
 
         } else {
-            playerOnTurn = true;
+            player1OnTurn = true;
             output.setHeadMessage(player1.getName() + "'s turn.");
         }
     }
@@ -278,8 +282,8 @@ public class Game implements Serializable, Runnable {
      *
      * @return Vrati hrace na tahu.
      */
-    public boolean isPlayerOnTurn() {
-        return playerOnTurn;
+    public boolean isPlayer1OnTurn() {
+        return player1OnTurn;
     }
 
     /**
@@ -321,6 +325,10 @@ public class Game implements Serializable, Runnable {
      */
     public AbstractPlayer getPlayer2() {
         return player2;
+    }
+
+    public void setEndOfGame(boolean endOfGame) {
+        this.endOfGame = endOfGame;
     }
 
     /**
@@ -412,7 +420,7 @@ public class Game implements Serializable, Runnable {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 41 * hash + (this.playerOnTurn ? 1 : 0);
+        hash = 41 * hash + (this.player1OnTurn ? 1 : 0);
         hash = 41 * hash + (this.player1 != null ? this.player1.hashCode() : 0);
         hash = 41 * hash + (this.player2 != null ? this.player2.hashCode() : 0);
         hash = 41 * hash + (this.deck != null ? this.deck.hashCode() : 0);
@@ -431,7 +439,7 @@ public class Game implements Serializable, Runnable {
             return false;
         }
         final Game other = (Game) obj;
-        if (this.playerOnTurn != other.playerOnTurn) {
+        if (this.player1OnTurn != other.player1OnTurn) {
             return false;
         }
         if (this.player1 != other.player1 && (this.player1 == null || !this.player1.equals(other.player1))) {
@@ -457,6 +465,10 @@ public class Game implements Serializable, Runnable {
 
     @Override
     public String toString() {
-        return "Game{" + "playerOnTurn=" + playerOnTurn + ", player1=" + player1 + ", player2=" + player2 + ", deck=" + deck + ", uncoveredCards=" + uncoveredCards + ", newMove=" + newMove + ", endOfGame=" + endOfGame + '}';
+        return "Game{" + "player1OnTurn=" + player1OnTurn + ", player1=" + player1 + ", player2=" + player2 + ", deck=" + deck + ", uncoveredCards=" + uncoveredCards + ", newMove=" + newMove + ", endOfGame=" + endOfGame + '}';
+    }
+
+    public String getResult() {
+        return result;
     }
 }

@@ -33,7 +33,7 @@ public class ClientGame extends Game {
      */
     public ClientGame(AbstractPlayer clientPlayer, DeckOfCards deck) {
         super(clientPlayer, null, deck);
-        playerOnTurn = false;
+        player1OnTurn = false;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ClientGame extends Game {
             return;
         }
 
-        if (playerOnTurn) {
+        if (player1OnTurn) {
             output.setHeadMessage(player1.getName() + "'s turn.");
         } else {
             output.setHeadMessage(player2.getName() + "'s turn.");
@@ -71,7 +71,7 @@ public class ClientGame extends Game {
 
         while (!endOfGame) {
 
-            if (playerOnTurn) {
+            if (player1OnTurn) {
                 newMove = player1.move(lastPlayer1Move, player2Moves, deck.getCards().length);
                 try {
                     objOutStream.writeObject(newMove);
@@ -107,7 +107,7 @@ public class ClientGame extends Game {
     /**
      * Zavre proudy.
      */
-    private void closeStreams() {
+    public void closeStreams() {
         try {
             if (objInStream != null) {
                 objInStream.close();
@@ -129,7 +129,7 @@ public class ClientGame extends Game {
      * @throws UnknownHostException
      * @throws IOException
      */
-    private void connectToServer() throws UnknownHostException, IOException {
+    public void connectToServer() throws UnknownHostException, IOException {
         clientSock = new Socket(hostIPAddress, 4444);
         objOutStream = new ObjectOutputStream(clientSock.getOutputStream());
         objInStream = new ObjectInputStream(clientSock.getInputStream());
@@ -142,7 +142,7 @@ public class ClientGame extends Game {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    private void loadFromServer() throws ClassNotFoundException, IOException {
+    public void loadFromServer() throws ClassNotFoundException, IOException {
         player2 = (AbstractPlayer) objInStream.readObject();
         player2.setPlayerNumber(2);
         player2.setDelegate(player1.getDelegate());

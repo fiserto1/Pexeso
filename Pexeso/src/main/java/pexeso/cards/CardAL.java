@@ -46,7 +46,7 @@ public class CardAL implements ActionListener {
                     move.setSecondCardIDNumber(cardBut.getCard().getIdNumber());
                     move.setSecondCardCompareNumber(cardBut.getCard().getCompareNumber());
                     player.setMyMove(move);
-                    player.setMoveCompleted(true);
+//                    player.setMoveCompleted(true);
                 }
             }
         }

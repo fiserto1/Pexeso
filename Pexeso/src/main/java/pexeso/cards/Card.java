@@ -38,6 +38,14 @@ public class Card implements Serializable {
      */
     private boolean discovered;
 
+    public Card(int compareNumber, int idNumber) {
+        this.compareNumber = compareNumber;
+        this.idNumber = idNumber;
+    }
+
+    public Card() {
+    }
+
     /**
      * Uhodne kartu a schova kartu.
      */

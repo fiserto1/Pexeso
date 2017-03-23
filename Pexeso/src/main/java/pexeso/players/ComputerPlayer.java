@@ -24,6 +24,10 @@ public class ComputerPlayer extends AbstractPlayer {
     private final ArrayList<Integer> uncoveredCards;
     private final ArrayList<int[]> memory;
 
+    public ComputerPlayer(int playerNumber) {
+        this("Computer" + playerNumber, null, playerNumber);
+    }
+
     /**
      *
      * @param playerName Jmeno hrace.
@@ -42,11 +46,11 @@ public class ComputerPlayer extends AbstractPlayer {
 
         refreshMemory();
         deleteOldMemory();
-        saveMoves(myLastMove);
+        saveMove(myLastMove);
 
         if (oppMoves != null) {
             for (int i = 0; i < oppMoves.size(); i++) {
-                saveMoves(oppMoves.get(i));
+                saveMove(oppMoves.get(i));
             }
         }
 
@@ -62,7 +66,7 @@ public class ComputerPlayer extends AbstractPlayer {
     /**
      * Posune stari tahu.
      */
-    private void refreshMemory() {
+    public void refreshMemory() {
         for (int[] card : memory) {
             card[0]++;
         }
@@ -73,7 +77,7 @@ public class ComputerPlayer extends AbstractPlayer {
      * Stari se pricita a maze jeste pred pred vyhodnocenim taktiky, tudiz
      * opravdove stari je 4 (4 x 2 hraci) tj. 8 tahu zpet.
      */
-    private void deleteOldMemory() {
+    public void deleteOldMemory() {
         for (int[] card : memory) {
             if (card[0] == 5) {
                 if (correctMoves.containsKey(card[1])) {
@@ -95,7 +99,7 @@ public class ComputerPlayer extends AbstractPlayer {
      * @param numberOfCards Uvodni pocet karet.
      * @return Vrati nahodny tah.
      */
-    private OneMove playRandom(int numberOfCards) {
+    public OneMove playRandom(int numberOfCards) {
         Random rnd = new Random();
         int firstTurn;
         int secondTurn;
@@ -120,12 +124,12 @@ public class ComputerPlayer extends AbstractPlayer {
      *
      * @param move
      */
-    private void saveMoves(OneMove move) {
+    public void saveMove(OneMove move) {
         if (move != null) {
             saveToMap(move.getFirstCardCompareNumber(), move.getFirstCardIDNumber());
             saveToMap(move.getSecondCardCompareNumber(), move.getSecondCardIDNumber());
 
-            //delete correct moves
+            //delete correct moves if they are revealed by another player
             if (move.getFirstCardCompareNumber() == move.getSecondCardCompareNumber()) {
                 if (correctMoves.containsKey(move.getFirstCardCompareNumber())) {
                     correctMoves.remove(move.getFirstCardCompareNumber());
@@ -136,13 +140,22 @@ public class ComputerPlayer extends AbstractPlayer {
         }
     }
 
+    public ArrayList<int[]> getMemory() {
+        return memory;
+    }
+
+    public TreeMap<Integer, ArrayList<Integer>> getCorrectMoves() {
+        return correctMoves;
+    }
+
     /**
      * Ulozi tah do pameti.
      *
      * @param compareNumber Porovnavaci cislo karty.
      * @param idNumber ID cislo karty.
      */
-    private void saveToMemory(int compareNumber, int idNumber) {
+
+    public void saveToMemory(int compareNumber, int idNumber) {
         //0 - age
         //1 - key
         //2 - value
@@ -157,7 +170,7 @@ public class ComputerPlayer extends AbstractPlayer {
      * @param compareNumber Porovnavaci cislo karty.
      * @param idNumber ID cislo karty.
      */
-    private void saveToMap(int compareNumber, int idNumber) {
+    public void saveToMap(int compareNumber, int idNumber) {
         if (compareNumber != -1) {
             saveToMemory(compareNumber, idNumber);
 

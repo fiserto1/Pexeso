@@ -37,8 +37,11 @@ public class HumanPlayer extends AbstractPlayer {
 
         myMove = null;
         moveCompleted = false;
+
         CardAL listener = new CardAL(this);
-        getDelegate().activateCards(listener);
+        if (getDelegate() != null) {
+            getDelegate().activateCards(listener);
+        }
         //wait for user choice
         while (!moveCompleted) {
             try {
@@ -50,8 +53,9 @@ public class HumanPlayer extends AbstractPlayer {
                 break;
             }
         }
-
-        getDelegate().deactivateCards(listener);
+        if (getDelegate() != null) {
+            getDelegate().deactivateCards(listener);
+        }
         return myMove;
     }
 
@@ -60,9 +64,9 @@ public class HumanPlayer extends AbstractPlayer {
      *
      * @param moveCompleted Kompletni tah.
      */
-    public void setMoveCompleted(boolean moveCompleted) {
-        this.moveCompleted = moveCompleted;
-    }
+//    public void setMoveCompleted(boolean moveCompleted) {
+//        this.moveCompleted = moveCompleted;
+//    }
 
     /**
      * Nastavi hracuv tah.
@@ -71,5 +75,6 @@ public class HumanPlayer extends AbstractPlayer {
      */
     public void setMyMove(OneMove myMove) {
         this.myMove = myMove;
+        this.moveCompleted = true;
     }
 }

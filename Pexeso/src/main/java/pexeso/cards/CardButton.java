@@ -56,7 +56,7 @@ public class CardButton extends JButton {
      * @param fileNumber Cislo souboru.
      * @return
      */
-    private ImageIcon loadImgFromFile(int fileNumber) {
+    public ImageIcon loadImgFromFile(int fileNumber) {
         ImageIcon image = new ImageIcon(getClass().getResource(
                 "/images/" + fileNumber + ".jpg"));
         return image;

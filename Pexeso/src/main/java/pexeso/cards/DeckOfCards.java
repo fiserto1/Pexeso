@@ -35,7 +35,7 @@ public class DeckOfCards implements Serializable {
      * Vytvori balicek dvojic karet do pole. Priradi kazde karte porovnavaci
      * cislo, ID.
      */
-    private void createDeck() {
+    public void createDeck() {
         int j = 1;
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new Card();

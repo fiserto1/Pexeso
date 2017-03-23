@@ -37,11 +37,11 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
     //Menu
     private final JMenuBar headMenuBar = new JMenuBar();
     private final JMenu gameMenu = new JMenu("Game");
-    private final JMenu settingsMenu = new JMenu("Settings");
+    public final JMenu settingsMenu = new JMenu("Settings");
     private final JMenu newGameMenu = new JMenu("New game");
     private final JMenu offlineGameMenu = new JMenu("Offline game");
     private final JMenu onlineGameMenu = new JMenu("LAN game");
-    private final JMenuItem onePlayerGameMenuItem = new JMenuItem("One player");
+    public final JMenuItem onePlayerGameMenuItem = new JMenuItem("One player");
     private final JMenuItem twoPlayersGameMenuItem = new JMenuItem("Two players");
     private final JMenuItem saveGameMenuItem = new JMenuItem("Save game");
     private final JMenuItem loadGameMenuItem = new JMenuItem("Load game");
@@ -74,9 +74,9 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
     //Thread
     private Thread gameThread;
     //Avatars
-    private final ImageIcon defaultPlayerAvatar
+    public final ImageIcon defaultPlayerAvatar
             = new ImageIcon(getClass().getResource("/avatars/Professor.png"));
-    private final ImageIcon defaultComputerAvatar
+    public final ImageIcon defaultComputerAvatar
             = new ImageIcon(getClass().getResource("/avatars/Female.png"));
 
     /**

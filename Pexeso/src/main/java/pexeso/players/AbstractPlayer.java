@@ -36,6 +36,7 @@ public abstract class AbstractPlayer implements Serializable {
         this.name = name;
         this.avatar = avatar;
         this.playerNumber = playerNumber;
+        this.delegate = null;
     }
 
     /**
@@ -132,8 +133,8 @@ public abstract class AbstractPlayer implements Serializable {
      */
     public void setDelegate(PlayerDelegate delegate) {
         this.delegate = delegate;
-        if (delegate != null) {
-            delegate.showPlayerOnBoard(this);
+        if (this.delegate != null) {
+            this.delegate.showPlayerOnBoard(this);
         }
     }
 

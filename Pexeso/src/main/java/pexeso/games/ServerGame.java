@@ -34,7 +34,7 @@ public class ServerGame extends Game {
      */
     public ServerGame(AbstractPlayer serverPlayer, DeckOfCards deck) {
         super(serverPlayer, null, deck);
-        playerOnTurn = true;
+        player1OnTurn = true;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ServerGame extends Game {
             return;
         }
 
-        if (playerOnTurn) {
+        if (player1OnTurn) {
             output.setHeadMessage(player1.getName() + "'s turn.");
         } else {
             output.setHeadMessage(player2.getName() + "'s turn.");
@@ -70,7 +70,7 @@ public class ServerGame extends Game {
 
         while (!endOfGame) {
 
-            if (playerOnTurn) {
+            if (player1OnTurn) {
 
                 newMove = player1.move(lastPlayer1Move, player2Moves, deck.getCards().length);
 
@@ -108,7 +108,7 @@ public class ServerGame extends Game {
     /**
      * Zavre proudy.
      */
-    private void closeStreams() {
+    public void closeStreams() {
         try {
             if (objInStream != null) {
                 objInStream.close();
@@ -135,7 +135,7 @@ public class ServerGame extends Game {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    private void connectClient() throws UnknownHostException, ClassNotFoundException, IOException {
+    public void connectClient() throws UnknownHostException, ClassNotFoundException, IOException {
         output.setHeadMessage("Your IP adress: "
                 + InetAddress.getLocalHost().getHostAddress());
         serverSock = new ServerSocket(4444);
@@ -152,7 +152,7 @@ public class ServerGame extends Game {
      *
      * @throws IOException
      */
-    private void sendGameToClient() throws IOException {
+    public void sendGameToClient() throws IOException {
         objOutStream.writeObject(player1);
         objOutStream.writeObject(deck);
         if (player1.getName().equals(player2.getName())) {
