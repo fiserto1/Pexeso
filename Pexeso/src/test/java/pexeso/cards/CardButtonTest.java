@@ -2,6 +2,7 @@ package pexeso.cards;
 
 import org.junit.Before;
 import org.junit.Test;
+import pexeso.gui.CardButton;
 
 import javax.swing.*;
 

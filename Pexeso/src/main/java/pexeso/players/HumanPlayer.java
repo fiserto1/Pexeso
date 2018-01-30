@@ -5,8 +5,8 @@
  */
 package pexeso.players;
 
-import pexeso.OneMove;
-import pexeso.cards.CardAL;
+import pexeso.games.OneMove;
+import pexeso.gui.CardAL;
 
 import javax.swing.*;
 import java.util.ArrayList;

@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pexeso.cards;
+package pexeso.gui;
 
-import pexeso.OneMove;
+import pexeso.games.OneMove;
 import pexeso.players.HumanPlayer;
 
 import java.awt.event.ActionEvent;

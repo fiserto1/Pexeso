@@ -5,6 +5,8 @@
  */
 package pexeso;
 
+import pexeso.gui.HeadFrame;
+
 /**
  * Main, ktery pouze spousti hlavni okno.
  *

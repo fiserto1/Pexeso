@@ -6,7 +6,7 @@
 package pexeso.delegates;
 
 
-import pexeso.cards.CardAL;
+import pexeso.gui.CardAL;
 import pexeso.cards.DeckOfCards;
 import pexeso.players.AbstractPlayer;
 

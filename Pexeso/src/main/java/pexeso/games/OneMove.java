@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pexeso;
+package pexeso.games;
 
 import java.io.Serializable;
 

@@ -1,6 +1,6 @@
 import org.junit.Before;
 import org.junit.Test;
-import pexeso.OneMove;
+import pexeso.games.OneMove;
 import pexeso.Settings;
 import pexeso.cards.DeckOfCards;
 import pexeso.games.Game;

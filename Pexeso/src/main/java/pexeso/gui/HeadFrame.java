@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pexeso;
+package pexeso.gui;
 
+import pexeso.Message;
+import pexeso.Settings;
 import pexeso.cards.Card;
-import pexeso.cards.CardAL;
-import pexeso.cards.CardButton;
 import pexeso.cards.DeckOfCards;
 import pexeso.delegates.CardDelegate;
 import pexeso.delegates.MessageDelegate;

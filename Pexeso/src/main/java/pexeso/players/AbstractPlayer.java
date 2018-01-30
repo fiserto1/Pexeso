@@ -5,7 +5,7 @@
  */
 package pexeso.players;
 
-import pexeso.OneMove;
+import pexeso.games.OneMove;
 import pexeso.delegates.PlayerDelegate;
 
 import javax.swing.*;
@@ -20,6 +20,7 @@ import java.util.ArrayList;
  */
 public abstract class AbstractPlayer implements Serializable {
 
+    private static final long serialVersionUID = 7401090768696208112L;
     protected int score;
     protected String name;
     protected ImageIcon avatar;

@@ -2,7 +2,7 @@ package pexeso.players;
 
 import org.junit.Before;
 import org.junit.Test;
-import pexeso.OneMove;
+import pexeso.games.OneMove;
 
 import javax.swing.*;
 import java.util.ArrayList;

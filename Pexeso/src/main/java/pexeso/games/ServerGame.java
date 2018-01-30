@@ -5,7 +5,6 @@
  */
 package pexeso.games;
 
-import pexeso.OneMove;
 import pexeso.cards.DeckOfCards;
 import pexeso.players.AbstractPlayer;
 

@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pexeso.cards;
+package pexeso.gui;
+
+import pexeso.cards.Card;
 
 import javax.swing.*;
 import java.awt.*;

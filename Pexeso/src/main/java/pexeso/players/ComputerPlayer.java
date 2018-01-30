@@ -5,7 +5,7 @@
  */
 package pexeso.players;
 
-import pexeso.OneMove;
+import pexeso.games.OneMove;
 
 import javax.swing.*;
 import java.util.ArrayList;

@@ -5,9 +5,8 @@
  */
 package pexeso.games;
 
-import pexeso.HeadFrame;
+import pexeso.gui.HeadFrame;
 import pexeso.Message;
-import pexeso.OneMove;
 import pexeso.cards.DeckOfCards;
 import pexeso.delegates.MessageDelegate;
 import pexeso.players.AbstractPlayer;
