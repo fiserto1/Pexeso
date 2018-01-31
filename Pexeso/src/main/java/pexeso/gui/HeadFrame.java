@@ -13,6 +13,7 @@ import pexeso.delegates.CardDelegate;
 import pexeso.delegates.MessageDelegate;
 import pexeso.delegates.PlayerDelegate;
 import pexeso.games.ClientGame;
+import pexeso.games.Difficulty;
 import pexeso.games.Game;
 import pexeso.games.ServerGame;
 import pexeso.players.AbstractPlayer;
@@ -73,7 +74,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
     private JLabel errorLabel;
     //Cards
     private DeckOfCards deck;
-    private final Settings settings = new Settings(64, 1);
+    private final Settings settings = new Settings(64, Difficulty.EASY);
     private Game newGame;
     //Thread
     private Thread gameThread;
@@ -88,6 +89,9 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
      * hrace.
      */
     public HeadFrame() {
+        this.player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
+        this.player2 = new HumanPlayer("Player 2", defaultPlayerAvatar, 2);
+
         //Close
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         //Menu
@@ -95,7 +99,6 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         //Panels
         createPanels();
 
-        this.player1 = new HumanPlayer("Player 1", defaultPlayerAvatar, 1);
 
         getContentPane().setLayout(new java.awt.BorderLayout(30, 30));
         getContentPane().add(leftPanel, java.awt.BorderLayout.LINE_START);
@@ -139,6 +142,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         leftPanel = new JPanel(new java.awt.GridLayout(3, 1));
         //Menu Buttons
         initMainMenuPanel();
+        initCenterSettingsComponents();
         //Player 1
         playerOneNameLabel = new JLabel("PlayerName 1", SwingConstants.CENTER);
         playerOneScoreLabel = new JLabel("Score: ", SwingConstants.CENTER);
@@ -268,29 +272,37 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
     }
 
     private void showTwoPlayerMenu() {
+        player1NameTF.setName(player1.getName());
+        player2NameTF.setName(player2.getName());
+
         startTwoPlayerGameBut = new JButton("Start game");
+        startTwoPlayerGameBut.setPreferredSize(new Dimension(400, 100));
         startTwoPlayerGameBut.addActionListener(e -> {
+            updateSettings();
+
             centerMenuPanel.removeAll();
             getContentPane().remove(centerMenuPanel);
             getContentPane().add(centerCardDeckPanel, BorderLayout.CENTER);
 
-            startTwoPlayerGame();
+            startTwoPlayerGame(player2NameTF.getText());
         });
-        startTwoPlayerGameBut.setPreferredSize(new Dimension(400, 100));
-        JPanel buttonGrid = new JPanel(new GridLayout(1, 1));
+        JPanel buttonGrid = new JPanel(new GridLayout(5, 1));
+        buttonGrid.add(namePanel);
+        buttonGrid.add(name2Panel);
+        buttonGrid.add(numOfCardsPanel);
         buttonGrid.add(startTwoPlayerGameBut);
         centerMenuPanel.add(buttonGrid);
         centerMenuPanel.repaint();
         pack();
     }
 
-    private void startTwoPlayerGame() {
+    private void startTwoPlayerGame(String player2Name) {
         saveGameMenuItem.setEnabled(true);
         endCurrentGameThread();
 
         deck = new DeckOfCards(settings.getNumberOfCards());
         deck.shuffleCards();
-        player2 = new HumanPlayer("Player 2", defaultPlayerAvatar, 2);
+        player2 = new HumanPlayer(player2Name, defaultPlayerAvatar, 2);
         player1.setDelegate(HeadFrame.this);
         player2.setDelegate(HeadFrame.this);
         player1.setScore(0);
@@ -298,21 +310,93 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         showGameBoard();
     }
 
+    private void initCenterSettingsComponents() {
+
+        player1NameTF = new JTextField(player1.getName());
+
+        player2NameTF = new JTextField(player2.getName());
+
+        radButts = new JRadioButton[]{new JRadioButton("4"),
+                new JRadioButton("16"), new JRadioButton("36", true),
+                new JRadioButton("64")};
+
+        Difficulty[] values = Difficulty.values();
+        difficultyCB = new JComboBox<>(values);
+
+
+        ButtonGroup radButGroup = new ButtonGroup();
+        radButPanel = new JPanel();
+
+        for (JRadioButton button : radButts) {
+            radButGroup.add(button);
+            radButPanel.add(button);
+        }
+
+        namePanel = new JPanel(new GridLayout(2,1));
+        namePanel.add(new JLabel("Player 1 name:"));
+        namePanel.add(player1NameTF);
+        name2Panel = new JPanel(new GridLayout(2,1));
+        name2Panel.add(new JLabel("Player 2 name:"));
+        name2Panel.add(player2NameTF);
+
+        difficultyPanel = new JPanel(new GridLayout(2, 1));
+        difficultyPanel.add(new JLabel("Difficulty:"));
+        difficultyPanel.add(difficultyCB);
+
+        numOfCardsPanel = new JPanel(new GridLayout(2,1));
+        numOfCardsPanel.add(new JLabel("Number of cards:"));
+        numOfCardsPanel.add(radButPanel);
+
+    }
+
+    private JTextField player1NameTF;
+    private JTextField player2NameTF;
+    private JRadioButton[] radButts;
+    JComboBox<Difficulty> difficultyCB;
+
+    JPanel namePanel;
+    JPanel name2Panel;
+    JPanel radButPanel;
+    JPanel numOfCardsPanel;
+    JPanel difficultyPanel;
+
     private void showSinglePlayerMenu() {
+        player1NameTF.setName(player1.getName());
+
         startGameButton = new JButton("Start game");
+        startGameButton.setPreferredSize(new Dimension(400, 100));
         startGameButton.addActionListener(e -> {
+            updateSettings();
+
             centerMenuPanel.removeAll();
             getContentPane().remove(centerMenuPanel);
             getContentPane().add(centerCardDeckPanel, BorderLayout.CENTER);
 
             startSingleGame();
         });
-        startGameButton.setPreferredSize(new Dimension(400, 100));
-        JPanel buttonGrid = new JPanel(new GridLayout(1, 1));
+
+        JPanel buttonGrid = new JPanel(new GridLayout(4, 1));
+        buttonGrid.add(namePanel);
+        buttonGrid.add(difficultyPanel);
+        buttonGrid.add(numOfCardsPanel);
         buttonGrid.add(startGameButton);
         centerMenuPanel.add(buttonGrid);
         centerMenuPanel.repaint();
         pack();
+    }
+
+
+
+    private void updateSettings() {
+        for (JRadioButton rBut : radButts) {
+            if (rBut.isSelected()) {
+                settings.setNumberOfCards(Integer.parseInt(rBut.getText()));
+                break;
+            }
+        }
+        player1.setName(player1NameTF.getText());
+        player2.setName(player2NameTF.getText());
+        settings.setDifficulty((Difficulty) difficultyCB.getSelectedItem());
     }
 
     private void startSingleGame() {

@@ -1,5 +1,6 @@
 import org.junit.Before;
 import org.junit.Test;
+import pexeso.games.Difficulty;
 import pexeso.games.OneMove;
 import pexeso.Settings;
 import pexeso.cards.DeckOfCards;
@@ -26,7 +27,7 @@ public class TestGameProcess {
 
     @Before
     public void setUp() {
-        settings = new Settings(4, 1);
+        settings = new Settings(4, Difficulty.EASY);
         deck = new DeckOfCards(settings.getNumberOfCards());
 
         player1 = new HumanPlayer("Tomas", null, 1);

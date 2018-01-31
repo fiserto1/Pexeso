@@ -5,6 +5,8 @@
  */
 package pexeso;
 
+import pexeso.games.Difficulty;
+
 /**
  * Trida pro nasteveni hry. (obtiznost hry, pocet karet ve hre)
  *
@@ -13,14 +15,14 @@ package pexeso;
 public class Settings {
 
     private int numberOfCards;
-    private int difficulty;
+    private Difficulty difficulty;
 
     /**
      *
      * @param numberOfCards Pocet hracich karet.
      * @param difficulty Obtiznost PC protihrace.
      */
-    public Settings(int numberOfCards, int difficulty) {
+    public Settings(int numberOfCards, Difficulty difficulty) {
         this.numberOfCards = numberOfCards;
         this.difficulty = difficulty;
     }
@@ -47,7 +49,7 @@ public class Settings {
      *
      * @return Vrati obtiznost hry.
      */
-    public int getDifficulty() {
+    public Difficulty getDifficulty() {
         return difficulty;
     }
 
@@ -56,34 +58,26 @@ public class Settings {
      *
      * @param difficulty Obtiznost hry.
      */
-    public void setDifficulty(int difficulty) {
+    public void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty;
     }
 
     @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 53 * hash + this.numberOfCards;
-        hash = 53 * hash + this.difficulty;
-        return hash;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Settings settings = (Settings) o;
+
+        if (numberOfCards != settings.numberOfCards) return false;
+        return difficulty == settings.difficulty;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Settings other = (Settings) obj;
-        if (this.numberOfCards != other.numberOfCards) {
-            return false;
-        }
-        if (this.difficulty != other.difficulty) {
-            return false;
-        }
-        return true;
+    public int hashCode() {
+        int result = numberOfCards;
+        result = 31 * result + (difficulty != null ? difficulty.hashCode() : 0);
+        return result;
     }
 
     @Override
