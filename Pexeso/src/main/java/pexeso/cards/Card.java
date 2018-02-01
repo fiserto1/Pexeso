@@ -38,6 +38,12 @@ public class Card implements Serializable {
      */
     private boolean discovered;
 
+    /**
+     * true - karta je otocena licem vzhuru
+     * false - karta je otocena rubem vzhuru
+     */
+    private boolean isVisible;
+
     public Card(int compareNumber, int idNumber) {
         this.compareNumber = compareNumber;
         this.idNumber = idNumber;
@@ -50,6 +56,7 @@ public class Card implements Serializable {
      * Uhodne kartu a schova kartu.
      */
     public void hideCard() {
+        this.isVisible = false;
         discovered = true;
         if (delegate != null) {
             delegate.cardRevealed(this);
@@ -60,6 +67,7 @@ public class Card implements Serializable {
      * Otoci kartu licem vzhuru.
      */
     public void showCard() {
+        this.isVisible = true;
         if (delegate != null) {
             delegate.cardShowed(this);
         }
@@ -69,6 +77,7 @@ public class Card implements Serializable {
      * Otoci kartu rubem vzhuru.
      */
     public void turnBack() {
+        this.isVisible = false;
         if (delegate != null) {
             delegate.cardTurnedBack(this);
         }
@@ -168,5 +177,9 @@ public class Card implements Serializable {
     @Override
     public String toString() {
         return "Card{" + "reverseSide=" + reverseSide + ", compareNumber=" + compareNumber + ", idNumber=" + idNumber + ", delegate=" + delegate + ", discovered=" + discovered + '}';
+    }
+
+    public boolean isVisible() {
+        return isVisible;
     }
 }

@@ -38,18 +38,25 @@ public class ComputerPlayerTest {
         assertTrue(computerPlayer.getMemory().isEmpty());
 
         //ARRANGE
-        computerPlayer.saveMove(new OneMove(2,4));
+        OneMove oneMove = new OneMove(2, 4);
+        oneMove.setFirstCardCompareNumber(1);
+        oneMove.setSecondCardCompareNumber(2);
+        computerPlayer.saveMove(oneMove);
         computerPlayer.refreshMemory();
         computerPlayer.refreshMemory();
         computerPlayer.refreshMemory();
-        computerPlayer.saveMove(new OneMove(6,8));
+
+        OneMove secondMove = new OneMove(6, 8);
+        secondMove.setFirstCardCompareNumber(3);
+        secondMove.setSecondCardCompareNumber(4);
+        computerPlayer.saveMove(secondMove);
         computerPlayer.refreshMemory();
 
         //ACT
         computerPlayer.deleteOldMemory();
 
         //ASSERT
-        assertEquals(1, computerPlayer.getMemory().size());
+        assertEquals(2, computerPlayer.getMemory().size());
     }
 
 

@@ -34,10 +34,29 @@ public abstract class AbstractPlayer implements Serializable {
      * @param playerNumber Cislo hrace.
      */
     public AbstractPlayer(String name, ImageIcon avatar, int playerNumber) {
+        validateName(name);
+        validatePlayerNumber(playerNumber);
         this.name = name;
         this.avatar = avatar;
         this.playerNumber = playerNumber;
         this.delegate = null;
+    }
+
+    private void validatePlayerNumber(int playerNumber) {
+        if (playerNumber != 1 && playerNumber != 2) {
+            throw new IllegalArgumentException("Only one or two players is allowed.");
+        }
+    }
+
+
+    private void validateName(String name){
+        if (name == null || name.equals("")) {
+            throw new IllegalArgumentException("Name is null or empty.");
+        }
+
+        if (name.length() > 30) {
+            throw new IllegalArgumentException("Name is too long. The maximum length is 30 characters.");
+        }
     }
 
     /**
@@ -109,6 +128,7 @@ public abstract class AbstractPlayer implements Serializable {
      * @param name Hracovo jmeno.
      */
     public void setName(String name) {
+        validateName(name);
         this.name = name;
         if (delegate != null) {
             delegate.nameChanged(this);

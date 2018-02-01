@@ -9,6 +9,7 @@ import pexeso.cards.Card;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 
 /**
  * Trida pro tlacitko s kartickou. Rozsireny JButton o vlastnost mit na sobe
@@ -18,6 +19,7 @@ import java.awt.*;
  */
 public class CardButton extends JButton {
 
+    private static final long serialVersionUID = 2378059682891565891L;
     private final Card card;
 
     /**
@@ -37,9 +39,13 @@ public class CardButton extends JButton {
      */
     public void showCard() {
         this.setText("");
-        ImageIcon newImage = new ImageIcon(loadImgFromFile(card.getCompareNumber()).getImage().getScaledInstance(
-                (this.getHeight() - (this.getHeight() / 5)), -1, Image.SCALE_SMOOTH));
-        this.setIcon(newImage);
+
+        int width = this.getHeight() - (this.getHeight() / 5);
+        int height = -1;
+        ImageIcon loadedImageIcon = loadImgFromFile(card.getCompareNumber());
+        ImageIcon rescaledImIcon = new ImageIcon(loadedImageIcon.getImage().getScaledInstance(
+                width, height, Image.SCALE_SMOOTH));
+        this.setIcon(rescaledImIcon);
     }
 
     /**
@@ -59,8 +65,12 @@ public class CardButton extends JButton {
      * @return
      */
     public ImageIcon loadImgFromFile(int fileNumber) {
-        ImageIcon image = new ImageIcon(getClass().getResource(
-                "/images/" + fileNumber + ".jpg"));
+        if (fileNumber < 1 || fileNumber > 32) {
+            throw new IllegalArgumentException("File number has to be in the interval <1, 32>.");
+        }
+        final String filepath = String.format("/images/%d.jpg", fileNumber);
+        URL resource = getClass().getResource(filepath);
+        ImageIcon image = new ImageIcon(resource);
         return image;
     }
 

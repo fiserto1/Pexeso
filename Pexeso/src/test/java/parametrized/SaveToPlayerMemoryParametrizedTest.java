@@ -1,3 +1,5 @@
+package parametrized;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +16,7 @@ import static junit.framework.TestCase.assertEquals;
  * Created by Tomas on 24-Jan-16.
  */
 @RunWith(Parameterized.class)
-public class ParametrizedSaveToMapTest {
+public class SaveToPlayerMemoryParametrizedTest {
     private int compareNumber;
     private int idNumber;
     private int expectedResult;
@@ -28,7 +30,7 @@ public class ParametrizedSaveToMapTest {
         player.getCorrectMoves().put(1, cards);
     }
 
-    public ParametrizedSaveToMapTest(int compareNumber, int idNumber, int expectedResult) {
+    public SaveToPlayerMemoryParametrizedTest(int compareNumber, int idNumber, int expectedResult) {
         this.compareNumber = compareNumber;
         this.idNumber = idNumber;
         this.expectedResult = expectedResult;

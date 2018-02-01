@@ -9,6 +9,7 @@ import pexeso.games.OneMove;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
@@ -78,8 +79,10 @@ public class ComputerPlayer extends AbstractPlayer {
      * opravdove stari je 4 (4 x 2 hraci) tj. 8 tahu zpet.
      */
     public void deleteOldMemory() {
+        List<int[]> cardsToRemove = new ArrayList<>();
         for (int[] card : memory) {
-            if (card[0] == 5) {
+            if (card[0] >= 5) {
+                cardsToRemove.add(card);
                 if (correctMoves.containsKey(card[1])) {
                     ArrayList<Integer> oldCard = correctMoves.get(card[1]);
                     oldCard.remove((Integer) card[2]);
@@ -91,6 +94,8 @@ public class ComputerPlayer extends AbstractPlayer {
                 }
             }
         }
+
+        memory.removeAll(cardsToRemove);
     }
 
     /**

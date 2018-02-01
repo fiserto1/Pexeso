@@ -54,4 +54,10 @@ public class DeckOfCardsTest {
         assertEquals(3, deck.getCards()[3].getIdNumber());
 
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidInput() {
+        // TODO: 01-Feb-18 parametrized?
+        new DeckOfCards(0);
+    }
 }

@@ -5,9 +5,15 @@ import org.junit.runner.notification.Failure;
 /**
  * Created by Tomas on 23-Jan-16.
  */
-public class TestRunner {
+public class PexesoTestRunner {
     public static void main(String[] args) {
-        Result result = JUnitCore.runClasses(PexesoTestSuite.class);
+        Result result = JUnitCore.runClasses(
+                JUnitTestSuite.class,
+                ParametrizedTestSuite.class,
+                ProcessTestSuite.class,
+                CRUDTestSuite.class
+        );
+
         for (Failure failure : result.getFailures()) {
             System.out.println(failure.toString());
         }

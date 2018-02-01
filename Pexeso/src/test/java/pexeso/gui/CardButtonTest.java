@@ -1,23 +1,21 @@
-package pexeso.cards;
+package pexeso.gui;
 
 import org.junit.Before;
 import org.junit.Test;
-import pexeso.gui.CardButton;
+import pexeso.cards.Card;
 
 import javax.swing.*;
+
+import java.awt.*;
 
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNull;
+import static org.junit.Assert.*;
 
-/**
- * Created by Tomas on 23-Jan-16.
- */
 public class CardButtonTest {
-
     CardButton cardButton;
     Card card;
-
     @Before
     public void setUp() {
         card = new Card();
@@ -25,6 +23,24 @@ public class CardButtonTest {
         cardButton = new CardButton(card);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void showCardInvalidSize() {
+        cardButton.showCard();
+    }
+
+    @Test
+    public void showCard() {
+        cardButton.setSize(new Dimension(30, 30));
+
+        cardButton.showCard();
+
+        assertEquals("", cardButton.getText());
+        Icon icon = cardButton.getIcon();
+        assertNotNull(icon);
+        assertEquals(24, icon.getIconWidth());
+        assertEquals(24, icon.getIconHeight());
+
+    }
 
     @Test
     public void testTurnBack() throws Exception {
@@ -32,9 +48,9 @@ public class CardButtonTest {
 
         assertNull(cardButton.getIcon());
         assertTrue(cardButton.isVisible());
+
         assertEquals("CARD", cardButton.getText());
     }
-
 
 
     @Test
@@ -43,7 +59,7 @@ public class CardButtonTest {
 
         ImageIcon realValue = cardButton.loadImgFromFile(1);
 
-        assertEquals(expectedValue, realValue);
+        assertEquals(expectedValue.getImage(), realValue.getImage());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -59,5 +75,26 @@ public class CardButtonTest {
     @Test(expected = IllegalArgumentException.class)
     public void testLoadImgFromFileInvalidArgument33() {
         cardButton.loadImgFromFile(33);
+    }
+
+    @Test
+    public void testEquals() {
+        assertFalse(cardButton.equals(null));
+
+        JButton but = new JButton();
+        assertFalse(cardButton.equals(but));
+
+        CardButton comparedCB = new CardButton(new Card());
+
+        assertFalse(cardButton.equals(comparedCB));
+
+        Card card = new Card();
+        card.setCompareNumber(2);
+        comparedCB = new CardButton(card);
+
+        assertFalse(cardButton.equals(comparedCB));
+
+        card.setCompareNumber(1);
+        assertTrue(cardButton.equals(comparedCB));
     }
 }
