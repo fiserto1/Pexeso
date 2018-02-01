@@ -40,9 +40,6 @@ public class TestGameProcess {
 
     @Test
     public void testGameProc1() throws InterruptedException {
-//        HeadFrame headFrame = new HeadFrame();
-//        headFrame.setVisible(true);
-//        headFrame.onePlayerGameMenuItem.doClick();
         deck.shuffleCards();
         Game game = new Game(cpu1, cpu2, deck);
         game.run();

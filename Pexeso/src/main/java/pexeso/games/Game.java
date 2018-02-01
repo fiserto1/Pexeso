@@ -26,6 +26,7 @@ import java.util.ArrayList;
  */
 public class Game implements Serializable, Runnable {
 
+    private static final long serialVersionUID = 5578878660960106971L;
     protected Socket clientSock;
     protected ServerSocket serverSock;
     protected ObjectInputStream objInStream;
@@ -65,6 +66,12 @@ public class Game implements Serializable, Runnable {
      * @param deck Balicek karet.
      */
     public Game(AbstractPlayer player1, AbstractPlayer player2, DeckOfCards deck) {
+        if (player1 == null || player2 == null) {
+            throw new IllegalArgumentException("Player cannot be null");
+        }
+        if (player1.equals(player2)) {
+            throw new IllegalArgumentException("Player cannot play with himself.");
+        }
         this.player1 = player1;
         this.player2 = player2;
         this.deck = deck;

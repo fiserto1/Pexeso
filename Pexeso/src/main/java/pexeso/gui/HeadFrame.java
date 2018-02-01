@@ -51,7 +51,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
     private JPanel rightPanel;
     private JPanel leftPanel;
     //Menu
-    private JButton singlePlayerButton;
+    public JButton singlePlayerButton;
     private JButton twoPlayersButton;
     private JButton lanButton;
     private JButton startGameButton;
@@ -137,6 +137,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         northPanel = new JPanel();
         southPanel = new JPanel();
         centerCardDeckPanel = new JPanel(new java.awt.GridLayout(8, 8, 5, 5));
+        centerCardDeckPanel.setName("centerCardDeckPanel");
         centerMenuPanel = new JPanel(new java.awt.GridBagLayout());
         rightPanel = new JPanel(new java.awt.GridLayout(3, 1));
         leftPanel = new JPanel(new java.awt.GridLayout(3, 1));
@@ -177,12 +178,14 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
 
     private void initMainMenuPanel() {
         singlePlayerButton = new JButton("Single player");
+        singlePlayerButton.setName("singlePlayerButton");
         singlePlayerButton.setPreferredSize(new Dimension(400, 100));
         singlePlayerButton.addActionListener(e -> {
             hideMainMenu();
             showSinglePlayerMenu();
         });
         twoPlayersButton = new JButton("Two players");
+        twoPlayersButton.setName("twoPlayersButton");
         twoPlayersButton.addActionListener(e -> {
             hideMainMenu();
             showTwoPlayerMenu();
@@ -276,6 +279,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         player2NameTF.setName(player2.getName());
 
         startTwoPlayerGameBut = new JButton("Start game");
+        startTwoPlayerGameBut.setName("startTwoPlayerGameBut");
         startTwoPlayerGameBut.setPreferredSize(new Dimension(400, 100));
         startTwoPlayerGameBut.addActionListener(e -> {
             updateSettings();
@@ -364,6 +368,7 @@ public class HeadFrame extends JFrame implements Serializable, PlayerDelegate,
         player1NameTF.setName(player1.getName());
 
         startGameButton = new JButton("Start game");
+        startGameButton.setName("startGameButton");
         startGameButton.setPreferredSize(new Dimension(400, 100));
         startGameButton.addActionListener(e -> {
             updateSettings();
